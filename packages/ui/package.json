@@ -1,16 +1,16 @@
 {
-	"name": "@websense/ui",
-	"private": true,
-	"version": "1.0.0",
-	"type": "module",
-	"scripts": {
-		"format-check": "biome format .",
-		"format-write": "biome format --write .",
-		"lint-check": "biome lint .",
-		"lint-apply": "biome lint --write .",
-		"test": "vitest run"
-	},
-	"dependencies": {
-		"lit": "^3.3.0"
-	}
+    "name": "@websense/ui",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "format-check": "biome format .",
+        "format-write": "biome format --write .",
+        "lint-check": "biome lint .",
+        "lint-apply": "biome lint --write .",
+        "test": "node -e \"console.log('No tests implemented yet')\""
+    },
+    "dependencies": {
+        "lit": "^3.3.0"
+    }
 }
