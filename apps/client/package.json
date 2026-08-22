@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@websense/ui": "workspace:*",
+    "@websense/util": "workspace:*",
     "lit": "^3.3.0"
   },
   "devDependencies": {

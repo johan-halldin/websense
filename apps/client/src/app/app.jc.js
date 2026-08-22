@@ -1,3 +1,4 @@
+import { capitalize } from "@websense/util";
 import { WsAppView } from "./app.wc.js";
 
 /**
@@ -39,7 +40,7 @@ class App {
   /** @returns {IAppView} */
   #getIAppView() {
     return {
-      getStatus: () => this.#status,
+      getStatus: () => capitalize(this.#status),
       onRefresh: () => this.#checkHealth(),
     };
   }

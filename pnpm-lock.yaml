@@ -29,6 +29,9 @@ importers:
       '@websense/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@websense/util':
+        specifier: workspace:*
+        version: link:../../packages/util
       lit:
         specifier: ^3.3.0
         version: 3.3.3
