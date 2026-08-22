@@ -67,6 +67,7 @@ export class UiButton extends LitElement {
 
     return html`
       <button
+        part="button"
         ?disabled=${disabled}
         title=${tooltip ?? ""}
         @click=${(/** @type {MouseEvent} */ e) => onClick?.(e)}

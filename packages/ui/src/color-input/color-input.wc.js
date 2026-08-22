@@ -24,13 +24,21 @@ export class UiColorInput extends LitElement {
       font-size: 14px;
       color: var(--color-text);
     }
+    .control {
+      position: relative;
+      display: inline-flex;
+      align-items: stretch;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      background-color: var(--color-surface);
+      overflow: hidden;
+    }
     input {
       width: 32px;
       height: 32px;
       padding: 2px;
-      border: 1px solid var(--color-border);
-      border-radius: 4px;
-      background-color: var(--color-surface);
+      border: none;
+      background-color: transparent;
       cursor: pointer;
     }
     input:disabled {
@@ -49,6 +57,13 @@ export class UiColorInput extends LitElement {
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
+    }
+    .control ::part(button) {
+      border: none;
+      border-radius: 0;
+    }
+    .control input:not(.hidden) ~ ui-button::part(button) {
+      border-left: 1px solid var(--color-border);
     }
   `;
 
@@ -73,34 +88,36 @@ export class UiColorInput extends LitElement {
     return html`
       <label title=${ic.tooltip ?? ""}>
         ${ic.label ?? ""}
-        <input
-          type="color"
-          class=${hasValue ? "" : "hidden"}
-          .value=${ic.value ?? "#000000"}
-          ?disabled=${disabled}
-          @input=${(/** @type {Event} */ e) =>
-            ic.onInput?.(/** @type {HTMLInputElement} */ (e.target).value)}
-        />
-        ${
-          hasValue
-            ? html`<ui-button
-                .ic=${{
-                  label: "Clear",
-                  ...(ic.onInput !== undefined
-                    ? { onClick: () => ic.onInput?.(null) }
-                    : {}),
-                }}
-              ></ui-button>`
-            : html`<ui-button
-                .ic=${{
-                  label: "Select",
-                  icon: "color-palette",
-                  ...(ic.onInput !== undefined
-                    ? { onClick: () => this.#openPicker() }
-                    : {}),
-                }}
-              ></ui-button>`
-        }
+        <span class="control">
+          <input
+            type="color"
+            class=${hasValue ? "" : "hidden"}
+            .value=${ic.value ?? "#000000"}
+            ?disabled=${disabled}
+            @input=${(/** @type {Event} */ e) =>
+              ic.onInput?.(/** @type {HTMLInputElement} */ (e.target).value)}
+          />
+          ${
+            hasValue
+              ? html`<ui-button
+                  .ic=${{
+                    label: "Clear",
+                    ...(ic.onInput !== undefined
+                      ? { onClick: () => ic.onInput?.(null) }
+                      : {}),
+                  }}
+                ></ui-button>`
+              : html`<ui-button
+                  .ic=${{
+                    label: "Select",
+                    icon: "color-palette",
+                    ...(ic.onInput !== undefined
+                      ? { onClick: () => this.#openPicker() }
+                      : {}),
+                  }}
+                ></ui-button>`
+          }
+        </span>
       </label>
     `;
   }
