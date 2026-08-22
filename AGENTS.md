@@ -45,6 +45,10 @@ An `IXxx` interface object has three kinds of fields, distinguished by naming:
 
 Always use the CSS variables defined in `packages/ui/src/tokens.css` (the color scales and their semantic aliases, e.g. `var(--color-primary)`, `var(--color-text)`). Don't define one-off colors inline (hex/rgb literals) - if a needed shade is missing from the scales, add it to `tokens.css` rather than hardcoding it at the point of use.
 
+#### Layout
+
+Use simple CSS utility classes from the UI package for layout. Do not create Web Components for layout primitives.
+
 ### Backend
 
 Node.js, JavaScript (with JSDoc for types).
