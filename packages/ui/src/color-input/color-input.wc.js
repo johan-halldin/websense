@@ -1,11 +1,16 @@
 import { css, html, LitElement } from "lit";
+import "../button/button.wc.js";
 
 /**
  * @typedef {object} IColorInput
- * @property {string} value
+ * @property {string|null} value - null means no color is set. A native
+ *   <input type="color"> can't represent "empty" itself (its .value always
+ *   coerces to a valid hex color, and its picker has no clear affordance),
+ *   so this shows a "Select" button instead of the swatch until a color is
+ *   actually chosen, and a "Clear" button to get back to null.
  * @property {string} [label]
  * @property {string} [tooltip]
- * @property {(value: string) => void} [onInput]
+ * @property {(value: string|null) => void} [onInput]
  */
 
 export class UiColorInput extends LitElement {
@@ -32,6 +37,19 @@ export class UiColorInput extends LitElement {
       cursor: default;
       opacity: 0.5;
     }
+    /* Kept in the DOM (so it can still be .click()'d to open the native
+       picker) but not visible - the "Select" button is shown instead. */
+    input.hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   `;
 
   /** @type {IColorInput|null} */
@@ -50,19 +68,45 @@ export class UiColorInput extends LitElement {
       return "";
     }
     const disabled = ic.onInput === undefined;
+    const hasValue = ic.value !== null;
 
     return html`
       <label title=${ic.tooltip ?? ""}>
         ${ic.label ?? ""}
         <input
           type="color"
-          .value=${ic.value}
+          class=${hasValue ? "" : "hidden"}
+          .value=${ic.value ?? "#000000"}
           ?disabled=${disabled}
           @input=${(/** @type {Event} */ e) =>
             ic.onInput?.(/** @type {HTMLInputElement} */ (e.target).value)}
         />
+        ${
+          hasValue
+            ? html`<ui-button
+                .ic=${{
+                  label: "Clear",
+                  ...(ic.onInput !== undefined
+                    ? { onClick: () => ic.onInput?.(null) }
+                    : {}),
+                }}
+              ></ui-button>`
+            : html`<ui-button
+                .ic=${{
+                  label: "Select",
+                  icon: "palette",
+                  ...(ic.onInput !== undefined
+                    ? { onClick: () => this.#openPicker() }
+                    : {}),
+                }}
+              ></ui-button>`
+        }
       </label>
     `;
+  }
+
+  #openPicker() {
+    this.shadowRoot?.querySelector("input")?.click();
   }
 }
 

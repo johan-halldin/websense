@@ -35,6 +35,7 @@
  * |"mail"
  * |"menu"
  * |"minus"
+ * |"palette"
  * |"paperclip"
  * |"pencil"
  * |"plus"
