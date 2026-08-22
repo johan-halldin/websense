@@ -3,6 +3,7 @@
     "private": true,
     "version": "1.0.0",
     "packageManager": "pnpm@10.16.1",
+    "type": "module",
     "scripts": {
         "format-check": "pnpm -r run format-check",
         "format-write": "pnpm -r run format-write",
