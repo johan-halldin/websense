@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
   "scripts": {
     "format-check": "prettier --check .",
     "format-write": "prettier --write .",

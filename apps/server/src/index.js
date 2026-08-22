@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
+import { clamp } from "@websense/util";
 
-const PORT = process.env.PORT ?? 3001;
+const PORT = clamp(Number(process.env.PORT) || 3001, 0, 65535);
 
 const server = createServer((req, res) => {
   if (req.url === "/api/health") {

@@ -12,5 +12,8 @@
     "lint-apply": "biome lint --write .",
     "typecheck": "tsgo --noEmit",
     "test": "node -e \"console.log('No tests implemented yet')\""
+  },
+  "dependencies": {
+    "@websense/util": "workspace:*"
   }
 }

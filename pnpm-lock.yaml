@@ -37,7 +37,11 @@ importers:
         specifier: ^7.3.6
         version: 7.3.6(@types/node@26.2.0)
 
-  apps/server: {}
+  apps/server:
+    dependencies:
+      '@websense/util':
+        specifier: workspace:*
+        version: link:../../packages/util
 
   packages/ui:
     dependencies:
