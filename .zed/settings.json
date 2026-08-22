@@ -1,4 +1,16 @@
 {
   "format_on_save": "on",
   "formatter": "prettier",
+  "lsp": {
+    "vtsls": {
+      "settings": {
+        "typescript": {
+          "tsdk": "node_modules/typescript/lib"
+        },
+        "vtsls": {
+          "autoUseWorkspaceTsdk": true
+        }
+      }
+    }
+  }
 }
