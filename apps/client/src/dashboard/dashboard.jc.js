@@ -1,4 +1,5 @@
 import { Counter } from "../app/counter.jc.js";
+import { Latency } from "../latency/latency.jc.js";
 
 /**
  * @typedef {import("./dashboard.wc.js").IDashboard} IDashboard
@@ -16,6 +17,8 @@ class Dashboard {
   #on_change;
   /** @type {Counter} */
   #counter;
+  /** @type {Latency} */
+  #latency;
   /** @type {string} */
   #activeTab = "overview";
   /** @type {boolean} */
@@ -31,6 +34,7 @@ class Dashboard {
   constructor(on_change) {
     this.#on_change = on_change;
     this.#counter = new Counter(on_change);
+    this.#latency = new Latency(on_change);
   }
 
   /** @returns {IDashboard} */
@@ -42,6 +46,7 @@ class Dashboard {
           { value: "overview", label: "Overview", icon: "house" },
           { value: "settings", label: "Settings", icon: "settings" },
           { value: "users", label: "Users", icon: "user" },
+          { value: "latency", label: "Latency", icon: "clock" },
         ],
         onChange: (value) => {
           this.#activeTab = value;
@@ -59,6 +64,7 @@ class Dashboard {
         onClick: () => console.log("Export clicked"),
       },
       counter: this.#counter.getICounter(),
+      latency: this.#latency.getIWsLatency(),
       advancedStatsCheckbox: {
         checked: this.#showAdvancedStats,
         label: "Show advanced stats",

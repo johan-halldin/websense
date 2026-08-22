@@ -4,6 +4,7 @@ import "@websense/ui/src/checkbox/checkbox.wc.js";
 import "@websense/ui/src/radio-group/radio-group.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
 import "../app/counter.wc.js";
+import "../latency/latency.wc.js";
 
 /**
  * @typedef {import("@websense/ui/src/tabs/tabs.wc.js").ITabs} ITabs
@@ -11,6 +12,7 @@ import "../app/counter.wc.js";
  * @typedef {import("@websense/ui/src/checkbox/checkbox.wc.js").ICheckbox} ICheckbox
  * @typedef {import("@websense/ui/src/radio-group/radio-group.wc.js").IRadioGroup} IRadioGroup
  * @typedef {import("../app/counter.wc.js").ICounter} ICounter
+ * @typedef {import("../latency/latency.wc.js").IWsLatency} IWsLatency
  */
 
 /**
@@ -19,6 +21,7 @@ import "../app/counter.wc.js";
  * @property {IButton} refreshButton
  * @property {IButton} exportButton
  * @property {ICounter} counter
+ * @property {IWsLatency} latency
  * @property {ICheckbox} advancedStatsCheckbox
  * @property {ICheckbox} notificationsCheckbox
  * @property {ICheckbox} darkModeCheckbox
@@ -93,6 +96,7 @@ class WsDashboard extends LitElement {
             : ""
         }
         ${activeTab === "users" ? html`<p>User management coming soon.</p>` : ""}
+        ${activeTab === "latency" ? html`<ws-latency .ic=${ic.latency}></ws-latency>` : ""}
       </div>
     `;
   }

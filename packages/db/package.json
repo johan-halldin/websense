@@ -1,11 +1,12 @@
 {
-  "name": "@websense/server",
+  "name": "@websense/db",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
     "format-check": "prettier --check .",
     "format-write": "prettier --write .",
     "lint-check": "biome lint .",
@@ -14,7 +15,9 @@
     "test": "node -e \"console.log('No tests implemented yet')\""
   },
   "dependencies": {
-    "@websense/db": "workspace:*",
-    "@websense/util": "workspace:*"
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
   }
 }
