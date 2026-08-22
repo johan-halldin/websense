@@ -4,6 +4,7 @@ import { UiNumberInput } from "./number-input.wc.js";
  * @param {HTMLElement} root
  */
 function init_example_number_input(root) {
+  /** @type {number|null} */
   let age = 25;
   const input = new UiNumberInput();
   function render() {

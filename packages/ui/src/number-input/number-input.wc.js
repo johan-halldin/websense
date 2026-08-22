@@ -3,14 +3,15 @@ import { ifDefined } from "lit/directives/if-defined.js";
 
 /**
  * @typedef {object} INumberInput
- * @property {number} value
+ * @property {number|null} value - null means the field is empty, a real,
+ *   representable state (not an error) - e.g. an optional numeric field.
  * @property {string} [label]
  * @property {string} [placeholder]
  * @property {string} [tooltip]
  * @property {number} [min]
  * @property {number} [max]
  * @property {number} [step]
- * @property {(value: number) => void} [onInput]
+ * @property {(value: number|null) => void} [onInput]
  */
 
 export class UiNumberInput extends LitElement {
@@ -73,9 +74,7 @@ export class UiNumberInput extends LitElement {
           @input=${(/** @type {Event} */ e) => {
             const valueAsNumber = /** @type {HTMLInputElement} */ (e.target)
               .valueAsNumber;
-            if (!Number.isNaN(valueAsNumber)) {
-              ic.onInput?.(valueAsNumber);
-            }
+            ic.onInput?.(Number.isNaN(valueAsNumber) ? null : valueAsNumber);
           }}
         />
       </label>
