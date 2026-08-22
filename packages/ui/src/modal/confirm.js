@@ -4,6 +4,7 @@ import { UiModal } from "./modal.wc.js";
 /**
  * @typedef {object} IConfirmOptions
  * @property {string} [title]
+ * @property {string} [description]
  * @property {string} [confirmLabel]
  * @property {string} [cancelLabel]
  */
@@ -32,6 +33,14 @@ function async_confirm(message, options = {}) {
     const messageElement = document.createElement("p");
     messageElement.textContent = message;
     modal.appendChild(messageElement);
+
+    if (options.description !== undefined) {
+      const descriptionElement = document.createElement("p");
+      descriptionElement.textContent = options.description;
+      descriptionElement.style.color = "var(--color-text-muted)";
+      descriptionElement.style.fontSize = "13px";
+      modal.appendChild(descriptionElement);
+    }
 
     const buttonRow = document.createElement("div");
     buttonRow.className = "ui-row ui-gap-sm ui-justify-end";

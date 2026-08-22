@@ -11,6 +11,7 @@ import { UiModal } from "./modal.wc.js";
 /**
  * @typedef {object} IAsyncModalOptions
  * @property {string} [title]
+ * @property {string} [description]
  * @property {string} [confirmLabel]
  * @property {string} [cancelLabel]
  */
@@ -39,6 +40,14 @@ function async_modal_with_content(element, makeIc, options = {}) {
       const titleElement = document.createElement("h3");
       titleElement.textContent = options.title;
       modal.appendChild(titleElement);
+    }
+
+    if (options.description !== undefined) {
+      const descriptionElement = document.createElement("p");
+      descriptionElement.textContent = options.description;
+      descriptionElement.style.color = "var(--color-text-muted)";
+      descriptionElement.style.fontSize = "13px";
+      modal.appendChild(descriptionElement);
     }
 
     modal.appendChild(element);

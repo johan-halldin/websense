@@ -85,6 +85,7 @@ function init_example_modal(root) {
     onClick: async () => {
       const result = await async_confirm("Are you sure you want to continue?", {
         title: "Please confirm",
+        description: "This action cannot be undone.",
       });
       console.log("Confirmed:", result);
     },
@@ -109,7 +110,11 @@ function init_example_modal(root) {
           },
           canConfirm: value.trim() !== "",
         }),
-        { title: "Enter your name", confirmLabel: "Save" },
+        {
+          title: "Enter your name",
+          description: "This is shown on your public profile.",
+          confirmLabel: "Save",
+        },
       );
       console.log("Confirmed:", result, "Value:", value);
     },
