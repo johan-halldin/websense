@@ -32,7 +32,20 @@ function init_example_select_actions(root) {
           {
             label: "Export",
             icon: "download",
-            onSelect: () => console.log("Export"),
+            children: [
+              {
+                actions: [
+                  {
+                    label: "Export as PDF",
+                    onSelect: () => console.log("PDF"),
+                  },
+                  {
+                    label: "Export as CSV",
+                    onSelect: () => console.log("CSV"),
+                  },
+                ],
+              },
+            ],
           },
         ],
       },

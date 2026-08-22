@@ -1,16 +1,19 @@
 /**
  * A trigger + content pair wired together via the native Popover API
  * (top-layer rendering, click-outside/Escape-to-close all come for free).
- * Position is computed once when it opens - below the trigger if there's
- * room, above it otherwise. No live repositioning while open (e.g. on
- * window resize) - a deliberate simplification for a short-lived dropdown
- * or context menu.
+ * Position is computed once when it opens. No live repositioning while
+ * open (e.g. on window resize) - a deliberate simplification for a
+ * short-lived dropdown or context menu.
  *
  * Usage:
  *   <ui-popover>
  *     <button slot="trigger">Open</button>
  *     <ul>...</ul>
  *   </ui-popover>
+ *
+ * Set placement="right" to open beside the trigger instead of below it
+ * (flipping to the left if there's no room) - used for nested submenus,
+ * e.g. in ui-select-actions.
  *
  * No `ic` - unlike the other design-system components, a popover has no
  * data to represent, only a trigger/content pair to wire up.
@@ -108,6 +111,12 @@ class UiPopover extends HTMLElement {
     const rect = trigger.getBoundingClientRect();
     const height = content.offsetHeight;
     const width = content.offsetWidth;
+
+    if (this.getAttribute("placement") === "right") {
+      this.#positionRight(rect, height, width);
+      return;
+    }
+
     const spaceBelow = window.innerHeight - rect.bottom - PADDING;
     const spaceAbove = rect.top - PADDING;
     const showBelow = spaceBelow >= height || spaceBelow >= spaceAbove;
@@ -125,6 +134,30 @@ class UiPopover extends HTMLElement {
       content.style.top = `${Math.max(rect.top - height - PADDING, PADDING)}px`;
       content.style.maxHeight = `${Math.max(Math.min(height, spaceAbove), 0)}px`;
     }
+  }
+
+  /**
+   * @param {DOMRect} rect
+   * @param {number} height
+   * @param {number} width
+   */
+  #positionRight(rect, height, width) {
+    const content = this.#content;
+    if (content === null) {
+      return;
+    }
+    const spaceRight = window.innerWidth - rect.right - PADDING;
+    const showRight = spaceRight >= width;
+    content.style.left = showRight
+      ? `${rect.right}px`
+      : `${Math.max(rect.left - width, PADDING)}px`;
+
+    const maxHeight = window.innerHeight - PADDING * 2;
+    content.style.top = `${Math.max(
+      Math.min(rect.top, window.innerHeight - height - PADDING),
+      PADDING,
+    )}px`;
+    content.style.maxHeight = `${Math.max(Math.min(height, maxHeight), 0)}px`;
   }
 }
 

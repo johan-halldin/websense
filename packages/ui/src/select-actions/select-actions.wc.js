@@ -7,11 +7,15 @@ import "../popover/popover.wc.js";
  */
 
 /**
+ * An action is either a leaf (has `onSelect`, possibly undefined to mean
+ * disabled) or a branch (has `children`, opening a nested submenu instead).
+ *
  * @typedef {object} ISelectAction
  * @property {string} label
  * @property {string} [tooltip]
  * @property {IconName} [icon]
  * @property {() => void} [onSelect]
+ * @property {ISelectActionGroup[]} [children]
  */
 
 /**
@@ -92,6 +96,25 @@ export class UiSelectActions extends LitElement {
         cursor: default;
         opacity: 0.5;
       }
+      .nested-trigger {
+        all: unset;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        padding: 6px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: var(--color-text);
+        cursor: pointer;
+        box-sizing: border-box;
+      }
+      .nested-trigger:hover {
+        background: var(--color-background);
+      }
+      .nested-trigger .chevron {
+        margin-left: auto;
+      }
     `,
   ];
 
@@ -126,54 +149,99 @@ export class UiSelectActions extends LitElement {
             style="mask-image: var(--icon-${icon}); -webkit-mask-image: var(--icon-${icon});"
           ></span>
         </button>
-        <div class="content">
-          ${ic.groups.map(
-            (group) => html`
-              <div class="group">
-                ${
-                  group.header !== undefined
-                    ? html`<div class="header">${group.header}</div>`
-                    : ""
-                }
-                <ul>
-                  ${group.actions.map((action) => {
-                    const actionDisabled = action.onSelect === undefined;
-                    return html`
-                      <li
-                        class=${actionDisabled ? "disabled" : ""}
-                        title=${action.tooltip ?? action.label}
-                        @click=${() => {
-                          action.onSelect?.();
-                          this.#hidePopover();
-                        }}
-                      >
-                        ${
-                          action.icon !== undefined
-                            ? html`<span
-                                class="icon"
-                                style="mask-image: var(--icon-${action.icon}); -webkit-mask-image: var(--icon-${action.icon});"
-                              ></span>`
-                            : ""
-                        }
-                        ${action.label}
-                      </li>
-                    `;
-                  })}
-                </ul>
-              </div>
-            `,
-          )}
-        </div>
+        <div class="content">${this.#renderGroups(ic.groups)}</div>
       </ui-popover>
     `;
   }
 
-  #hidePopover() {
-    const popover =
-      /** @type {import("../popover/popover.wc.js").UiPopover|null} */ (
-        this.shadowRoot?.querySelector("ui-popover") ?? null
-      );
-    popover?.hidePopover();
+  /**
+   * @param {ISelectActionGroup[]} groups
+   * @returns {import("lit").TemplateResult}
+   */
+  #renderGroups(groups) {
+    return html`
+      ${groups.map(
+        (group) => html`
+          <div class="group">
+            ${
+              group.header !== undefined
+                ? html`<div class="header">${group.header}</div>`
+                : ""
+            }
+            <ul>
+              ${group.actions.map((action) => this.#renderAction(action))}
+            </ul>
+          </div>
+        `,
+      )}
+    `;
+  }
+
+  /**
+   * @param {ISelectAction} action
+   * @returns {import("lit").TemplateResult}
+   */
+  #renderAction(action) {
+    if (action.children !== undefined) {
+      return html`
+        <li>
+          <ui-popover placement="right">
+            <button
+              slot="trigger"
+              class="nested-trigger"
+              title=${action.tooltip ?? action.label}
+            >
+              ${
+                action.icon !== undefined
+                  ? html`<span
+                      class="icon"
+                      style="mask-image: var(--icon-${action.icon}); -webkit-mask-image: var(--icon-${action.icon});"
+                    ></span>`
+                  : ""
+              }
+              ${action.label}
+              <span
+                class="icon chevron"
+                style="mask-image: var(--icon-chevron-right); -webkit-mask-image: var(--icon-chevron-right);"
+              ></span>
+            </button>
+            <div class="content">${this.#renderGroups(action.children)}</div>
+          </ui-popover>
+        </li>
+      `;
+    }
+
+    const actionDisabled = action.onSelect === undefined;
+    return html`
+      <li
+        class=${actionDisabled ? "disabled" : ""}
+        title=${action.tooltip ?? action.label}
+        @click=${() => {
+          action.onSelect?.();
+          this.#hideAllPopovers();
+        }}
+      >
+        ${
+          action.icon !== undefined
+            ? html`<span
+                class="icon"
+                style="mask-image: var(--icon-${action.icon}); -webkit-mask-image: var(--icon-${action.icon});"
+              ></span>`
+            : ""
+        }
+        ${action.label}
+      </li>
+    `;
+  }
+
+  /** Closes this menu and any open nested submenus, all at once. */
+  #hideAllPopovers() {
+    const popovers = this.shadowRoot?.querySelectorAll("ui-popover") ?? [];
+    for (const popover of popovers) {
+      /** @type {import("../popover/popover.wc.js").UiPopover} */ (
+        popover
+      ).hidePopover();
+    }
   }
 }
 
