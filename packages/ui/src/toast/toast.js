@@ -1,6 +1,10 @@
 import { UiToast } from "./toast.wc.js";
 import { UiToastStack } from "./toast-stack.wc.js";
 
+/**
+ * @typedef {import("../icons/icon-types.js").IconName} IconName
+ */
+
 /** @type {UiToastStack|null} */
 let stack = null;
 
@@ -14,7 +18,8 @@ function get_stack() {
 
 /**
  * @typedef {object} IShowToastOptions
- * @property {"info"|"success"|"error"} [tone]
+ * @property {"info"|"success"|"warning"|"error"} [level]
+ * @property {IconName} [icon] - defaults to an icon matching `level`
  * @property {number} [duration] - ms before auto-dismiss, default 4000
  */
 
@@ -32,7 +37,8 @@ function show_toast(message, options = {}) {
 
   toast.ic = {
     message,
-    ...(options.tone !== undefined ? { tone: options.tone } : {}),
+    ...(options.level !== undefined ? { level: options.level } : {}),
+    ...(options.icon !== undefined ? { icon: options.icon } : {}),
     onDismiss: dismiss,
   };
 

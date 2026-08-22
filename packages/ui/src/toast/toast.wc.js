@@ -1,37 +1,60 @@
 import { css, html, LitElement } from "lit";
+import { iconBaseStyle } from "../icons/icon-styles.js";
+
+/**
+ * @typedef {import("../icons/icon-types.js").IconName} IconName
+ */
+
+/** @type {Record<"info"|"success"|"warning"|"error", IconName>} */
+const DEFAULT_ICON = {
+  info: "info",
+  success: "circle-check",
+  warning: "triangle-alert",
+  error: "circle-x",
+};
 
 /**
  * @typedef {object} IToast
  * @property {string} message
- * @property {"info"|"success"|"error"} [tone]
+ * @property {"info"|"success"|"warning"|"error"} [level]
+ * @property {IconName} [icon] - defaults to an icon matching `level`
  * @property {() => void} [onDismiss]
  */
 
 export class UiToast extends LitElement {
   /** @override */
-  static styles = css`
-    .toast {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      max-width: 320px;
-      padding: 10px 14px;
-      border-radius: 6px;
-      border-left: 3px solid var(--color-primary);
-      background-color: var(--color-surface);
-      color: var(--color-text);
-      font: inherit;
-      font-size: 14px;
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
-      cursor: pointer;
-    }
-    .toast.success {
-      border-left-color: var(--color-success);
-    }
-    .toast.error {
-      border-left-color: var(--color-error);
-    }
-  `;
+  static styles = [
+    iconBaseStyle,
+    css`
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 320px;
+        padding: 10px 14px;
+        border-radius: 6px;
+        border-left: 3px solid var(--color-primary);
+        background-color: var(--color-surface);
+        color: var(--color-text);
+        font: inherit;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+        cursor: pointer;
+      }
+      .toast.success {
+        border-left-color: var(--color-success);
+        --icon-color: var(--color-success);
+      }
+      .toast.warning {
+        border-left-color: var(--color-warning);
+        --icon-color: var(--color-warning);
+      }
+      .toast.error {
+        border-left-color: var(--color-error);
+        --icon-color: var(--color-error);
+      }
+    `,
+  ];
 
   /** @type {IToast|null} */
   #ic = null;
@@ -48,9 +71,15 @@ export class UiToast extends LitElement {
     if (ic === null) {
       return "";
     }
+    const level = ic.level ?? "info";
+    const icon = ic.icon ?? DEFAULT_ICON[level];
 
     return html`
-      <div class="toast ${ic.tone ?? ""}" @click=${() => ic.onDismiss?.()}>
+      <div class="toast ${level}" @click=${() => ic.onDismiss?.()}>
+        <span
+          class="icon"
+          style="mask-image: var(--icon-${icon}); -webkit-mask-image: var(--icon-${icon});"
+        ></span>
         ${ic.message}
       </div>
     `;
