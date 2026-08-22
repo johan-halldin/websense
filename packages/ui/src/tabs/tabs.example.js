@@ -16,13 +16,13 @@ const CONTENT_BY_VALUE = {
  */
 function init_example_tabs(root) {
   /** @type {ITabOption[]} */
-  const tabs = [
+  const options = [
     { value: "overview", label: "Overview", icon: "house" },
     { value: "settings", label: "Settings", icon: "settings" },
     { value: "users", label: "Users", icon: "user", tooltip: "Manage users" },
   ];
 
-  let activeValue = "overview";
+  let value = "overview";
 
   const tabsElement = new WsTabs();
 
@@ -30,14 +30,14 @@ function init_example_tabs(root) {
 
   function render() {
     tabsElement.ic = {
-      activeValue,
-      tabs,
-      onChange: (value) => {
-        activeValue = value;
+      value,
+      options,
+      onChange: (newValue) => {
+        value = newValue;
         render();
       },
     };
-    content.textContent = CONTENT_BY_VALUE[activeValue] ?? "";
+    content.textContent = CONTENT_BY_VALUE[value] ?? "";
   }
   render();
 
@@ -45,7 +45,7 @@ function init_example_tabs(root) {
   root.appendChild(content);
 
   const disabledTabs = new WsTabs();
-  disabledTabs.ic = { activeValue: "overview", tabs };
+  disabledTabs.ic = { value: "overview", options };
   root.appendChild(disabledTabs);
 }
 

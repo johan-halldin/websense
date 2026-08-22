@@ -15,8 +15,8 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
 
 /**
  * @typedef {object} ITabs
- * @property {string} activeValue
- * @property {ITabOption[]} tabs
+ * @property {string} value
+ * @property {ITabOption[]} options
  * @property {(value: string) => void} [onChange]
  */
 
@@ -80,8 +80,8 @@ export class WsTabs extends LitElement {
 
     return html`
       <div id="container">
-        ${ic.tabs.map((tab) => {
-          const isActive = tab.value === ic.activeValue;
+        ${ic.options.map((tab) => {
+          const isActive = tab.value === ic.value;
           return html`
             <button
               class="tab ${isActive ? "active" : ""}"
