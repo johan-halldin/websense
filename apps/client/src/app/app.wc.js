@@ -3,7 +3,7 @@ import "@websense/ui/src/button.wc.js";
 
 /**
  * @typedef {object} IAppView
- * @property {() => string} getStatus
+ * @property {string} status
  * @property {() => void} onRefresh
  */
 
@@ -26,8 +26,10 @@ class WsAppView extends LitElement {
 
     return html`
       <h1>WebSense</h1>
-      <p>Server status: ${ic.getStatus()}</p>
-      <ws-button @click=${() => ic.onRefresh()}>Refresh</ws-button>
+      <p>Server status: ${ic.status}</p>
+      <ws-button
+        .ic=${{ title: "Refresh", onClick: () => ic.onRefresh() }}
+      ></ws-button>
     `;
   }
 }

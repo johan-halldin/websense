@@ -40,7 +40,7 @@ class App {
   /** @returns {IAppView} */
   #getIAppView() {
     return {
-      getStatus: () => capitalize(this.#status),
+      status: capitalize(this.#status),
       onRefresh: () => this.#checkHealth(),
     };
   }
