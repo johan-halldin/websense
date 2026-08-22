@@ -18,26 +18,25 @@
       }
       .swatch {
         width: 88px;
-        height: 64px;
-        border: 1px solid var(--color-gray-300);
-        border-radius: 6px;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-end;
-        gap: 2px;
-        padding: 4px;
+        gap: 4px;
         font-size: 11px;
         font-family: monospace;
       }
+      .swatch .color-box {
+        width: 100%;
+        height: 64px;
+        border: 1px solid var(--color-gray-300);
+        border-radius: 6px;
+      }
       .swatch .label {
-        background: rgb(255 255 255 / 0.8);
         border-radius: 3px;
         padding: 1px 3px;
         cursor: pointer;
       }
       .swatch .label:hover {
-        background: rgb(255 255 255 / 0.95);
+        background: var(--color-background);
       }
     </style>
   </head>
@@ -108,7 +107,12 @@
         for (const token of tokens) {
           const swatch = document.createElement("div");
           swatch.className = "swatch";
-          swatch.style.backgroundColor = `var(--color-${token})`;
+
+          const colorBox = document.createElement("div");
+          colorBox.className = "color-box";
+          colorBox.style.backgroundColor = `var(--color-${token})`;
+          swatch.appendChild(colorBox);
+
           swatch.appendChild(createCopyable(`--color-${token}`));
           swatch.appendChild(createCopyable(resolve(token)));
           row.appendChild(swatch);
