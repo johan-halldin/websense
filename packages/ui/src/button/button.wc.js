@@ -1,37 +1,51 @@
 import { css, html, LitElement } from "lit";
+import { iconBaseStyle } from "../icons/icon-styles.js";
+
+/**
+ * @typedef {import("../icons/icon-types.js").IconName} IconName
+ */
 
 /**
  * @typedef {object} IButton
- * @property {string} [title]
+ * @property {string} [label]
+ * @property {string} [tooltip]
+ * @property {IconName} [icon]
  * @property {(e: MouseEvent) => void} [onClick]
  */
 
 export class WsButton extends LitElement {
   /** @override */
-  static styles = css`
-    button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 32px;
-      padding: 0 12px;
-      font: inherit;
-      font-size: 14px;
-      color: var(--color-text);
-      background-color: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover:not(:disabled) {
-      background-color: var(--color-background);
-      border-color: var(--color-border-hover);
-    }
-    button:disabled {
-      cursor: default;
-      opacity: 0.5;
-    }
-  `;
+  static styles = [
+    iconBaseStyle,
+    css`
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 32px;
+        padding: 0 12px;
+        font: inherit;
+        font-size: 14px;
+        color: var(--color-text);
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        background-color: var(--color-background);
+        border-color: var(--color-border-hover);
+      }
+      button:active:not(:disabled) {
+        transform: scale(0.97);
+      }
+      button:disabled {
+        cursor: default;
+        opacity: 0.5;
+      }
+    `,
+  ];
 
   /** @type {IButton|null} */
   #ic = null;
@@ -45,16 +59,27 @@ export class WsButton extends LitElement {
   /** @override */
   render() {
     const ic = this.#ic;
-    const title = ic?.title ?? "";
+    const label = ic?.label ?? "";
+    const tooltip = ic?.tooltip;
+    const icon = ic?.icon;
     const onClick = ic?.onClick;
     const disabled = onClick === undefined;
 
     return html`
       <button
         ?disabled=${disabled}
+        title=${tooltip ?? ""}
         @click=${(/** @type {MouseEvent} */ e) => onClick?.(e)}
       >
-        ${title}
+        ${
+          icon !== undefined
+            ? html`<span
+                class="icon"
+                style="mask-image: var(--icon-${icon}); -webkit-mask-image: var(--icon-${icon});"
+              ></span>`
+            : ""
+        }
+        ${label}
       </button>
     `;
   }

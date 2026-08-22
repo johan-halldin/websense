@@ -7,7 +7,32 @@ const svgDir = join(__dirname, "svg");
 const fileNames = readdirSync(svgDir).filter((name) => name.endsWith(".svg"));
 
 /** @type {string[]} */
+const names = [];
+/** @type {string[]} */
+const rootVarLines = [];
+/** @type {string[]} */
+const classRules = [];
+
+for (const fileName of fileNames) {
+  const name = fileName.slice(0, -".svg".length);
+  const svg = readFileSync(join(svgDir, fileName), "utf8");
+  const dataUrl = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  rootVarLines.push(`  --icon-${name}: url("${dataUrl}");`);
+  classRules.push(`.icon.${name} {
+  mask-image: var(--icon-${name});
+  -webkit-mask-image: var(--icon-${name});
+}`);
+  names.push(name);
+}
+names.sort();
+rootVarLines.sort();
+
+// Icons are exposed as CSS custom properties (not just the .icon.<name> class
+// below) because custom properties inherit through shadow DOM boundaries and
+// classes don't - components rendering inside a shadow root reference
+// var(--icon-<name>) directly instead of relying on the class.
 const cssRules = [
+  `:root {\n${rootVarLines.join("\n")}\n}`,
   `.icon {
   display: inline-block;
   width: calc(var(--icon-scale, 1) * 16px);
@@ -20,22 +45,8 @@ const cssRules = [
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
 }`,
+  ...classRules,
 ];
-
-/** @type {string[]} */
-const names = [];
-
-for (const fileName of fileNames) {
-  const name = fileName.slice(0, -".svg".length);
-  const svg = readFileSync(join(svgDir, fileName), "utf8");
-  const dataUrl = `data:image/svg+xml,${encodeURIComponent(svg)}`;
-  cssRules.push(`.icon.${name} {
-  mask-image: url("${dataUrl}");
-  -webkit-mask-image: url("${dataUrl}");
-}`);
-  names.push(name);
-}
-names.sort();
 
 writeFileSync(join(__dirname, "icons.css"), `${cssRules.join("\n\n")}\n`);
 

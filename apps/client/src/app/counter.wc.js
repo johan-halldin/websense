@@ -26,9 +26,13 @@ class WsCounter extends LitElement {
     }
 
     return html`
-      <ws-button .ic=${{ title: "-", onClick: ic.onDecrement }}></ws-button>
+      <ws-button
+        .ic=${{ icon: "minus", tooltip: "Decrement", onClick: ic.onDecrement }}
+      ></ws-button>
       <span>${ic.count}</span>
-      <ws-button .ic=${{ title: "+", onClick: ic.onIncrement }}></ws-button>
+      <ws-button
+        .ic=${{ icon: "plus", tooltip: "Increment", onClick: ic.onIncrement }}
+      ></ws-button>
     `;
   }
 }
