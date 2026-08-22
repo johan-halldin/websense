@@ -69,6 +69,11 @@ class UiPopover extends HTMLElement {
     });
   }
 
+  /** @override */
+  hidePopover() {
+    this.#content?.hidePopover();
+  }
+
   #wireUp() {
     const trigger = this.#trigger;
     const content = this.#content;
