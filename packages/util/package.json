@@ -8,6 +8,7 @@
     "format-write": "prettier --write .",
     "lint-check": "biome lint .",
     "lint-apply": "biome lint --write .",
+    "typecheck": "tsgo --noEmit",
     "test": "vitest run"
   }
 }

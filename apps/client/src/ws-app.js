@@ -2,6 +2,7 @@ import { html, LitElement } from "lit";
 import "@websense/ui/src/button.js";
 
 export class WsApp extends LitElement {
+  /** @override */
   static properties = {
     status: { state: true },
   };
@@ -11,6 +12,7 @@ export class WsApp extends LitElement {
     this.status = "checking...";
   }
 
+  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.checkHealth();
@@ -26,6 +28,7 @@ export class WsApp extends LitElement {
     }
   }
 
+  /** @override */
   render() {
     return html`
       <h1>WebSense</h1>

@@ -1,6 +1,7 @@
 import { html, LitElement } from "lit";
 
 export class WsButton extends LitElement {
+  /** @override */
   render() {
     return html`
       <button>
