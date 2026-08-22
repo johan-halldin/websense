@@ -10,6 +10,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
  * @property {string} [label]
  * @property {string} [tooltip]
  * @property {IconName} [icon]
+ * @property {"default"|"primary"} [variant]
  * @property {(e: MouseEvent) => void} [onClick]
  */
 
@@ -44,6 +45,15 @@ export class UiButton extends LitElement {
         cursor: default;
         opacity: 0.5;
       }
+      button.primary {
+        color: var(--color-on-primary);
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+      }
+      button.primary:hover:not(:disabled) {
+        background-color: var(--color-primary-hover);
+        border-color: var(--color-primary-hover);
+      }
     `,
   ];
 
@@ -62,12 +72,14 @@ export class UiButton extends LitElement {
     const label = ic?.label ?? "";
     const tooltip = ic?.tooltip;
     const icon = ic?.icon;
+    const variant = ic?.variant ?? "default";
     const onClick = ic?.onClick;
     const disabled = onClick === undefined;
 
     return html`
       <button
         part="button"
+        class=${variant === "primary" ? "primary" : ""}
         ?disabled=${disabled}
         title=${tooltip ?? ""}
         @click=${(/** @type {MouseEvent} */ e) => onClick?.(e)}
