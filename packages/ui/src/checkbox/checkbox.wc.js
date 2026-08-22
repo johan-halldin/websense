@@ -8,7 +8,7 @@ import { css, html, LitElement } from "lit";
  * @property {(checked: boolean) => void} [onChange]
  */
 
-export class WsCheckbox extends LitElement {
+export class UiCheckbox extends LitElement {
   /** @override */
   static styles = css`
     label {
@@ -68,4 +68,4 @@ export class WsCheckbox extends LitElement {
   }
 }
 
-customElements.define("ws-checkbox", WsCheckbox);
+customElements.define("ui-checkbox", UiCheckbox);

@@ -36,9 +36,9 @@ class WsAppView extends LitElement {
     return html`
       <h1>WebSense</h1>
       <p>Server status: ${ic.status}</p>
-      <ws-button
+      <ui-button
         .ic=${{ label: "Refresh", onClick: () => ic.onRefresh() }}
-      ></ws-button>
+      ></ui-button>
       <ws-counter .ic=${ic.counter}></ws-counter>
       <ws-dashboard .ic=${ic.dashboard}></ws-dashboard>
     `;

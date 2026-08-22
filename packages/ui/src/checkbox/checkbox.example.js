@@ -1,10 +1,10 @@
-import { WsCheckbox } from "./checkbox.wc.js";
+import { UiCheckbox } from "./checkbox.wc.js";
 
 /**
  * @param {HTMLElement} root
  */
 function init_example_checkbox(root) {
-  const checkedBox = new WsCheckbox();
+  const checkedBox = new UiCheckbox();
   checkedBox.ic = {
     checked: true,
     label: "Checked",
@@ -13,7 +13,7 @@ function init_example_checkbox(root) {
   };
   root.appendChild(checkedBox);
 
-  const uncheckedBox = new WsCheckbox();
+  const uncheckedBox = new UiCheckbox();
   uncheckedBox.ic = {
     checked: false,
     label: "Unchecked",
@@ -21,7 +21,7 @@ function init_example_checkbox(root) {
   };
   root.appendChild(uncheckedBox);
 
-  const disabledBox = new WsCheckbox();
+  const disabledBox = new UiCheckbox();
   disabledBox.ic = { checked: true, label: "Disabled" };
   root.appendChild(disabledBox);
 }

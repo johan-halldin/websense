@@ -1,4 +1,4 @@
-import { WsTabs } from "./tabs.wc.js";
+import { UiTabs } from "./tabs.wc.js";
 
 /**
  * @typedef {import("./tabs.wc.js").ITabOption} ITabOption
@@ -24,7 +24,7 @@ function init_example_tabs(root) {
 
   let value = "overview";
 
-  const tabsElement = new WsTabs();
+  const tabsElement = new UiTabs();
 
   const content = document.createElement("p");
 
@@ -44,7 +44,7 @@ function init_example_tabs(root) {
   root.appendChild(tabsElement);
   root.appendChild(content);
 
-  const disabledTabs = new WsTabs();
+  const disabledTabs = new UiTabs();
   disabledTabs.ic = { value: "overview", options };
   root.appendChild(disabledTabs);
 }

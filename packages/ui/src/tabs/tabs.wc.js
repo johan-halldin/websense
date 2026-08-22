@@ -20,7 +20,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
  * @property {(value: string) => void} [onChange]
  */
 
-export class WsTabs extends LitElement {
+export class UiTabs extends LitElement {
   /** @override */
   static styles = [
     iconBaseStyle,
@@ -106,4 +106,4 @@ export class WsTabs extends LitElement {
   }
 }
 
-customElements.define("ws-tabs", WsTabs);
+customElements.define("ui-tabs", UiTabs);

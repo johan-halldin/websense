@@ -14,7 +14,7 @@ import { css, html, LitElement } from "lit";
  * @property {(value: string) => void} [onChange]
  */
 
-export class WsRadioGroup extends LitElement {
+export class UiRadioGroup extends LitElement {
   /** @override */
   static styles = css`
     fieldset {
@@ -88,4 +88,4 @@ export class WsRadioGroup extends LitElement {
   }
 }
 
-customElements.define("ws-radio-group", WsRadioGroup);
+customElements.define("ui-radio-group", UiRadioGroup);

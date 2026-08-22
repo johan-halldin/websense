@@ -1,4 +1,4 @@
-import { WsRadioGroup } from "./radio-group.wc.js";
+import { UiRadioGroup } from "./radio-group.wc.js";
 
 /**
  * @param {HTMLElement} root
@@ -10,7 +10,7 @@ function init_example_radio_group(root) {
     { value: "large", label: "Large", tooltip: "Spacious size" },
   ];
 
-  const group = new WsRadioGroup();
+  const group = new UiRadioGroup();
   group.ic = {
     value: "medium",
     options,
@@ -21,7 +21,7 @@ function init_example_radio_group(root) {
   };
   root.appendChild(group);
 
-  const disabledGroup = new WsRadioGroup();
+  const disabledGroup = new UiRadioGroup();
   disabledGroup.ic = { value: "medium", options };
   root.appendChild(disabledGroup);
 }

@@ -49,14 +49,19 @@ Always use the CSS variables defined in `packages/ui/src/tokens.css` (the color 
 
 Use simple CSS utility classes from the UI package for layout. Do not create Web Components for layout primitives.
 
-Layout utility classes (`.row`, `.gap-md`, etc.) are plain CSS classes, not
-custom properties - they don't cross a Shadow DOM boundary the same way
-color tokens do. A page/layout-composing `*.wc.js` (one that arranges other
-components using these classes) should render in light DOM
-(`createRenderRoot() { return this; }`) so the classes apply directly.
-Leaf/atomic design-system components (button, checkbox, etc.) keep the
-default Shadow DOM for their own style encapsulation - only components whose
-job is composing a layout need light DOM.
+Layout utility classes are prefixed `ws-` (`.ws-row`, `.ws-gap-md`, etc.),
+matching the same prefix used for custom element tag names, so they can't
+collide with unrelated global class names in an app that renders them in
+light DOM.
+
+Layout utility classes are plain CSS classes, not custom properties - they
+don't cross a Shadow DOM boundary the same way color tokens do. A
+page/layout-composing `*.wc.js` (one that arranges other components using
+these classes) should render in light DOM (`createRenderRoot() { return
+this; }`) so the classes apply directly. Leaf/atomic design-system
+components (button, checkbox, etc.) keep the default Shadow DOM for their
+own style encapsulation - only components whose job is composing a layout
+need light DOM.
 
 ### Backend
 

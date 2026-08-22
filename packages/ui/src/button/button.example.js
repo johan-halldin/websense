@@ -1,21 +1,21 @@
-import { WsButton } from "./button.wc.js";
+import { UiButton } from "./button.wc.js";
 
 /**
  * @param {HTMLElement} root
  */
 function init_example_button(root) {
-  const normalButton = new WsButton();
+  const normalButton = new UiButton();
   normalButton.ic = {
     label: "Click me",
     onClick: () => console.log("Clicked"),
   };
   root.appendChild(normalButton);
 
-  const disabledButton = new WsButton();
+  const disabledButton = new UiButton();
   disabledButton.ic = { label: "Disabled" };
   root.appendChild(disabledButton);
 
-  const iconButton = new WsButton();
+  const iconButton = new UiButton();
   iconButton.ic = {
     label: "Download",
     icon: "download",
@@ -24,7 +24,7 @@ function init_example_button(root) {
   };
   root.appendChild(iconButton);
 
-  const iconOnlyButton = new WsButton();
+  const iconOnlyButton = new UiButton();
   iconOnlyButton.ic = {
     icon: "trash-2",
     tooltip: "Delete",

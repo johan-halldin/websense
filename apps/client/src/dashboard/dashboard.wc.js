@@ -28,7 +28,8 @@ import "../app/counter.wc.js";
 class WsDashboard extends LitElement {
   /**
    * Renders in light DOM (not shadow DOM) so this page's layout.css
-   * utility classes (.row, .gap-md, etc.) apply directly - see AGENTS.md.
+   * utility classes (.ui-row, .ui-gap-md, etc.) apply directly - see
+   * AGENTS.md.
    * @override
    */
   createRenderRoot() {
@@ -54,23 +55,23 @@ class WsDashboard extends LitElement {
     const activeTab = ic.tabs.value;
 
     return html`
-      <div class="stack gap-lg padding-lg">
+      <div class="ui-stack ui-gap-lg ui-padding-lg">
         <h1>Dashboard</h1>
-        <ws-tabs .ic=${ic.tabs}></ws-tabs>
+        <ui-tabs .ic=${ic.tabs}></ui-tabs>
 
         ${
           activeTab === "overview"
             ? html`
-                <div class="stack gap-md">
-                  <div class="row gap-sm">
-                    <ws-button .ic=${ic.refreshButton}></ws-button>
-                    <ws-button .ic=${ic.exportButton}></ws-button>
+                <div class="ui-stack ui-gap-md">
+                  <div class="ui-row ui-gap-sm">
+                    <ui-button .ic=${ic.refreshButton}></ui-button>
+                    <ui-button .ic=${ic.exportButton}></ui-button>
                   </div>
-                  <div class="row align-center gap-sm">
+                  <div class="ui-row ui-align-center ui-gap-sm">
                     <span>Widgets:</span>
                     <ws-counter .ic=${ic.counter}></ws-counter>
                   </div>
-                  <ws-checkbox .ic=${ic.advancedStatsCheckbox}></ws-checkbox>
+                  <ui-checkbox .ic=${ic.advancedStatsCheckbox}></ui-checkbox>
                   ${
                     ic.advancedStatsCheckbox.checked
                       ? html`<p>Advanced stat: p99 latency 42ms</p>`
@@ -83,10 +84,10 @@ class WsDashboard extends LitElement {
         ${
           activeTab === "settings"
             ? html`
-                <div class="stack gap-md">
-                  <ws-checkbox .ic=${ic.notificationsCheckbox}></ws-checkbox>
-                  <ws-checkbox .ic=${ic.darkModeCheckbox}></ws-checkbox>
-                  <ws-radio-group .ic=${ic.themeRadioGroup}></ws-radio-group>
+                <div class="ui-stack ui-gap-md">
+                  <ui-checkbox .ic=${ic.notificationsCheckbox}></ui-checkbox>
+                  <ui-checkbox .ic=${ic.darkModeCheckbox}></ui-checkbox>
+                  <ui-radio-group .ic=${ic.themeRadioGroup}></ui-radio-group>
                 </div>
               `
             : ""

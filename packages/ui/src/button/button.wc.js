@@ -13,7 +13,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
  * @property {(e: MouseEvent) => void} [onClick]
  */
 
-export class WsButton extends LitElement {
+export class UiButton extends LitElement {
   /** @override */
   static styles = [
     iconBaseStyle,
@@ -85,4 +85,4 @@ export class WsButton extends LitElement {
   }
 }
 
-customElements.define("ws-button", WsButton);
+customElements.define("ui-button", UiButton);
