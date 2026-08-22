@@ -3,21 +3,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-/**
- * @param {string} dir
- * @returns {{ dir: string, fileName: string }[]}
- */
-function listSvgs(dir) {
-  return readdirSync(dir)
-    .filter((name) => name.endsWith(".svg"))
-    .map((fileName) => ({ dir, fileName }));
-}
-
-const files = [
-  ...listSvgs(join(__dirname, "svg")),
-  ...listSvgs(join(__dirname, "svg-new")),
-];
+const svgDir = join(__dirname, "svg");
+const fileNames = readdirSync(svgDir).filter((name) => name.endsWith(".svg"));
 
 /** @type {string[]} */
 const cssRules = [
@@ -38,9 +25,9 @@ const cssRules = [
 /** @type {string[]} */
 const names = [];
 
-for (const { dir, fileName } of files) {
+for (const fileName of fileNames) {
   const name = fileName.slice(0, -".svg".length);
-  const svg = readFileSync(join(dir, fileName), "utf8");
+  const svg = readFileSync(join(svgDir, fileName), "utf8");
   const dataUrl = `data:image/svg+xml,${encodeURIComponent(svg)}`;
   cssRules.push(`.icon.${name} {
   mask-image: url("${dataUrl}");
