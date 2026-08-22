@@ -7,6 +7,8 @@ import { css, html, LitElement } from "lit";
  * @property {string} [placeholder]
  * @property {string} [tooltip]
  * @property {number} [rows]
+ * @property {string} [error] - validation message; also switches the input
+ *   into an error visual state when set
  * @property {(value: string) => void} [onInput]
  */
 
@@ -39,6 +41,13 @@ export class UiTextArea extends LitElement {
       opacity: 0.5;
       resize: none;
     }
+    textarea.error {
+      border-color: var(--color-error);
+    }
+    .error-message {
+      font-size: 12px;
+      color: var(--color-error);
+    }
   `;
 
   /** @type {ITextArea|null} */
@@ -62,13 +71,20 @@ export class UiTextArea extends LitElement {
       <label title=${ic.tooltip ?? ""}>
         ${ic.label ?? ""}
         <textarea
+          class=${ic.error !== undefined ? "error" : ""}
           .value=${ic.value}
           placeholder=${ic.placeholder ?? ""}
           rows=${ic.rows ?? 3}
           ?disabled=${disabled}
+          ?aria-invalid=${ic.error !== undefined}
           @input=${(/** @type {Event} */ e) =>
             ic.onInput?.(/** @type {HTMLTextAreaElement} */ (e.target).value)}
         ></textarea>
+        ${
+          ic.error !== undefined
+            ? html`<span class="error-message">${ic.error}</span>`
+            : ""
+        }
       </label>
     `;
   }

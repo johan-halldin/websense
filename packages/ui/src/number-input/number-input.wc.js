@@ -11,6 +11,8 @@ import { ifDefined } from "lit/directives/if-defined.js";
  * @property {number} [min]
  * @property {number} [max]
  * @property {number} [step]
+ * @property {string} [error] - validation message; also switches the input
+ *   into an error visual state when set
  * @property {(value: number|null) => void} [onInput]
  */
 
@@ -41,6 +43,13 @@ export class UiNumberInput extends LitElement {
       cursor: default;
       opacity: 0.5;
     }
+    input.error {
+      border-color: var(--color-error);
+    }
+    .error-message {
+      font-size: 12px;
+      color: var(--color-error);
+    }
   `;
 
   /** @type {INumberInput|null} */
@@ -65,18 +74,25 @@ export class UiNumberInput extends LitElement {
         ${ic.label ?? ""}
         <input
           type="number"
+          class=${ic.error !== undefined ? "error" : ""}
           .valueAsNumber=${ic.value}
           placeholder=${ifDefined(ic.placeholder)}
           min=${ifDefined(ic.min)}
           max=${ifDefined(ic.max)}
           step=${ifDefined(ic.step)}
           ?disabled=${disabled}
+          ?aria-invalid=${ic.error !== undefined}
           @input=${(/** @type {Event} */ e) => {
             const valueAsNumber = /** @type {HTMLInputElement} */ (e.target)
               .valueAsNumber;
             ic.onInput?.(Number.isNaN(valueAsNumber) ? null : valueAsNumber);
           }}
         />
+        ${
+          ic.error !== undefined
+            ? html`<span class="error-message">${ic.error}</span>`
+            : ""
+        }
       </label>
     `;
   }

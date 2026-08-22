@@ -6,6 +6,8 @@ import { css, html, LitElement } from "lit";
  * @property {string} [label]
  * @property {string} [placeholder]
  * @property {string} [tooltip]
+ * @property {string} [error] - validation message; also switches the input
+ *   into an error visual state when set
  * @property {(value: string) => void} [onInput]
  */
 
@@ -36,6 +38,13 @@ export class UiStringInput extends LitElement {
       cursor: default;
       opacity: 0.5;
     }
+    input.error {
+      border-color: var(--color-error);
+    }
+    .error-message {
+      font-size: 12px;
+      color: var(--color-error);
+    }
   `;
 
   /** @type {IStringInput|null} */
@@ -59,12 +68,19 @@ export class UiStringInput extends LitElement {
       <label title=${ic.tooltip ?? ""}>
         ${ic.label ?? ""}
         <input
+          class=${ic.error !== undefined ? "error" : ""}
           .value=${ic.value}
           placeholder=${ic.placeholder ?? ""}
           ?disabled=${disabled}
+          ?aria-invalid=${ic.error !== undefined}
           @input=${(/** @type {Event} */ e) =>
             ic.onInput?.(/** @type {HTMLInputElement} */ (e.target).value)}
         />
+        ${
+          ic.error !== undefined
+            ? html`<span class="error-message">${ic.error}</span>`
+            : ""
+        }
       </label>
     `;
   }

@@ -23,6 +23,26 @@ function init_example_number_input(root) {
   render();
   root.appendChild(input);
 
+  /** @type {number|null} */
+  let quantity = null;
+  const validatedInput = new UiNumberInput();
+  function renderValidated() {
+    validatedInput.ic = {
+      label: "Quantity",
+      min: 1,
+      value: quantity,
+      ...(quantity !== null && quantity < 1
+        ? { error: "Must be at least 1" }
+        : {}),
+      onInput: (value) => {
+        quantity = value;
+        renderValidated();
+      },
+    };
+  }
+  renderValidated();
+  root.appendChild(validatedInput);
+
   const disabledInput = new UiNumberInput();
   disabledInput.ic = { label: "Disabled", value: 42 };
   root.appendChild(disabledInput);

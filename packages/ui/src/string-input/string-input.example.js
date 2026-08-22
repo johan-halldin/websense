@@ -20,6 +20,25 @@ function init_example_string_input(root) {
   render();
   root.appendChild(input);
 
+  let email = "";
+  const validatedInput = new UiStringInput();
+  function renderValidated() {
+    validatedInput.ic = {
+      label: "Email",
+      placeholder: "you@example.com",
+      value: email,
+      ...(email !== "" && !email.includes("@")
+        ? { error: "Must be a valid email address" }
+        : {}),
+      onInput: (value) => {
+        email = value;
+        renderValidated();
+      },
+    };
+  }
+  renderValidated();
+  root.appendChild(validatedInput);
+
   const disabledInput = new UiStringInput();
   disabledInput.ic = {
     label: "Disabled",

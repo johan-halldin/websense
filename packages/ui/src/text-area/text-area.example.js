@@ -21,6 +21,24 @@ function init_example_text_area(root) {
   render();
   root.appendChild(textArea);
 
+  let bio = "";
+  const validatedTextArea = new UiTextArea();
+  function renderValidated() {
+    validatedTextArea.ic = {
+      label: "Bio",
+      placeholder: "Tell us about yourself",
+      rows: 3,
+      value: bio,
+      ...(bio.length > 140 ? { error: "Must be 140 characters or fewer" } : {}),
+      onInput: (value) => {
+        bio = value;
+        renderValidated();
+      },
+    };
+  }
+  renderValidated();
+  root.appendChild(validatedTextArea);
+
   const disabledTextArea = new UiTextArea();
   disabledTextArea.ic = {
     label: "Disabled",
