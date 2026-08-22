@@ -41,6 +41,21 @@ function init_example_toast(root) {
   };
   root.appendChild(customIconButton);
 
+  const shortButton = new UiButton();
+  shortButton.ic = {
+    label: "Show 1s toast",
+    onClick: () => show_toast("Gone in a second", { duration: 1000 }),
+  };
+  root.appendChild(shortButton);
+
+  const stickyButton = new UiButton();
+  stickyButton.ic = {
+    label: "Show sticky toast",
+    onClick: () =>
+      show_toast("Click me to dismiss", { level: "warning", duration: null }),
+  };
+  root.appendChild(stickyButton);
+
   const manyButton = new UiButton();
   manyButton.ic = {
     label: "Show 3 at once",

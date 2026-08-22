@@ -20,7 +20,8 @@ function get_stack() {
  * @typedef {object} IShowToastOptions
  * @property {"info"|"success"|"warning"|"error"} [level]
  * @property {IconName} [icon] - defaults to an icon matching `level`
- * @property {number} [duration] - ms before auto-dismiss, default 4000
+ * @property {number|null} [duration] - ms before auto-dismiss, default
+ *   4000. null means it stays until the user clicks it (no auto-dismiss).
  */
 
 /**
@@ -34,6 +35,7 @@ function get_stack() {
 function show_toast(message, options = {}) {
   const toast = new UiToast();
   const dismiss = () => toast.remove();
+  const duration = options.duration === undefined ? 4000 : options.duration;
 
   toast.ic = {
     message,
@@ -43,7 +45,9 @@ function show_toast(message, options = {}) {
   };
 
   get_stack().appendChild(toast);
-  setTimeout(dismiss, options.duration ?? 4000);
+  if (duration !== null) {
+    setTimeout(dismiss, duration);
+  }
 }
 
 export { show_toast };
