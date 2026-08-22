@@ -1,5 +1,5 @@
 import { html, LitElement } from "lit";
-import "@websense/ui/src/button.wc.js";
+import "@websense/ui/src/button/button.wc.js";
 import "./counter.wc.js";
 
 /**

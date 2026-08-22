@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Color tokens</title>
+    <link rel="stylesheet" href="./tokens.css" />
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .scale {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+      }
+      .swatch {
+        width: 88px;
+        height: 64px;
+        border: 1px solid var(--color-gray-300);
+        border-radius: 6px;
+        display: flex;
+        align-items: flex-end;
+        padding: 4px;
+        font-size: 11px;
+        font-family: monospace;
+      }
+      .swatch span {
+        background: rgb(255 255 255 / 0.8);
+        border-radius: 3px;
+        padding: 1px 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      const SCALES = ["gray", "primary", "secondary"];
+      const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+      const SEMANTIC_TOKENS = [
+        "text",
+        "text-muted",
+        "border",
+        "border-hover",
+        "surface",
+        "background",
+        "primary",
+        "primary-hover",
+        "on-primary",
+        "secondary",
+        "secondary-hover",
+        "on-secondary",
+      ];
+
+      /**
+       * @param {string} token
+       * @returns {string}
+       */
+      function resolve(token) {
+        return getComputedStyle(document.documentElement)
+          .getPropertyValue(`--color-${token}`)
+          .trim();
+      }
+
+      /**
+       * @param {string} title
+       * @param {string[]} tokens
+       * @returns {HTMLElement}
+       */
+      function renderScale(title, tokens) {
+        const section = document.createElement("div");
+        const heading = document.createElement("h3");
+        heading.textContent = title;
+        section.appendChild(heading);
+
+        const row = document.createElement("div");
+        row.className = "scale";
+        for (const token of tokens) {
+          const swatch = document.createElement("div");
+          swatch.className = "swatch";
+          swatch.style.backgroundColor = `var(--color-${token})`;
+          const label = document.createElement("span");
+          label.textContent = `${token}\n${resolve(token)}`;
+          label.style.whiteSpace = "pre";
+          swatch.appendChild(label);
+          row.appendChild(swatch);
+        }
+        section.appendChild(row);
+        return section;
+      }
+
+      const root = document.getElementById("root");
+      for (const scale of SCALES) {
+        root.appendChild(
+          renderScale(
+            scale,
+            STEPS.map((step) => `${scale}-${step}`),
+          ),
+        );
+      }
+      root.appendChild(renderScale("base", ["white", "black"]));
+      root.appendChild(renderScale("semantic", SEMANTIC_TOKENS));
+    </script>
+  </body>
+</html>
