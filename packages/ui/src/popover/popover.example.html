@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ui-popover example</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <style>
+      body {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        font-family: sans-serif;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      li {
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      li:hover {
+        background: var(--color-background);
+      }
+    </style>
+    <script type="module">
+      import { init_example_popover } from "./popover.example.js";
+
+      init_example_popover(document.getElementById("root"));
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
