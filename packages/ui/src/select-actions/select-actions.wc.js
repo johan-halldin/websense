@@ -7,15 +7,29 @@ import "../popover/popover.wc.js";
  */
 
 /**
- * An action is either a leaf (has `onSelect`, possibly undefined to mean
- * disabled) or a branch (has `children`, opening a nested submenu instead).
- *
- * @typedef {object} ISelectAction
+ * @typedef {object} ISelectActionLeaf
+ * @property {"leaf"} type
  * @property {string} label
  * @property {string} [tooltip]
  * @property {IconName} [icon]
  * @property {() => void} [onSelect]
- * @property {ISelectActionGroup[]} [children]
+ */
+
+/**
+ * @typedef {object} ISelectActionBranch
+ * @property {"branch"} type
+ * @property {string} label
+ * @property {string} [tooltip]
+ * @property {IconName} [icon]
+ * @property {ISelectActionGroup[]} children
+ */
+
+/**
+ * An action is either a leaf (`onSelect`, possibly undefined to mean
+ * disabled) or a branch (`children`, opening a nested submenu instead) -
+ * the `type` tag makes it a type error to set both at once.
+ *
+ * @typedef {ISelectActionLeaf|ISelectActionBranch} ISelectAction
  */
 
 /**
@@ -182,7 +196,7 @@ export class UiSelectActions extends LitElement {
    * @returns {import("lit").TemplateResult}
    */
   #renderAction(action) {
-    if (action.children !== undefined) {
+    if (action.type === "branch") {
       return html`
         <li>
           <ui-popover placement="right">

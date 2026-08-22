@@ -18,28 +18,37 @@ function init_example_select_actions(root) {
         header: "Edit",
         actions: [
           {
+            type: "leaf",
             label: "Rename",
             icon: "pencil",
             onSelect: () => console.log("Rename"),
           },
-          { label: "Copy", icon: "copy", onSelect: () => console.log("Copy") },
-          { label: "Delete", icon: "trash-2" },
+          {
+            type: "leaf",
+            label: "Copy",
+            icon: "copy",
+            onSelect: () => console.log("Copy"),
+          },
+          { type: "leaf", label: "Delete", icon: "trash-2" },
         ],
       },
       {
         header: "Share",
         actions: [
           {
+            type: "branch",
             label: "Export",
             icon: "download",
             children: [
               {
                 actions: [
                   {
+                    type: "leaf",
                     label: "Export as PDF",
                     onSelect: () => console.log("PDF"),
                   },
                   {
+                    type: "leaf",
                     label: "Export as CSV",
                     onSelect: () => console.log("CSV"),
                   },
