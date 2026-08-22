@@ -56,6 +56,9 @@
   --color-secondary-hover: var(--color-secondary-600);
   --color-on-secondary: var(--color-text);
 
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+
   /* Spacing */
   --space-2xs: 2px;
   --space-xs: 4px;
