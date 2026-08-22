@@ -94,7 +94,7 @@ export class UiColorInput extends LitElement {
             : html`<ui-button
                 .ic=${{
                   label: "Select",
-                  icon: "palette",
+                  icon: "color-palette",
                   ...(ic.onInput !== undefined
                     ? { onClick: () => this.#openPicker() }
                     : {}),
