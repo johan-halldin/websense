@@ -1,10 +1,7 @@
 /**
- * @typedef {"arrow-right"
- * |"calendar"
- * |"check"
+ * @typedef {"calendar"
  * |"chevron-down"
  * |"chevron-up"
- * |"close"
  * |"copy"
  * |"download"
  * |"external-link"

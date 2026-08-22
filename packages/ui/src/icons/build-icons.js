@@ -92,11 +92,29 @@ const exampleHtml = `<!doctype html>
       .item span.name {
         font-size: 11px;
         font-family: monospace;
+        cursor: pointer;
+        border-radius: 3px;
+        padding: 1px 3px;
+      }
+      .item span.name:hover {
+        background: var(--color-background);
       }
     </style>
   </head>
   <body>
-${names.map((name) => `    <div class="item"><span class="icon ${name}"></span><span class="name">${name}</span></div>`).join("\n")}
+${names.map((name) => `    <div class="item"><span class="icon ${name}"></span><span class="name" title="Click to copy">${name}</span></div>`).join("\n")}
+    <script type="module">
+      for (const label of document.querySelectorAll("span.name")) {
+        label.addEventListener("click", async () => {
+          await navigator.clipboard.writeText(label.textContent);
+          const original = label.textContent;
+          label.textContent = "Copied!";
+          setTimeout(() => {
+            label.textContent = original;
+          }, 800);
+        });
+      }
+    </script>
   </body>
 </html>
 `;
