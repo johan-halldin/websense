@@ -10,6 +10,9 @@ Follow established patterns for code formatting, naming, organization, and other
 
 Prefer short, elegant solutions over unnecessary abstraction or complexity.
 
+When designing types, make invalid states impossible to represent, rather
+than allowing them and guarding against them at runtime.
+
 ## Stack
 
 ### Frontend
@@ -49,10 +52,10 @@ Always use the CSS variables defined in `packages/ui/src/tokens.css` (the color 
 
 Use simple CSS utility classes from the UI package for layout. Do not create Web Components for layout primitives.
 
-Layout utility classes are prefixed `ws-` (`.ws-row`, `.ws-gap-md`, etc.),
-matching the same prefix used for custom element tag names, so they can't
-collide with unrelated global class names in an app that renders them in
-light DOM.
+Layout utility classes are prefixed `ui-` (`.ui-row`, `.ui-gap-md`, etc.),
+matching the same prefix used for `packages/ui`'s custom element tag names,
+so they can't collide with unrelated global class names in an app that
+renders them in light DOM.
 
 Layout utility classes are plain CSS classes, not custom properties - they
 don't cross a Shadow DOM boundary the same way color tokens do. A
