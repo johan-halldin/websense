@@ -92,6 +92,26 @@
       }
 
       /**
+       * @param {string} colorValue - a CSS color, e.g. "var(--color-gray-500)" or "#c66006"
+       * @param {string[]} labels
+       * @returns {HTMLElement}
+       */
+      function createSwatch(colorValue, labels) {
+        const swatch = document.createElement("div");
+        swatch.className = "swatch";
+
+        const colorBox = document.createElement("div");
+        colorBox.className = "color-box";
+        colorBox.style.backgroundColor = colorValue;
+        swatch.appendChild(colorBox);
+
+        for (const label of labels) {
+          swatch.appendChild(createCopyable(label));
+        }
+        return swatch;
+      }
+
+      /**
        * @param {string} title
        * @param {string[]} tokens
        * @returns {HTMLElement}
@@ -105,17 +125,12 @@
         const row = document.createElement("div");
         row.className = "scale";
         for (const token of tokens) {
-          const swatch = document.createElement("div");
-          swatch.className = "swatch";
-
-          const colorBox = document.createElement("div");
-          colorBox.className = "color-box";
-          colorBox.style.backgroundColor = `var(--color-${token})`;
-          swatch.appendChild(colorBox);
-
-          swatch.appendChild(createCopyable(`--color-${token}`));
-          swatch.appendChild(createCopyable(resolve(token)));
-          row.appendChild(swatch);
+          row.appendChild(
+            createSwatch(`var(--color-${token})`, [
+              `--color-${token}`,
+              resolve(token),
+            ]),
+          );
         }
         section.appendChild(row);
         return section;

@@ -27,17 +27,18 @@
   --color-primary-800: #001b61;
   --color-primary-900: #001342;
 
-  /* Secondary scale - warm amber/orange, complements the primary blue */
-  --color-secondary-50: #fef7f0;
-  --color-secondary-100: #fdecdd;
-  --color-secondary-200: #fbd6b6;
-  --color-secondary-300: #fab980;
-  --color-secondary-400: #f99843;
-  --color-secondary-500: #fa7705;
-  --color-secondary-600: #c66006;
-  --color-secondary-700: #9d4d07;
-  --color-secondary-800: #793c06;
-  --color-secondary-900: #562b06;
+  /* Secondary scale - Swedish flag yellow (#fecc00), anchored at 500 since
+     darker steps read as mustard/olive rather than yellow */
+  --color-secondary-50: #fefcf0;
+  --color-secondary-100: #fef7dd;
+  --color-secondary-200: #fdf0ba;
+  --color-secondary-300: #fde891;
+  --color-secondary-400: #fdde5d;
+  --color-secondary-500: #fecc00;
+  --color-secondary-600: #d6ac00;
+  --color-secondary-700: #ad8b00;
+  --color-secondary-800: #856a00;
+  --color-secondary-900: #5c4a00;
 
   /* Semantic aliases - components reference these, not the raw scales above */
   --color-text: var(--color-gray-900);
@@ -51,7 +52,7 @@
   --color-primary-hover: var(--color-primary-700);
   --color-on-primary: var(--color-white);
 
-  --color-secondary: var(--color-secondary-600);
-  --color-secondary-hover: var(--color-secondary-700);
-  --color-on-secondary: var(--color-white);
+  --color-secondary: var(--color-secondary-500);
+  --color-secondary-hover: var(--color-secondary-600);
+  --color-on-secondary: var(--color-text);
 }
