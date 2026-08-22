@@ -4,6 +4,13 @@ import { WsTabs } from "./tabs.wc.js";
  * @typedef {import("./tabs.wc.js").ITabOption} ITabOption
  */
 
+/** @type {Record<string, string>} */
+const CONTENT_BY_VALUE = {
+  overview: "This is the overview panel.",
+  settings: "This is the settings panel.",
+  users: "This is the users panel.",
+};
+
 /**
  * @param {HTMLElement} root
  */
@@ -15,16 +22,27 @@ function init_example_tabs(root) {
     { value: "users", label: "Users", icon: "user", tooltip: "Manage users" },
   ];
 
+  let activeValue = "overview";
+
   const tabsElement = new WsTabs();
-  tabsElement.ic = {
-    activeValue: "overview",
-    tabs,
-    onChange: (value) => {
-      console.log("Changed", value);
-      tabsElement.ic = { ...tabsElement.ic, activeValue: value };
-    },
-  };
+
+  const content = document.createElement("p");
+
+  function render() {
+    tabsElement.ic = {
+      activeValue,
+      tabs,
+      onChange: (value) => {
+        activeValue = value;
+        render();
+      },
+    };
+    content.textContent = CONTENT_BY_VALUE[activeValue] ?? "";
+  }
+  render();
+
   root.appendChild(tabsElement);
+  root.appendChild(content);
 
   const disabledTabs = new WsTabs();
   disabledTabs.ic = { activeValue: "overview", tabs };
