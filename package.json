@@ -8,12 +8,15 @@
         "format-write": "pnpm -r run format-write",
         "lint-check": "pnpm -r run lint-check",
         "lint-apply": "pnpm -r run lint-apply",
-        "check": "pnpm format-check && pnpm lint-check",
+        "typecheck": "tsgo --noEmit",
+        "check": "pnpm format-check && pnpm lint-check && pnpm typecheck && pnpm test",
         "fix": "pnpm format-write && pnpm lint-apply",
         "test": "pnpm -r run test"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.2.0",
+        "@types/node": "^26.2.0",
+        "@typescript/native-preview": "^7.0.0-dev.20260707.1",
         "prettier": "^3.6.2",
         "vitest": "^3.2.7"
     }

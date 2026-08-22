@@ -19,6 +19,7 @@
         "useDefineForClassFields": false,
 
         "lib": ["ESNext", "DOM"],
+        "types": ["node"],
         "skipLibCheck": true,
     },
     "include": ["apps/**/*.js", "packages/**/*.js"],
