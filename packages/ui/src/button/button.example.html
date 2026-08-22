@@ -18,15 +18,6 @@
         gap: 10px;
         align-items: center;
       }
-      /*
-        A consuming app themes ui-button by redeclaring the same custom
-        properties tokens.css defines - no JS API needed, just CSS cascade.
-      */
-      .custom-theme {
-        --color-border: #d6409f;
-        --color-border-hover: #a30662;
-        --color-text: #a30662;
-      }
     </style>
     <script type="importmap">
       {
@@ -45,17 +36,12 @@
       import { init_example_button } from "./button.example.js";
 
       init_example_button(document.getElementById("default-root"));
-      init_example_button(document.getElementById("custom-root"));
     </script>
   </head>
   <body>
     <div>
       <h3>Default theme (tokens.css)</h3>
       <div id="default-root" class="group"></div>
-    </div>
-    <div class="custom-theme">
-      <h3>Custom theme (overridden --color-border / --color-text)</h3>
-      <div id="custom-root" class="group"></div>
     </div>
   </body>
 </html>
