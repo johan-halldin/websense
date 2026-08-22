@@ -1,5 +1,6 @@
 import { capitalize } from "@websense/util";
 import { WsAppView } from "./app.wc.js";
+import { Counter } from "./counter.jc.js";
 
 /**
  * @typedef {import("./app.wc.js").IAppView} IAppView
@@ -12,6 +13,8 @@ class App {
   #status = "checking...";
   /** @type {number|null} */
   #renderTimer = null;
+  /** @type {Counter} */
+  #counter = new Counter(() => this.#render());
 
   async init() {
     await this.#checkHealth();
@@ -42,6 +45,7 @@ class App {
     return {
       status: capitalize(this.#status),
       onRefresh: () => this.#checkHealth(),
+      counter: this.#counter.getICounter(),
     };
   }
 

@@ -1,10 +1,16 @@
 import { html, LitElement } from "lit";
 import "@websense/ui/src/button.wc.js";
+import "./counter.wc.js";
+
+/**
+ * @typedef {import("./counter.wc.js").ICounter} ICounter
+ */
 
 /**
  * @typedef {object} IAppView
  * @property {string} status
  * @property {() => void} onRefresh
+ * @property {ICounter} counter
  */
 
 class WsAppView extends LitElement {
@@ -30,6 +36,7 @@ class WsAppView extends LitElement {
       <ws-button
         .ic=${{ title: "Refresh", onClick: () => ic.onRefresh() }}
       ></ws-button>
+      <ws-counter .ic=${ic.counter}></ws-counter>
     `;
   }
 }
