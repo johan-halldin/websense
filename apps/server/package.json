@@ -1,0 +1,15 @@
+{
+  "name": "@websense/server",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "format-check": "prettier --check .",
+    "format-write": "prettier --write .",
+    "lint-check": "biome lint .",
+    "lint-apply": "biome lint --write .",
+    "test": "node -e \"console.log('No tests implemented yet')\""
+  }
+}

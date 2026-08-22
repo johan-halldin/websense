@@ -18,6 +18,21 @@ importers:
         specifier: ^3.2.7
         version: 3.2.7
 
+  apps/client:
+    dependencies:
+      '@websense/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      lit:
+        specifier: ^3.3.0
+        version: 3.3.3
+    devDependencies:
+      vite:
+        specifier: ^7.3.6
+        version: 7.3.6
+
+  apps/server: {}
+
   packages/ui:
     dependencies:
       lit:

@@ -1,0 +1,22 @@
+{
+  "name": "@websense/client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "format-check": "prettier --check .",
+    "format-write": "prettier --write .",
+    "lint-check": "biome lint .",
+    "lint-apply": "biome lint --write .",
+    "test": "node -e \"console.log('No tests implemented yet')\""
+  },
+  "dependencies": {
+    "@websense/ui": "workspace:*",
+    "lit": "^3.3.0"
+  },
+  "devDependencies": {
+    "vite": "^7.3.6"
+  }
+}
