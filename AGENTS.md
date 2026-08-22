@@ -31,6 +31,16 @@ JavaScript (with JSDoc for types), Lit, Web Components, HTML, CSS.
 - Stateless components (e.g. a plain button) only need a `.wc.js` — don't add
   a `.jc.js` unless there's real state to manage.
 
+#### `ic` field convention
+
+An `IXxx` interface object has three kinds of fields, distinguished by naming:
+
+- Plain fields (`title`, `icon`) — cheap, always-relevant data. Read directly.
+- `get*` (`getHeavyData`) — an explicit escape hatch for data that's expensive
+  to compute and only sometimes needed. Only call it from the branch of `render()` that actually needs the value, never unconditionally — otherwise
+  it's just a plain field with extra ceremony.
+- `on*` (`onClick`) — an interaction callback. Its _absence_ (`undefined`) means that interaction is disabled, e.g. `onClick === undefined` should drive a `disabled` attribute rather than being treated as a no-op handler.
+
 ### Backend
 
 Node.js, JavaScript (with JSDoc for types).
