@@ -1,3 +1,4 @@
+import "@websense/ui/src/icons/icons.css";
 import "@websense/ui/src/tokens.css";
 import { init_app } from "./app/app.jc.js";
 

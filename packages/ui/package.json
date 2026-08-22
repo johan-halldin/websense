@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "build-icons": "node src/icons/build-icons.js",
     "format-check": "prettier --check .",
     "format-write": "prettier --write .",
     "lint-check": "biome lint .",
