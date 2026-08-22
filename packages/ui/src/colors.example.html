@@ -22,15 +22,22 @@
         border: 1px solid var(--color-gray-300);
         border-radius: 6px;
         display: flex;
-        align-items: flex-end;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
+        gap: 2px;
         padding: 4px;
         font-size: 11px;
         font-family: monospace;
       }
-      .swatch span {
+      .swatch .label {
         background: rgb(255 255 255 / 0.8);
         border-radius: 3px;
         padding: 1px 3px;
+        cursor: pointer;
+      }
+      .swatch .label:hover {
+        background: rgb(255 255 255 / 0.95);
       }
     </style>
   </head>
@@ -65,6 +72,27 @@
       }
 
       /**
+       * Renders a line of text that copies itself to the clipboard on click.
+       * @param {string} text
+       * @returns {HTMLElement}
+       */
+      function createCopyable(text) {
+        const label = document.createElement("span");
+        label.className = "label";
+        label.textContent = text;
+        label.title = "Click to copy";
+        label.addEventListener("click", async () => {
+          await navigator.clipboard.writeText(text);
+          const original = label.textContent;
+          label.textContent = "Copied!";
+          setTimeout(() => {
+            label.textContent = original;
+          }, 800);
+        });
+        return label;
+      }
+
+      /**
        * @param {string} title
        * @param {string[]} tokens
        * @returns {HTMLElement}
@@ -81,10 +109,8 @@
           const swatch = document.createElement("div");
           swatch.className = "swatch";
           swatch.style.backgroundColor = `var(--color-${token})`;
-          const label = document.createElement("span");
-          label.textContent = `${token}\n${resolve(token)}`;
-          label.style.whiteSpace = "pre";
-          swatch.appendChild(label);
+          swatch.appendChild(createCopyable(`--color-${token}`));
+          swatch.appendChild(createCopyable(resolve(token)));
           row.appendChild(swatch);
         }
         section.appendChild(row);
