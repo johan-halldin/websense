@@ -16,14 +16,16 @@ const OPTIONS = [
  */
 function init_example_select(root) {
   // Single-select: onSelect replaces the whole selection.
+  let singleValue = "apple";
   const single = new UiSelect();
   function renderSingle() {
     single.ic = {
       label: "Fruit",
       options: OPTIONS,
-      selectedValues: single.ic?.selectedValues ?? ["apple"],
+      selectedValues: [singleValue],
       onSelect: (value) => {
-        single.ic = { ...single.ic, selectedValues: [value] };
+        singleValue = value;
+        renderSingle();
       },
     };
   }
@@ -31,19 +33,18 @@ function init_example_select(root) {
   root.appendChild(single);
 
   // Multi-select: onSelect toggles membership in the selection.
+  let multiValues = ["apple", "cherry"];
   const multi = new UiSelect();
   function renderMulti() {
-    const current = multi.ic?.selectedValues ?? ["apple", "cherry"];
     multi.ic = {
       label: "Fruits",
       options: OPTIONS,
-      selectedValues: current,
+      selectedValues: multiValues,
       onSelect: (value) => {
-        const selected = multi.ic?.selectedValues ?? [];
-        const next = selected.includes(value)
-          ? selected.filter((v) => v !== value)
-          : [...selected, value];
-        multi.ic = { ...multi.ic, selectedValues: next };
+        multiValues = multiValues.includes(value)
+          ? multiValues.filter((v) => v !== value)
+          : [...multiValues, value];
+        renderMulti();
       },
     };
   }

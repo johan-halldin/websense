@@ -10,15 +10,21 @@ function init_example_radio_group(root) {
     { value: "large", label: "Large", tooltip: "Spacious size" },
   ];
 
+  let value = "medium";
+
   const group = new UiRadioGroup();
-  group.ic = {
-    value: "medium",
-    options,
-    onChange: (value) => {
-      console.log("Changed", value);
-      group.ic = { ...group.ic, value };
-    },
-  };
+  function render() {
+    group.ic = {
+      value,
+      options,
+      onChange: (newValue) => {
+        console.log("Changed", newValue);
+        value = newValue;
+        render();
+      },
+    };
+  }
+  render();
   root.appendChild(group);
 
   const disabledGroup = new UiRadioGroup();
