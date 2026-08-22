@@ -1,4 +1,3 @@
-import { capitalize } from "@websense/util";
 import { WsAppView } from "./app.wc.js";
 
 /**
