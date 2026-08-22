@@ -1,3 +1,4 @@
+import "@websense/ui/src/tokens.css";
 import { init_app } from "./app/app.jc.js";
 
 const root = document.getElementById("root");

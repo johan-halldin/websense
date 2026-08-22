@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 
 /**
  * @typedef {object} IButton
@@ -7,6 +7,32 @@ import { html, LitElement } from "lit";
  */
 
 export class WsButton extends LitElement {
+  /** @override */
+  static styles = css`
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      padding: 0 12px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--color-text);
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover:not(:disabled) {
+      background-color: var(--color-background);
+      border-color: var(--color-border-hover);
+    }
+    button:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+  `;
+
   /** @type {IButton|null} */
   #ic = null;
 
