@@ -40,7 +40,7 @@ class WsLatency extends LitElement {
 
     return html`
       <h2>Latency</h2>
-      <ui-line-chart .ic=${{ points }}></ui-line-chart>
+      <ui-line-chart .ic=${{ points, width: 10000 }}></ui-line-chart>
     `;
   }
 }
