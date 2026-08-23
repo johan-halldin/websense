@@ -28,6 +28,17 @@ class Mesh {
   constructor(on_change) {
     this.#on_change = on_change;
     this.#fetch();
+    this.#subscribeToUpdates();
+  }
+
+  /** Silently re-fetches (no blocking spinner) whenever the server pushes
+   * a notification that new ping results landed - e.g. from the scheduled
+   * background ingestion, not just this tab's own actions. */
+  #subscribeToUpdates() {
+    const source = new EventSource("/api/events");
+    source.onmessage = () => {
+      this.#doFetch().then(() => this.#on_change());
+    };
   }
 
   async #fetch() {

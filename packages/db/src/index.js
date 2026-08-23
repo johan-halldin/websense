@@ -10,4 +10,5 @@ function query(text, params) {
 }
 
 export { query };
+export { listenForPingResultsUpdates } from "./listen.js";
 export { runIngestCycle } from "./run.js";

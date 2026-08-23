@@ -1,8 +1,47 @@
 import { createServer } from "node:http";
-import { query, runIngestCycle } from "@websense/db";
+import {
+  listenForPingResultsUpdates,
+  query,
+  runIngestCycle,
+} from "@websense/db";
 import { clamp } from "@websense/util";
 
 const PORT = clamp(Number(process.env.PORT) || 3001, 0, 65535);
+
+/** @type {Set<import("node:http").ServerResponse>} */
+const sseClients = new Set();
+
+/**
+ * @param {import("node:http").ServerResponse} res
+ */
+function handleEvents(res) {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+  res.write("\n");
+  sseClients.add(res);
+  res.on("close", () => sseClients.delete(res));
+}
+
+/** An ingest cycle inserts in many batches, each firing its own NOTIFY -
+ * coalesce a burst of them into a single broadcast once things go quiet. */
+const NOTIFY_DEBOUNCE_MS = 500;
+/** @type {NodeJS.Timeout|null} */
+let broadcastTimer = null;
+
+listenForPingResultsUpdates(() => {
+  if (broadcastTimer !== null) {
+    clearTimeout(broadcastTimer);
+  }
+  broadcastTimer = setTimeout(() => {
+    broadcastTimer = null;
+    for (const res of sseClients) {
+      res.write("data: mesh-updated\n\n");
+    }
+  }, NOTIFY_DEBOUNCE_MS);
+});
 
 /**
  * @param {import("node:http").ServerResponse} res
@@ -164,6 +203,11 @@ const server = createServer((req, res) => {
 
   if (url.pathname === "/api/mesh") {
     handleMesh(res).catch(onError);
+    return;
+  }
+
+  if (url.pathname === "/api/events") {
+    handleEvents(res);
     return;
   }
 
