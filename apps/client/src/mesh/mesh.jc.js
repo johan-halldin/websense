@@ -1,3 +1,5 @@
+import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
+
 /**
  * @typedef {import("./mesh.wc.js").IWsMesh} IWsMesh
  * @typedef {import("@websense/ui/src/button/button.wc.js").IButton} IButton
@@ -17,10 +19,6 @@
 class Mesh {
   /** @type {() => void} */
   #on_change;
-  /** @type {boolean} */
-  #loading = true;
-  /** @type {boolean} */
-  #ingesting = false;
   /** @type {string|null} */
   #error = null;
   /** @type {MeshRow[]} */
@@ -33,8 +31,11 @@ class Mesh {
   }
 
   async #fetch() {
-    this.#loading = true;
+    await with_blocking_spinner(this.#doFetch(), "Loading mesh data...");
     this.#on_change();
+  }
+
+  async #doFetch() {
     try {
       const response = await fetch("/api/mesh");
       if (!response.ok) {
@@ -44,15 +45,15 @@ class Mesh {
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
-    } finally {
-      this.#loading = false;
-      this.#on_change();
     }
   }
 
   async #ingest() {
-    this.#ingesting = true;
-    this.#on_change();
+    await with_blocking_spinner(this.#doIngest(), "Ingesting...");
+    await this.#fetch();
+  }
+
+  async #doIngest() {
     try {
       const response = await fetch("/api/ingest", { method: "POST" });
       if (!response.ok) {
@@ -60,32 +61,26 @@ class Mesh {
       }
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
-    } finally {
-      this.#ingesting = false;
     }
-    await this.#fetch();
   }
 
   /** @returns {IWsMesh} */
   getIWsMesh() {
-    const busy = this.#loading || this.#ingesting;
-
     /** @type {IButton} */
     const refreshButton = {
       label: "Refresh",
       icon: "refresh-cw",
-      ...(busy ? {} : { onClick: () => this.#fetch() }),
+      onClick: () => this.#fetch(),
     };
 
     /** @type {IButton} */
     const ingestButton = {
-      label: this.#ingesting ? "Ingesting..." : "Ingest now",
+      label: "Ingest now",
       icon: "download",
-      ...(busy ? {} : { onClick: () => this.#ingest() }),
+      onClick: () => this.#ingest(),
     };
 
     return {
-      loading: this.#loading,
       error: this.#error,
       rows: this.#rows,
       refreshButton,

@@ -9,7 +9,6 @@ import { iconBaseStyle } from "@websense/ui/src/icons/icon-styles.js";
 
 /**
  * @typedef {object} IWsMesh
- * @property {boolean} loading
  * @property {string|null} error
  * @property {MeshRow[]} rows
  * @property {IButton} refreshButton
@@ -123,11 +122,6 @@ class WsMesh extends LitElement {
         <ui-button .ic=${ic.ingestButton}></ui-button>
       </header>
     `;
-
-    if (ic.loading) {
-      return html`${header}
-        <p>Loading mesh data...</p>`;
-    }
 
     if (ic.error !== null) {
       return html`${header}
