@@ -29,6 +29,9 @@ const MAX_DEVIATION_PERCENT = 15;
 /** Floor badge tint strength for any shown deviation, so one just past
  * MIN_DEVIATION_PERCENT is still visible rather than nearly transparent. */
 const MIN_INTENSITY = 0.15;
+/** Once the badge background is at least this saturated, the dark `-700`
+ * text no longer has good contrast against it - switch to white. */
+const INTENSITY_FOR_LIGHT_TEXT = 0.6;
 
 /**
  * @param {MeshRow} row
@@ -47,10 +50,14 @@ function rttDeviationPercent(row) {
  */
 function rttBadge(percent) {
   const magnitude = Math.min(Math.abs(percent) / MAX_DEVIATION_PERCENT, 1);
-  const intensity = Math.round(Math.max(magnitude, MIN_INTENSITY) * 100);
+  const intensity = Math.max(magnitude, MIN_INTENSITY);
   const token = percent >= 0 ? "error" : "success";
+  const textColor =
+    intensity >= INTENSITY_FOR_LIGHT_TEXT
+      ? `var(--color-on-${token})`
+      : `var(--color-${token}-700)`;
   return {
-    style: `background-color: color-mix(in srgb, var(--color-${token}) ${intensity}%, transparent); color: var(--color-${token}-700);`,
+    style: `background-color: color-mix(in srgb, var(--color-${token}) ${Math.round(intensity * 100)}%, transparent); color: ${textColor};`,
     icon: percent >= 0 ? "arrow-up" : "arrow-down",
   };
 }
@@ -152,7 +159,9 @@ class WsMesh extends LitElement {
               percent !== null && Math.abs(percent) >= MIN_DEVIATION_PERCENT;
             const badge = showBadge ? rttBadge(percent) : null;
             const delta =
-              percent === null ? "" : `${percent >= 0 ? "+" : ""}${percent}%`;
+              percent === null || percent === 0
+                ? ""
+                : `${percent >= 0 ? "+" : ""}${percent}%`;
             return html`
               <tr>
                 <td>${row.srcName}</td>
