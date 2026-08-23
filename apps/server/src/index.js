@@ -39,6 +39,27 @@ async function handleMeasurements(url, res) {
 }
 
 /**
+ * @param {import("node:http").ServerResponse} res
+ */
+async function handleMesh(res) {
+  const { rows } = await query(
+    `SELECT DISTINCT ON (p.probe_id, p.measurement_id)
+       src.name AS "srcName",
+       dst.name AS "dstName",
+       p.time,
+       p.rtt_avg_ms AS "rttAvgMs",
+       p.packet_loss_pct AS "packetLossPct"
+     FROM ping_results p
+     JOIN cities src ON src.probe_id = p.probe_id
+     JOIN cities dst ON dst.measurement_id = p.measurement_id
+     ORDER BY p.probe_id, p.measurement_id, p.time DESC`,
+  );
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(rows));
+}
+
+/**
  * @param {import("node:http").IncomingMessage} req
  * @returns {Promise<unknown>}
  */
@@ -147,6 +168,11 @@ const server = createServer((req, res) => {
 
   if (url.pathname === "/api/measurements") {
     handleMeasurements(url, res).catch(onError);
+    return;
+  }
+
+  if (url.pathname === "/api/mesh") {
+    handleMesh(res).catch(onError);
     return;
   }
 

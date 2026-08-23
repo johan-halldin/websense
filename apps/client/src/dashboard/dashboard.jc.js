@@ -1,5 +1,6 @@
 import { Counter } from "../app/counter.jc.js";
 import { Latency } from "../latency/latency.jc.js";
+import { Mesh } from "../mesh/mesh.jc.js";
 
 /**
  * @typedef {import("./dashboard.wc.js").IDashboard} IDashboard
@@ -19,6 +20,8 @@ class Dashboard {
   #counter;
   /** @type {Latency} */
   #latency;
+  /** @type {Mesh} */
+  #mesh;
   /** @type {string} */
   #activeTab = "overview";
   /** @type {boolean} */
@@ -35,6 +38,7 @@ class Dashboard {
     this.#on_change = on_change;
     this.#counter = new Counter(on_change);
     this.#latency = new Latency(on_change);
+    this.#mesh = new Mesh(on_change);
   }
 
   /** @returns {IDashboard} */
@@ -47,6 +51,7 @@ class Dashboard {
           { value: "settings", label: "Settings", icon: "settings" },
           { value: "users", label: "Users", icon: "user" },
           { value: "latency", label: "Latency", icon: "clock" },
+          { value: "mesh", label: "Mesh", icon: "link" },
         ],
         onChange: (value) => {
           this.#activeTab = value;
@@ -65,6 +70,7 @@ class Dashboard {
       },
       counter: this.#counter.getICounter(),
       latency: this.#latency.getIWsLatency(),
+      mesh: this.#mesh.getIWsMesh(),
       advancedStatsCheckbox: {
         checked: this.#showAdvancedStats,
         label: "Show advanced stats",
