@@ -13,7 +13,8 @@
         "check": "pnpm format-check && pnpm lint-check && pnpm typecheck && pnpm test",
         "fix": "pnpm format-write && pnpm lint-apply",
         "test": "pnpm -r run test",
-        "db:migrate": "node db/migrate.js"
+        "db:migrate": "node db/migrate.js",
+        "dev": "./scripts/dev.sh"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.5.10",
