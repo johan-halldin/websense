@@ -1,4 +1,5 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
+import { show_toast } from "@websense/ui/src/toast/toast.js";
 
 /**
  * @typedef {import("./mesh.wc.js").IWsMesh} IWsMesh
@@ -37,7 +38,12 @@ class Mesh {
   #subscribeToUpdates() {
     const source = new EventSource("/api/events");
     source.onmessage = () => {
-      this.#doFetch().then(() => this.#on_change());
+      this.#doFetch().then(() => {
+        this.#on_change();
+        show_toast(`Page updated at ${new Date().toLocaleTimeString()}`, {
+          level: "info",
+        });
+      });
     };
   }
 
