@@ -16,38 +16,42 @@ import { iconBaseStyle } from "@websense/ui/src/icons/icon-styles.js";
  * @property {IButton} ingestButton
  */
 
-/** Deviations smaller than this are treated as noise - no badge shown. */
-const MIN_DEVIATION = 0.01;
+/** Deviations smaller than this (in whole percent, post-rounding) are
+ * treated as noise - no badge shown. Rounding first, then thresholding the
+ * rounded value, keeps this in agreement with the displayed delta text -
+ * otherwise a raw 0.6% could round to a displayed "+1%" while still failing
+ * a threshold check against the unrounded 0.006. */
+const MIN_DEVIATION_PERCENT = 1;
 /** A deviation of this size (or more) from a pair's own average RTT reaches
- * full badge color strength - deviations between MIN_DEVIATION and this are
- * shown as a proportionally fainter tint. */
-const MAX_DEVIATION = 0.15;
+ * full badge color strength - deviations between MIN_DEVIATION_PERCENT and
+ * this are shown as a proportionally fainter tint. */
+const MAX_DEVIATION_PERCENT = 15;
 /** Floor badge tint strength for any shown deviation, so one just past
- * MIN_DEVIATION is still visible rather than nearly transparent. */
+ * MIN_DEVIATION_PERCENT is still visible rather than nearly transparent. */
 const MIN_INTENSITY = 0.15;
 
 /**
  * @param {MeshRow} row
- * @returns {number|null} signed fraction, e.g. 0.05 means 5% above average
+ * @returns {number|null} signed whole percent, e.g. 5 means 5% above average
  */
-function rttDeviation(row) {
+function rttDeviationPercent(row) {
   if (row.rttAvgMs === null || row.avgRttMs === null || row.avgRttMs === 0) {
     return null;
   }
-  return (row.rttAvgMs - row.avgRttMs) / row.avgRttMs;
+  return Math.round(((row.rttAvgMs - row.avgRttMs) / row.avgRttMs) * 100);
 }
 
 /**
- * @param {number} deviation
+ * @param {number} percent
  * @returns {{style: string, icon: "arrow-up"|"arrow-down"}}
  */
-function rttBadge(deviation) {
-  const magnitude = Math.min(Math.abs(deviation) / MAX_DEVIATION, 1);
+function rttBadge(percent) {
+  const magnitude = Math.min(Math.abs(percent) / MAX_DEVIATION_PERCENT, 1);
   const intensity = Math.round(Math.max(magnitude, MIN_INTENSITY) * 100);
-  const token = deviation >= 0 ? "error" : "success";
+  const token = percent >= 0 ? "error" : "success";
   return {
     style: `background-color: color-mix(in srgb, var(--color-${token}) ${intensity}%, transparent); color: var(--color-${token}-700);`,
-    icon: deviation >= 0 ? "arrow-up" : "arrow-down",
+    icon: percent >= 0 ? "arrow-up" : "arrow-down",
   };
 }
 
@@ -143,14 +147,12 @@ class WsMesh extends LitElement {
         </thead>
         <tbody>
           ${ic.rows.map((row) => {
-            const deviation = rttDeviation(row);
+            const percent = rttDeviationPercent(row);
             const showBadge =
-              deviation !== null && Math.abs(deviation) >= MIN_DEVIATION;
-            const badge = showBadge ? rttBadge(deviation) : null;
+              percent !== null && Math.abs(percent) >= MIN_DEVIATION_PERCENT;
+            const badge = showBadge ? rttBadge(percent) : null;
             const delta =
-              deviation === null
-                ? ""
-                : `${deviation >= 0 ? "+" : ""}${(deviation * 100).toFixed(0)}%`;
+              percent === null ? "" : `${percent >= 0 ? "+" : ""}${percent}%`;
             return html`
               <tr>
                 <td>${row.srcName}</td>
