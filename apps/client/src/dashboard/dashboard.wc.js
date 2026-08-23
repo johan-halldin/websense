@@ -44,13 +44,22 @@ class WsDashboard extends LitElement {
     }
 
     const activeTab = ic.tabs.value;
+    const isMapTab = activeTab === "map";
 
     return html`
-      <div class="ui-stack ui-gap-lg ui-padding-lg">
+      <div
+        class="ui-stack ui-gap-lg ui-padding-lg ${
+          isMapTab ? "ui-fill-viewport" : ""
+        }"
+      >
         <h1>WebSense</h1>
         <ui-tabs .ic=${ic.tabs}></ui-tabs>
         ${activeTab === "table" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}
-        ${activeTab === "map" ? html`<ui-geo-map .ic=${ic.geoMap}></ui-geo-map>` : ""}
+        ${
+          isMapTab
+            ? html`<ui-geo-map class="ui-flex-1" .ic=${ic.geoMap}></ui-geo-map>`
+            : ""
+        }
       </div>
     `;
   }

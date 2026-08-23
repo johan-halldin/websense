@@ -74,3 +74,13 @@
 .ui-justify-between {
   justify-content: space-between;
 }
+
+.ui-fill-viewport {
+  height: 100dvh;
+  box-sizing: border-box;
+}
+
+.ui-flex-1 {
+  flex: 1;
+  min-height: 0;
+}

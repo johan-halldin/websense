@@ -102,10 +102,13 @@ function buildLandPath(width, height) {
 export class UiGeoMap extends LitElement {
   /** @override */
   static styles = css`
+    :host {
+      display: block;
+    }
     svg {
       display: block;
       width: 100%;
-      height: auto;
+      height: 100%;
     }
     .land {
       fill: var(--color-gray-200);
