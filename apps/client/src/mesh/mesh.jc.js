@@ -10,6 +10,8 @@
  * @property {string} time
  * @property {number|null} rttAvgMs
  * @property {number|null} packetLossPct
+ * @property {number|null} avgRttMs
+ * @property {number|null} avgPacketLossPct
  */
 
 class Mesh {

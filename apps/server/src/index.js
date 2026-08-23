@@ -9,16 +9,36 @@ const PORT = clamp(Number(process.env.PORT) || 3001, 0, 65535);
  */
 async function handleMesh(res) {
   const { rows } = await query(
-    `SELECT DISTINCT ON (p.probe_id, p.measurement_id)
+    `WITH latest AS (
+       SELECT DISTINCT ON (probe_id, measurement_id)
+         probe_id, measurement_id, time, rtt_avg_ms, packet_loss_pct
+       FROM ping_results
+       ORDER BY probe_id, measurement_id, time DESC
+     ),
+     stats AS (
+       SELECT
+         probe_id,
+         measurement_id,
+         avg(rtt_avg_ms) AS avg_rtt_ms,
+         avg(packet_loss_pct) AS avg_packet_loss_pct
+       FROM ping_results
+       GROUP BY probe_id, measurement_id
+     )
+     SELECT
        src.name AS "srcName",
        dst.name AS "dstName",
-       p.time,
-       p.rtt_avg_ms AS "rttAvgMs",
-       p.packet_loss_pct AS "packetLossPct"
-     FROM ping_results p
-     JOIN cities src ON src.probe_id = p.probe_id
-     JOIN cities dst ON dst.measurement_id = p.measurement_id
-     ORDER BY p.probe_id, p.measurement_id, p.time DESC`,
+       latest.time,
+       latest.rtt_avg_ms AS "rttAvgMs",
+       latest.packet_loss_pct AS "packetLossPct",
+       stats.avg_rtt_ms AS "avgRttMs",
+       stats.avg_packet_loss_pct AS "avgPacketLossPct"
+     FROM latest
+     JOIN stats
+       ON stats.probe_id = latest.probe_id
+       AND stats.measurement_id = latest.measurement_id
+     JOIN cities src ON src.probe_id = latest.probe_id
+     JOIN cities dst ON dst.measurement_id = latest.measurement_id
+     ORDER BY src.name, dst.name`,
   );
 
   res.writeHead(200, { "Content-Type": "application/json" });

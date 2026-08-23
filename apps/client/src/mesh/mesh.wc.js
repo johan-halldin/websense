@@ -15,6 +15,28 @@ import "@websense/ui/src/button/button.wc.js";
  * @property {IButton} ingestButton
  */
 
+/** A current RTT more than this fraction away from its own average is
+ * highlighted as notably better/worse than usual. */
+const RTT_DEVIATION_THRESHOLD = 0.2;
+
+/**
+ * @param {MeshRow} row
+ * @returns {"high"|"low"|""}
+ */
+function rttDeviationClass(row) {
+  if (row.rttAvgMs === null || row.avgRttMs === null || row.avgRttMs === 0) {
+    return "";
+  }
+  const deviation = (row.rttAvgMs - row.avgRttMs) / row.avgRttMs;
+  if (deviation > RTT_DEVIATION_THRESHOLD) {
+    return "high";
+  }
+  if (deviation < -RTT_DEVIATION_THRESHOLD) {
+    return "low";
+  }
+  return "";
+}
+
 class WsMesh extends LitElement {
   /** @override */
   static styles = css`
@@ -32,6 +54,12 @@ class WsMesh extends LitElement {
       text-align: left;
       padding: 6px 12px;
       border-bottom: 1px solid var(--color-border);
+    }
+    td.high {
+      color: var(--color-error);
+    }
+    td.low {
+      color: var(--color-success);
     }
   `;
 
@@ -82,6 +110,7 @@ class WsMesh extends LitElement {
             <th>From</th>
             <th>To</th>
             <th>RTT (ms)</th>
+            <th>Avg RTT (ms)</th>
             <th>Loss (%)</th>
             <th>Updated</th>
           </tr>
@@ -92,7 +121,10 @@ class WsMesh extends LitElement {
               <tr>
                 <td>${row.srcName}</td>
                 <td>${row.dstName}</td>
-                <td>${row.rttAvgMs?.toFixed(1) ?? "—"}</td>
+                <td class=${rttDeviationClass(row)}>
+                  ${row.rttAvgMs?.toFixed(1) ?? "—"}
+                </td>
+                <td>${row.avgRttMs?.toFixed(1) ?? "—"}</td>
                 <td>${row.packetLossPct?.toFixed(0) ?? "—"}</td>
                 <td>${new Date(row.time).toLocaleTimeString()}</td>
               </tr>
