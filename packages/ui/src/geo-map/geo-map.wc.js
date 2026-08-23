@@ -1,0 +1,126 @@
+import { css, html, LitElement } from "lit";
+import landJson from "./land-110m.json";
+
+/**
+ * @typedef {object} IGeoMap
+ * @property {number} [width]
+ * @property {number} [height]
+ */
+
+/**
+ * @typedef {[number, number]} Position
+ * @typedef {object} PolygonGeometry
+ * @property {"Polygon"} type
+ * @property {Position[][]} coordinates
+ * @typedef {object} MultiPolygonGeometry
+ * @property {"MultiPolygon"} type
+ * @property {Position[][][]} coordinates
+ * @typedef {PolygonGeometry|MultiPolygonGeometry} LandGeometry
+ */
+
+const land = /** @type {{features: {geometry: LandGeometry}[]}} */ (
+  /** @type {unknown} */ (landJson)
+);
+
+const DEFAULT_WIDTH = 960;
+/** Equirectangular projection is 2:1 (360deg of longitude over 180deg of
+ * latitude), so height defaults to half the width. */
+const DEFAULT_HEIGHT = DEFAULT_WIDTH / 2;
+
+/**
+ * @param {Position} position
+ * @param {number} width
+ * @param {number} height
+ * @returns {Position}
+ */
+function project([lon, lat], width, height) {
+  const x = ((lon + 180) / 360) * width;
+  const y = ((90 - lat) / 180) * height;
+  return [x, y];
+}
+
+/**
+ * @param {Position[]} ring
+ * @param {number} width
+ * @param {number} height
+ * @returns {string}
+ */
+function ringToPath(ring, width, height) {
+  const points = ring.map((position) => {
+    const [x, y] = project(position, width, height);
+    return `${x.toFixed(2)},${y.toFixed(2)}`;
+  });
+  return `M${points.join("L")}Z`;
+}
+
+/**
+ * @param {Position[][]} rings
+ * @param {number} width
+ * @param {number} height
+ * @returns {string}
+ */
+function polygonToPath(rings, width, height) {
+  return rings.map((ring) => ringToPath(ring, width, height)).join(" ");
+}
+
+/**
+ * @param {number} width
+ * @param {number} height
+ * @returns {string} a single SVG path `d` covering every land feature
+ */
+function buildLandPath(width, height) {
+  return land.features
+    .map((feature) => {
+      const geometry = feature.geometry;
+      if (geometry.type === "Polygon") {
+        return polygonToPath(geometry.coordinates, width, height);
+      }
+      return geometry.coordinates
+        .map((polygon) => polygonToPath(polygon, width, height))
+        .join(" ");
+    })
+    .join(" ");
+}
+
+export class UiGeoMap extends LitElement {
+  /** @override */
+  static styles = css`
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .land {
+      fill: var(--color-gray-200);
+      stroke: var(--color-gray-300);
+      stroke-width: 0.5;
+    }
+  `;
+
+  /** @type {IGeoMap|null} */
+  #ic = null;
+
+  /** @param {IGeoMap} ic */
+  set ic(ic) {
+    this.#ic = ic;
+    this.requestUpdate();
+  }
+
+  /** @override */
+  render() {
+    const width = this.#ic?.width ?? DEFAULT_WIDTH;
+    const height = this.#ic?.height ?? DEFAULT_HEIGHT;
+
+    return html`
+      <svg viewBox="0 0 ${width} ${height}">
+        <path
+          class="land"
+          fill-rule="evenodd"
+          d=${buildLandPath(width, height)}
+        ></path>
+      </svg>
+    `;
+  }
+}
+
+customElements.define("ui-geo-map", UiGeoMap);

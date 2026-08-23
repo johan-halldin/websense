@@ -1,4 +1,5 @@
 import { html, LitElement } from "lit";
+import "@websense/ui/src/geo-map/geo-map.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
 import "../mesh/mesh.wc.js";
 
@@ -47,7 +48,7 @@ class WsDashboard extends LitElement {
         <h1>WebSense</h1>
         <ui-tabs .ic=${ic.tabs}></ui-tabs>
         ${activeTab === "table" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}
-        ${activeTab === "map" ? html`<p>Map view coming soon.</p>` : ""}
+        ${activeTab === "map" ? html`<ui-geo-map></ui-geo-map>` : ""}
       </div>
     `;
   }
