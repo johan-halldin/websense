@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import "@websense/ui/src/button/button.wc.js";
 import { iconBaseStyle } from "@websense/ui/src/icons/icon-styles.js";
+import { formatRelativeTime, formatTime } from "@websense/util";
 
 /**
  * @typedef {import("./mesh.jc.js").MeshRow} MeshRow
@@ -176,7 +177,9 @@ class WsMesh extends LitElement {
                 </td>
                 <td>${row.avgRttMs?.toFixed(1) ?? "—"}</td>
                 <td>${row.packetLossPct?.toFixed(0) ?? "—"}</td>
-                <td>${new Date(row.time).toLocaleTimeString()}</td>
+                <td title=${formatTime(new Date(row.time))}>
+                  ${formatRelativeTime(new Date(row.time))}
+                </td>
               </tr>
             `;
           })}
