@@ -1,10 +1,10 @@
 import { UiSelect } from "./select.wc.js";
 
 /**
- * @typedef {import("./select.wc.js").ISelectOption} ISelectOption
+ * @typedef {import("./select.wc.js").SelectOption} SelectOption
  */
 
-/** @type {ISelectOption[]} */
+/** @type {SelectOption[]} */
 const OPTIONS = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },

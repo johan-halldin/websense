@@ -1,9 +1,9 @@
 /**
- * @typedef {import("./ripe-atlas.js").IRipeAtlasPingResult} IRipeAtlasPingResult
+ * @typedef {import("./ripe-atlas.js").RipeAtlasPingResult} RipeAtlasPingResult
  */
 
 /**
- * @typedef {object} IPingRow
+ * @typedef {object} PingRow
  * @property {Date} time
  * @property {number} probeId
  * @property {number} measurementId
@@ -21,8 +21,8 @@
  * packets lost) has no `avg`/`min`/`max` fields, so those become `null`
  * rather than being dropped.
  *
- * @param {IRipeAtlasPingResult[]} rawResults
- * @returns {IPingRow[]}
+ * @param {RipeAtlasPingResult[]} rawResults
+ * @returns {PingRow[]}
  */
 function normalizeResults(rawResults) {
   return rawResults.map((raw) => {

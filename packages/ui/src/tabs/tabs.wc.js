@@ -6,7 +6,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
  */
 
 /**
- * @typedef {object} ITabOption
+ * @typedef {object} TabOption
  * @property {string} value
  * @property {string} label
  * @property {string} [tooltip]
@@ -16,7 +16,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
 /**
  * @typedef {object} ITabs
  * @property {string} value
- * @property {ITabOption[]} options
+ * @property {TabOption[]} options
  * @property {(value: string) => void} [onChange]
  */
 

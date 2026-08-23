@@ -4,7 +4,7 @@
  */
 
 /**
- * @typedef {object} IMeshRow
+ * @typedef {object} MeshRow
  * @property {string} srcName
  * @property {string} dstName
  * @property {string} time
@@ -21,7 +21,7 @@ class Mesh {
   #ingesting = false;
   /** @type {string|null} */
   #error = null;
-  /** @type {IMeshRow[]} */
+  /** @type {MeshRow[]} */
   #rows = [];
 
   /** @param {() => void} on_change */

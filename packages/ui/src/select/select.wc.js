@@ -3,7 +3,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
 import "../popover/popover.wc.js";
 
 /**
- * @typedef {object} ISelectOption
+ * @typedef {object} SelectOption
  * @property {string} value
  * @property {string} label
  * @property {string} [tooltip]
@@ -14,7 +14,7 @@ import "../popover/popover.wc.js";
  * @property {string} [label]
  * @property {string} [tooltip]
  * @property {string[]} selectedValues
- * @property {ISelectOption[]} options
+ * @property {SelectOption[]} options
  * @property {(value: string) => void} [onSelect]
  */
 

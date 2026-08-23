@@ -7,7 +7,7 @@ import "../popover/popover.wc.js";
  */
 
 /**
- * @typedef {object} ISelectActionLeaf
+ * @typedef {object} SelectActionLeaf
  * @property {"leaf"} type
  * @property {string} label
  * @property {string} [tooltip]
@@ -16,12 +16,12 @@ import "../popover/popover.wc.js";
  */
 
 /**
- * @typedef {object} ISelectActionBranch
+ * @typedef {object} SelectActionBranch
  * @property {"branch"} type
  * @property {string} label
  * @property {string} [tooltip]
  * @property {IconName} [icon]
- * @property {ISelectActionGroup[]} children
+ * @property {SelectActionGroup[]} children
  */
 
 /**
@@ -29,13 +29,13 @@ import "../popover/popover.wc.js";
  * disabled) or a branch (`children`, opening a nested submenu instead) -
  * the `type` tag makes it a type error to set both at once.
  *
- * @typedef {ISelectActionLeaf|ISelectActionBranch} ISelectAction
+ * @typedef {SelectActionLeaf|SelectActionBranch} SelectAction
  */
 
 /**
- * @typedef {object} ISelectActionGroup
+ * @typedef {object} SelectActionGroup
  * @property {string} [header]
- * @property {ISelectAction[]} actions
+ * @property {SelectAction[]} actions
  */
 
 /**
@@ -43,7 +43,7 @@ import "../popover/popover.wc.js";
  * @property {string} [label]
  * @property {string} [tooltip]
  * @property {IconName} [icon]
- * @property {ISelectActionGroup[]} groups
+ * @property {SelectActionGroup[]} groups
  */
 
 export class UiSelectActions extends LitElement {
@@ -169,7 +169,7 @@ export class UiSelectActions extends LitElement {
   }
 
   /**
-   * @param {ISelectActionGroup[]} groups
+   * @param {SelectActionGroup[]} groups
    * @returns {import("lit").TemplateResult}
    */
   #renderGroups(groups) {
@@ -192,7 +192,7 @@ export class UiSelectActions extends LitElement {
   }
 
   /**
-   * @param {ISelectAction} action
+   * @param {SelectAction} action
    * @returns {import("lit").TemplateResult}
    */
   #renderAction(action) {

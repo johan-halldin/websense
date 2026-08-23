@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 
 /**
- * @typedef {object} IRadioOption
+ * @typedef {object} RadioOption
  * @property {string} value
  * @property {string} label
  * @property {string} [tooltip]
@@ -10,7 +10,7 @@ import { css, html, LitElement } from "lit";
 /**
  * @typedef {object} IRadioGroup
  * @property {string} value
- * @property {IRadioOption[]} options
+ * @property {RadioOption[]} options
  * @property {(value: string) => void} [onChange]
  */
 

@@ -2,7 +2,7 @@ import { UiButton } from "../button/button.wc.js";
 import { UiModal } from "./modal.wc.js";
 
 /**
- * @typedef {object} IConfirmOptions
+ * @typedef {object} ConfirmOptions
  * @property {string} [title]
  * @property {string} [description]
  * @property {string} [confirmLabel]
@@ -16,7 +16,7 @@ import { UiModal } from "./modal.wc.js";
  * resolve() call, reading whichever outcome actually happened.
  *
  * @param {string} message
- * @param {IConfirmOptions} [options]
+ * @param {ConfirmOptions} [options]
  * @returns {Promise<boolean>}
  */
 function async_confirm(message, options = {}) {

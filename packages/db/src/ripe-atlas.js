@@ -1,7 +1,7 @@
 const BASE_URL = "https://atlas.ripe.net/api/v2/measurements";
 
 /**
- * @typedef {object} IRipeAtlasPingResult
+ * @typedef {object} RipeAtlasPingResult
  * @property {number} prb_id
  * @property {number} msm_id
  * @property {number} timestamp
@@ -24,7 +24,7 @@ const DAY_SECONDS = 24 * 60 * 60;
  *
  * @param {number} measurementId
  * @param {number[]} probeIds
- * @returns {Promise<IRipeAtlasPingResult[]>}
+ * @returns {Promise<RipeAtlasPingResult[]>}
  */
 async function fetchResults(measurementId, probeIds) {
   const url = new URL(`${BASE_URL}/${measurementId}/results/`);
@@ -40,7 +40,7 @@ async function fetchResults(measurementId, probeIds) {
     );
   }
 
-  return /** @type {Promise<IRipeAtlasPingResult[]>} */ (response.json());
+  return /** @type {Promise<RipeAtlasPingResult[]>} */ (response.json());
 }
 
 export { fetchResults };

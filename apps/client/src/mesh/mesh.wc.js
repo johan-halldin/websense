@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import "@websense/ui/src/button/button.wc.js";
 
 /**
- * @typedef {import("./mesh.jc.js").IMeshRow} IMeshRow
+ * @typedef {import("./mesh.jc.js").MeshRow} MeshRow
  * @typedef {import("@websense/ui/src/button/button.wc.js").IButton} IButton
  */
 
@@ -10,7 +10,7 @@ import "@websense/ui/src/button/button.wc.js";
  * @typedef {object} IWsMesh
  * @property {boolean} loading
  * @property {string|null} error
- * @property {IMeshRow[]} rows
+ * @property {MeshRow[]} rows
  * @property {IButton} refreshButton
  * @property {IButton} ingestButton
  */

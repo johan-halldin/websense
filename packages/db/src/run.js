@@ -3,7 +3,7 @@ import { normalizeResults } from "./normalize.js";
 import { fetchResults } from "./ripe-atlas.js";
 
 /**
- * @typedef {object} ICity
+ * @typedef {object} City
  * @property {number} id
  * @property {string} name
  * @property {number} probeId
@@ -19,7 +19,7 @@ import { fetchResults } from "./ripe-atlas.js";
  * @returns {Promise<number>} total rows ingested this cycle
  */
 async function runIngestCycle() {
-  const { rows: cities } = /** @type {{rows: ICity[]}} */ (
+  const { rows: cities } = /** @type {{rows: City[]}} */ (
     await pool.query(
       `SELECT id, name, probe_id AS "probeId", measurement_id AS "measurementId" FROM cities`,
     )

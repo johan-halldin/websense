@@ -17,7 +17,7 @@ function get_stack() {
 }
 
 /**
- * @typedef {object} IShowToastOptions
+ * @typedef {object} ShowToastOptions
  * @property {"info"|"success"|"warning"|"error"} [level]
  * @property {IconName} [icon] - defaults to an icon matching `level`
  * @property {number|null} [duration] - ms before auto-dismiss, default
@@ -30,7 +30,7 @@ function get_stack() {
  * it early.
  *
  * @param {string} message
- * @param {IShowToastOptions} [options]
+ * @param {ShowToastOptions} [options]
  */
 function show_toast(message, options = {}) {
   const toast = new UiToast();

@@ -1,7 +1,7 @@
 import { UiTabs } from "./tabs.wc.js";
 
 /**
- * @typedef {import("./tabs.wc.js").ITabOption} ITabOption
+ * @typedef {import("./tabs.wc.js").TabOption} TabOption
  */
 
 /** @type {Record<string, string>} */
@@ -15,7 +15,7 @@ const CONTENT_BY_VALUE = {
  * @param {HTMLElement} root
  */
 function init_example_tabs(root) {
-  /** @type {ITabOption[]} */
+  /** @type {TabOption[]} */
   const options = [
     { value: "overview", label: "Overview", icon: "house" },
     { value: "settings", label: "Settings", icon: "settings" },

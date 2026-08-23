@@ -3,13 +3,13 @@ import { UiModal } from "./modal.wc.js";
 
 /**
  * @template TIc
- * @typedef {object} IModalContentRender
+ * @typedef {object} ModalContentRender
  * @property {TIc} ic
  * @property {boolean} canConfirm
  */
 
 /**
- * @typedef {object} IAsyncModalOptions
+ * @typedef {object} AsyncModalOptions
  * @property {string} [title]
  * @property {string} [description]
  * @property {string} [confirmLabel]
@@ -27,8 +27,8 @@ import { UiModal } from "./modal.wc.js";
  *
  * @template TIc
  * @param {HTMLElement & {ic: TIc}} element
- * @param {(on_change: () => void) => IModalContentRender<TIc>} makeIc
- * @param {IAsyncModalOptions} [options]
+ * @param {(on_change: () => void) => ModalContentRender<TIc>} makeIc
+ * @param {AsyncModalOptions} [options]
  * @returns {Promise<boolean>}
  */
 function async_modal_with_content(element, makeIc, options = {}) {

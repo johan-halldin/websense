@@ -44,6 +44,15 @@ An `IXxx` interface object has three kinds of fields, distinguished by naming:
   it's just a plain field with extra ceremony.
 - `on*` (`onClick`) — an interaction callback. Its _absence_ (`undefined`) means that interaction is disabled, e.g. `onClick === undefined` should drive a `disabled` attribute rather than being treated as a no-op handler.
 
+#### `IXxx` naming
+
+The `I` prefix is reserved for a component's actual `.ic` interface object —
+the type assigned to a `wc`'s `set ic(ic)` (e.g. `IButton`, `IDashboard`).
+Nested pieces of an interface object (e.g. `ITabs`'s `options: TabOption[]`),
+options passed to a plain function (e.g. `ConfirmOptions`), and unrelated
+data types (e.g. a DB row shape) are not interface objects and should not be
+prefixed with `I` — plain `PascalCase` instead.
+
 #### Colors
 
 Always use the CSS variables defined in `packages/ui/src/tokens.css` (the color scales and their semantic aliases, e.g. `var(--color-primary)`, `var(--color-text)`). Don't define one-off colors inline (hex/rgb literals) - if a needed shade is missing from the scales, add it to `tokens.css` rather than hardcoding it at the point of use.
