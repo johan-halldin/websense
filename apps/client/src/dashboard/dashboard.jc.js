@@ -33,6 +33,7 @@ class Dashboard {
         },
       },
       mesh: this.#mesh.getIWsMesh(),
+      geoMap: this.#mesh.getIGeoMap(),
     };
   }
 }

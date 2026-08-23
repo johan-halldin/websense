@@ -65,7 +65,11 @@ async function handleMesh(res) {
      )
      SELECT
        src.name AS "srcName",
+       src.lat AS "srcLat",
+       src.lon AS "srcLon",
        dst.name AS "dstName",
+       dst.lat AS "dstLat",
+       dst.lon AS "dstLon",
        latest.time,
        latest.rtt_avg_ms AS "rttAvgMs",
        latest.packet_loss_pct AS "packetLossPct",

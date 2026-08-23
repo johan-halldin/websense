@@ -1,16 +1,27 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { formatTime } from "@websense/util";
+import {
+  isRttDeviationNotable,
+  rttColor,
+  rttDeviationPercent,
+} from "./rtt-color.js";
 
 /**
  * @typedef {import("./mesh.wc.js").IWsMesh} IWsMesh
  * @typedef {import("@websense/ui/src/button/button.wc.js").IButton} IButton
+ * @typedef {import("@websense/ui/src/geo-map/geo-map.wc.js").IGeoMap} IGeoMap
+ * @typedef {import("@websense/ui/src/geo-map/geo-map.wc.js").IGeoPoint} IGeoPoint
  */
 
 /**
  * @typedef {object} MeshRow
  * @property {string} srcName
+ * @property {number} srcLat
+ * @property {number} srcLon
  * @property {string} dstName
+ * @property {number} dstLat
+ * @property {number} dstLon
  * @property {string} time
  * @property {number|null} rttAvgMs
  * @property {number|null} packetLossPct
@@ -103,6 +114,46 @@ class Mesh {
       rows: this.#rows,
       refreshButton,
       ingestButton,
+    };
+  }
+
+  /** @returns {IGeoMap} */
+  getIGeoMap() {
+    /** @type {Map<string, IGeoPoint>} */
+    const pointByName = new Map();
+    for (const row of this.#rows) {
+      if (!pointByName.has(row.srcName)) {
+        pointByName.set(row.srcName, {
+          label: row.srcName,
+          lat: row.srcLat,
+          lon: row.srcLon,
+        });
+      }
+      if (!pointByName.has(row.dstName)) {
+        pointByName.set(row.dstName, {
+          label: row.dstName,
+          lat: row.dstLat,
+          lon: row.dstLon,
+        });
+      }
+    }
+
+    const edges = this.#rows.map((row) => {
+      const percent = rttDeviationPercent(row);
+      const color = isRttDeviationNotable(percent)
+        ? rttColor(/** @type {number} */ (percent)).color
+        : undefined;
+
+      return {
+        from: { label: row.srcName, lat: row.srcLat, lon: row.srcLon },
+        to: { label: row.dstName, lat: row.dstLat, lon: row.dstLon },
+        ...(color !== undefined ? { color } : {}),
+      };
+    });
+
+    return {
+      points: [...pointByName.values()],
+      edges,
     };
   }
 }

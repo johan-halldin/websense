@@ -1,10 +1,27 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, svg } from "lit";
 import landJson from "./land-110m.json";
+
+/**
+ * @typedef {object} IGeoPoint
+ * @property {string} label
+ * @property {number} lat
+ * @property {number} lon
+ */
+
+/**
+ * @typedef {object} IGeoEdge
+ * @property {IGeoPoint} from
+ * @property {IGeoPoint} to
+ * @property {string} [color] - CSS color for the line stroke, defaults to a
+ *   neutral border color if omitted
+ */
 
 /**
  * @typedef {object} IGeoMap
  * @property {number} [width]
  * @property {number} [height]
+ * @property {IGeoPoint[]} [points]
+ * @property {IGeoEdge[]} [edges]
  */
 
 /**
@@ -95,6 +112,19 @@ export class UiGeoMap extends LitElement {
       stroke: var(--color-gray-300);
       stroke-width: 0.5;
     }
+    .edge {
+      stroke-width: 1.5;
+      stroke-linecap: round;
+    }
+    .point {
+      fill: var(--color-primary);
+      stroke: var(--color-surface);
+      stroke-width: 1;
+    }
+    .label {
+      font-size: 9px;
+      fill: var(--color-text);
+    }
   `;
 
   /** @type {IGeoMap|null} */
@@ -110,6 +140,8 @@ export class UiGeoMap extends LitElement {
   render() {
     const width = this.#ic?.width ?? DEFAULT_WIDTH;
     const height = this.#ic?.height ?? DEFAULT_HEIGHT;
+    const points = this.#ic?.points ?? [];
+    const edges = this.#ic?.edges ?? [];
 
     return html`
       <svg viewBox="0 0 ${width} ${height}">
@@ -118,6 +150,31 @@ export class UiGeoMap extends LitElement {
           fill-rule="evenodd"
           d=${buildLandPath(width, height)}
         ></path>
+        ${edges.map((edge) => {
+          const [x1, y1] = project(
+            [edge.from.lon, edge.from.lat],
+            width,
+            height,
+          );
+          const [x2, y2] = project([edge.to.lon, edge.to.lat], width, height);
+          return svg`
+            <line
+              class="edge"
+              x1=${x1}
+              y1=${y1}
+              x2=${x2}
+              y2=${y2}
+              stroke=${edge.color ?? "var(--color-border)"}
+            ></line>
+          `;
+        })}
+        ${points.map((point) => {
+          const [x, y] = project([point.lon, point.lat], width, height);
+          return svg`
+            <circle class="point" cx=${x} cy=${y} r="3"></circle>
+            <text class="label" x=${x + 5} y=${y + 3}>${point.label}</text>
+          `;
+        })}
       </svg>
     `;
   }

@@ -6,12 +6,14 @@ import "../mesh/mesh.wc.js";
 /**
  * @typedef {import("@websense/ui/src/tabs/tabs.wc.js").ITabs} ITabs
  * @typedef {import("../mesh/mesh.wc.js").IWsMesh} IWsMesh
+ * @typedef {import("@websense/ui/src/geo-map/geo-map.wc.js").IGeoMap} IGeoMap
  */
 
 /**
  * @typedef {object} IDashboard
  * @property {ITabs} tabs
  * @property {IWsMesh} mesh
+ * @property {IGeoMap} geoMap
  */
 
 class WsDashboard extends LitElement {
@@ -48,7 +50,7 @@ class WsDashboard extends LitElement {
         <h1>WebSense</h1>
         <ui-tabs .ic=${ic.tabs}></ui-tabs>
         ${activeTab === "table" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}
-        ${activeTab === "map" ? html`<ui-geo-map></ui-geo-map>` : ""}
+        ${activeTab === "map" ? html`<ui-geo-map .ic=${ic.geoMap}></ui-geo-map>` : ""}
       </div>
     `;
   }
