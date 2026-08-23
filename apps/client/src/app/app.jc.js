@@ -1,7 +1,5 @@
-import { capitalize } from "@websense/util";
 import { Dashboard } from "../dashboard/dashboard.jc.js";
 import { WsAppView } from "./app.wc.js";
-import { Counter } from "./counter.jc.js";
 
 /**
  * @typedef {import("./app.wc.js").IAppView} IAppView
@@ -10,18 +8,10 @@ import { Counter } from "./counter.jc.js";
 class App {
   /** @type {WsAppView} */
   #view = new WsAppView();
-  /** @type {string} */
-  #status = "checking...";
   /** @type {number|null} */
   #renderTimer = null;
-  /** @type {Counter} */
-  #counter = new Counter(() => this.#render());
   /** @type {Dashboard} */
   #dashboard = new Dashboard(() => this.#render());
-
-  async init() {
-    await this.#checkHealth();
-  }
 
   /** @returns {HTMLElement} */
   get_element() {
@@ -32,23 +22,9 @@ class App {
     this.#do_render();
   }
 
-  async #checkHealth() {
-    try {
-      const response = await fetch("/api/health");
-      const data = await response.json();
-      this.#status = data.status;
-    } catch {
-      this.#status = "unreachable";
-    }
-    this.#render();
-  }
-
   /** @returns {IAppView} */
   #getIAppView() {
     return {
-      status: capitalize(this.#status),
-      onRefresh: () => this.#checkHealth(),
-      counter: this.#counter.getICounter(),
       dashboard: this.#dashboard.getIDashboard(),
     };
   }
@@ -71,11 +47,10 @@ class App {
 
 /**
  * @param {HTMLElement} root
- * @returns {Promise<App>}
+ * @returns {App}
  */
-async function init_app(root) {
+function init_app(root) {
   const app = new App();
-  await app.init();
   const el = app.get_element();
   root.appendChild(el);
   app.render();
