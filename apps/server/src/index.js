@@ -38,8 +38,106 @@ async function handleMeasurements(url, res) {
   res.end(JSON.stringify(rows));
 }
 
+/**
+ * @param {import("node:http").IncomingMessage} req
+ * @returns {Promise<unknown>}
+ */
+async function readJsonBody(req) {
+  const chunks = [];
+  for await (const chunk of req) {
+    chunks.push(chunk);
+  }
+  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+}
+
+/**
+ * @param {import("node:http").ServerResponse} res
+ */
+async function handleListCities(res) {
+  const { rows } = await query(
+    `SELECT
+       id,
+       name,
+       country,
+       lat,
+       lon,
+       probe_id AS "probeId",
+       measurement_id AS "measurementId"
+     FROM cities
+     ORDER BY name ASC`,
+  );
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(rows));
+}
+
+/**
+ * @param {import("node:http").IncomingMessage} req
+ * @param {import("node:http").ServerResponse} res
+ */
+async function handleCreateCity(req, res) {
+  const body = /** @type {Record<string, unknown>} */ (await readJsonBody(req));
+  const name = body.name;
+  const country = body.country;
+  const lat = Number(body.lat);
+  const lon = Number(body.lon);
+  const probeId = Number(body.probeId);
+  const measurementId = Number(body.measurementId);
+
+  if (
+    typeof name !== "string" ||
+    typeof country !== "string" ||
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    !Number.isInteger(probeId) ||
+    !Number.isInteger(measurementId)
+  ) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        error:
+          "Expected { name: string, country: string, lat: number, lon: number, probeId: integer, measurementId: integer }",
+      }),
+    );
+    return;
+  }
+
+  const { rows } = await query(
+    `INSERT INTO cities (name, country, lat, lon, probe_id, measurement_id)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING
+       id,
+       name,
+       country,
+       lat,
+       lon,
+       probe_id AS "probeId",
+       measurement_id AS "measurementId"`,
+    [name, country, lat, lon, probeId, measurementId],
+  );
+
+  res.writeHead(201, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(rows[0]));
+}
+
+/**
+ * @param {number} id
+ * @param {import("node:http").ServerResponse} res
+ */
+async function handleDeleteCity(id, res) {
+  await query("DELETE FROM cities WHERE id = $1", [id]);
+  res.writeHead(204);
+  res.end();
+}
+
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? "/", `http://${req.headers.host}`);
+
+  const onError = (/** @type {unknown} */ error) => {
+    console.error(error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Internal server error" }));
+  };
 
   if (url.pathname === "/api/health") {
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -48,11 +146,23 @@ const server = createServer((req, res) => {
   }
 
   if (url.pathname === "/api/measurements") {
-    handleMeasurements(url, res).catch((error) => {
-      console.error(error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Internal server error" }));
-    });
+    handleMeasurements(url, res).catch(onError);
+    return;
+  }
+
+  if (url.pathname === "/api/cities" && req.method === "GET") {
+    handleListCities(res).catch(onError);
+    return;
+  }
+
+  if (url.pathname === "/api/cities" && req.method === "POST") {
+    handleCreateCity(req, res).catch(onError);
+    return;
+  }
+
+  const cityIdMatch = url.pathname.match(/^\/api\/cities\/(\d+)$/);
+  if (cityIdMatch && req.method === "DELETE") {
+    handleDeleteCity(Number(cityIdMatch[1]), res).catch(onError);
     return;
   }
 
