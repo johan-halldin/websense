@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { query } from "@websense/db";
+import { query, runIngestCycle } from "@websense/db";
 import { clamp } from "@websense/util";
 
 const PORT = clamp(Number(process.env.PORT) || 3001, 0, 65535);
@@ -23,6 +23,16 @@ async function handleMesh(res) {
 
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(JSON.stringify(rows));
+}
+
+/**
+ * @param {import("node:http").ServerResponse} res
+ */
+async function handleIngest(res) {
+  const totalRows = await runIngestCycle();
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ totalRows }));
 }
 
 /**
@@ -134,6 +144,11 @@ const server = createServer((req, res) => {
 
   if (url.pathname === "/api/mesh") {
     handleMesh(res).catch(onError);
+    return;
+  }
+
+  if (url.pathname === "/api/ingest" && req.method === "POST") {
+    handleIngest(res).catch(onError);
     return;
   }
 

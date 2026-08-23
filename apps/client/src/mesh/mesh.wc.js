@@ -12,6 +12,7 @@ import "@websense/ui/src/button/button.wc.js";
  * @property {string|null} error
  * @property {IMeshRow[]} rows
  * @property {IButton} refreshButton
+ * @property {IButton} ingestButton
  */
 
 class WsMesh extends LitElement {
@@ -54,6 +55,7 @@ class WsMesh extends LitElement {
       <header>
         <h2>Mesh</h2>
         <ui-button .ic=${ic.refreshButton}></ui-button>
+        <ui-button .ic=${ic.ingestButton}></ui-button>
       </header>
     `;
 

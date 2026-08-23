@@ -1,4 +1,4 @@
-import { query } from "@websense/db";
+import { pool } from "./pool.js";
 import { normalizeResults } from "./normalize.js";
 import { fetchResults } from "./ripe-atlas.js";
 
@@ -20,7 +20,7 @@ import { fetchResults } from "./ripe-atlas.js";
  */
 async function runIngestCycle() {
   const { rows: cities } = /** @type {{rows: ICity[]}} */ (
-    await query(
+    await pool.query(
       `SELECT id, name, probe_id AS "probeId", measurement_id AS "measurementId" FROM cities`,
     )
   );
@@ -41,7 +41,7 @@ async function runIngestCycle() {
     const rows = normalizeResults(rawResults);
 
     for (const row of rows) {
-      await query(
+      await pool.query(
         `INSERT INTO ping_results
            (time, probe_id, measurement_id, dst_addr, dst_name, rtt_avg_ms, rtt_min_ms, rtt_max_ms, packet_loss_pct)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)

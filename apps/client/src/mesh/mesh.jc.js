@@ -17,6 +17,8 @@ class Mesh {
   #on_change;
   /** @type {boolean} */
   #loading = true;
+  /** @type {boolean} */
+  #ingesting = false;
   /** @type {string|null} */
   #error = null;
   /** @type {IMeshRow[]} */
@@ -29,12 +31,15 @@ class Mesh {
   }
 
   async #fetch() {
+    this.#loading = true;
+    this.#on_change();
     try {
       const response = await fetch("/api/mesh");
       if (!response.ok) {
         throw new Error(`Request failed: ${response.status}`);
       }
       this.#rows = await response.json();
+      this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
     } finally {
@@ -43,17 +48,38 @@ class Mesh {
     }
   }
 
+  async #ingest() {
+    this.#ingesting = true;
+    this.#on_change();
+    try {
+      const response = await fetch("/api/ingest", { method: "POST" });
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+    } catch (error) {
+      this.#error = error instanceof Error ? error.message : String(error);
+    } finally {
+      this.#ingesting = false;
+    }
+    await this.#fetch();
+  }
+
   /** @returns {IWsMesh} */
   getIWsMesh() {
+    const busy = this.#loading || this.#ingesting;
+
     /** @type {IButton} */
     const refreshButton = {
       label: "Refresh",
       icon: "refresh-cw",
-      onClick: () => {
-        this.#loading = true;
-        this.#on_change();
-        this.#fetch();
-      },
+      ...(busy ? {} : { onClick: () => this.#fetch() }),
+    };
+
+    /** @type {IButton} */
+    const ingestButton = {
+      label: this.#ingesting ? "Ingesting..." : "Ingest now",
+      icon: "download",
+      ...(busy ? {} : { onClick: () => this.#ingest() }),
     };
 
     return {
@@ -61,6 +87,7 @@ class Mesh {
       error: this.#error,
       rows: this.#rows,
       refreshButton,
+      ingestButton,
     };
   }
 }

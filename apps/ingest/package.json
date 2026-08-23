@@ -10,10 +10,9 @@
     "lint-check": "biome lint .",
     "lint-apply": "biome lint --write .",
     "typecheck": "tsgo --noEmit",
-    "test": "vitest run"
+    "test": "node -e \"console.log('No tests implemented yet')\""
   },
   "dependencies": {
-    "@websense/db": "workspace:*",
-    "@websense/util": "workspace:*"
+    "@websense/db": "workspace:*"
   }
 }

@@ -1,4 +1,4 @@
-import { runIngestCycle } from "./run.js";
+import { runIngestCycle } from "@websense/db";
 
 /**
  * @param {number} ms

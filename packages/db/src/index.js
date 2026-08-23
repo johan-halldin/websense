@@ -10,3 +10,4 @@ function query(text, params) {
 }
 
 export { query };
+export { runIngestCycle } from "./run.js";

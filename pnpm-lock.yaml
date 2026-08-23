@@ -51,9 +51,6 @@ importers:
       '@websense/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@websense/util':
-        specifier: workspace:*
-        version: link:../../packages/util
 
   apps/server:
     dependencies:
