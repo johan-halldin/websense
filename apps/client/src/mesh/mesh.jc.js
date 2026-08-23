@@ -1,5 +1,6 @@
 /**
  * @typedef {import("./mesh.wc.js").IWsMesh} IWsMesh
+ * @typedef {import("@websense/ui/src/button/button.wc.js").IButton} IButton
  */
 
 /**
@@ -44,10 +45,22 @@ class Mesh {
 
   /** @returns {IWsMesh} */
   getIWsMesh() {
+    /** @type {IButton} */
+    const refreshButton = {
+      label: "Refresh",
+      icon: "refresh-cw",
+      onClick: () => {
+        this.#loading = true;
+        this.#on_change();
+        this.#fetch();
+      },
+    };
+
     return {
       loading: this.#loading,
       error: this.#error,
       rows: this.#rows,
+      refreshButton,
     };
   }
 }

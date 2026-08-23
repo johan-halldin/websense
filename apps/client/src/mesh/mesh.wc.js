@@ -1,7 +1,9 @@
 import { css, html, LitElement } from "lit";
+import "@websense/ui/src/button/button.wc.js";
 
 /**
  * @typedef {import("./mesh.jc.js").IMeshRow} IMeshRow
+ * @typedef {import("@websense/ui/src/button/button.wc.js").IButton} IButton
  */
 
 /**
@@ -9,11 +11,17 @@ import { css, html, LitElement } from "lit";
  * @property {boolean} loading
  * @property {string|null} error
  * @property {IMeshRow[]} rows
+ * @property {IButton} refreshButton
  */
 
 class WsMesh extends LitElement {
   /** @override */
   static styles = css`
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
     table {
       border-collapse: collapse;
       width: 100%;
@@ -42,20 +50,30 @@ class WsMesh extends LitElement {
       return "";
     }
 
+    const header = html`
+      <header>
+        <h2>Mesh</h2>
+        <ui-button .ic=${ic.refreshButton}></ui-button>
+      </header>
+    `;
+
     if (ic.loading) {
-      return html`<p>Loading mesh data...</p>`;
+      return html`${header}
+        <p>Loading mesh data...</p>`;
     }
 
     if (ic.error !== null) {
-      return html`<p>Failed to load mesh data: ${ic.error}</p>`;
+      return html`${header}
+        <p>Failed to load mesh data: ${ic.error}</p>`;
     }
 
     if (ic.rows.length === 0) {
-      return html`<p>No mesh data yet.</p>`;
+      return html`${header}
+        <p>No mesh data yet.</p>`;
     }
 
     return html`
-      <h2>Mesh</h2>
+      ${header}
       <table>
         <thead>
           <tr>
