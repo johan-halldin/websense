@@ -12,6 +12,7 @@ import "../popover/popover.wc.js";
  * @property {string} label
  * @property {string} [tooltip]
  * @property {IconName} [icon]
+ * @property {string[]} [shortcutKeys]
  * @property {() => void} [onSelect]
  */
 
@@ -129,6 +130,20 @@ class UiSelectActions extends LitElement {
       .nested-trigger .chevron {
         margin-left: auto;
       }
+      .shortcut-keys {
+        display: flex;
+        gap: 4px;
+        margin-left: auto;
+      }
+      .shortcut-key {
+        padding: 1px 4px;
+        font-size: 11px;
+        color: var(--color-text-muted);
+        opacity: 0.6;
+        background-color: var(--color-white);
+        border: 1px solid var(--color-border);
+        border-radius: 2px;
+      }
     `,
   ];
 
@@ -244,6 +259,15 @@ class UiSelectActions extends LitElement {
             : ""
         }
         ${action.label}
+        ${
+          action.shortcutKeys !== undefined
+            ? html`<span class="shortcut-keys">
+                ${action.shortcutKeys.map(
+                  (key) => html`<span class="shortcut-key">${key}</span>`,
+                )}
+              </span>`
+            : ""
+        }
       </li>
     `;
   }
