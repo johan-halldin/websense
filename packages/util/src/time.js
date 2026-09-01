@@ -4,7 +4,7 @@
  * @param {Date} date
  * @returns {string}
  */
-export function formatTime(date) {
+function formatTime(date) {
   return date.toLocaleTimeString();
 }
 
@@ -17,7 +17,7 @@ export function formatTime(date) {
  *   keep this pure/testable.
  * @returns {string}
  */
-export function formatRelativeTime(date, now = new Date()) {
+function formatRelativeTime(date, now = new Date()) {
   const seconds = Math.max(
     0,
     Math.round((now.getTime() - date.getTime()) / 1000),
@@ -43,3 +43,5 @@ export function formatRelativeTime(date, now = new Date()) {
   const days = Math.round(hours / 24);
   return `${days}d ago`;
 }
+
+export { formatTime, formatRelativeTime };

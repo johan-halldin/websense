@@ -99,7 +99,7 @@ function buildLandPath(width, height) {
     .join(" ");
 }
 
-export class UiGeoMap extends LitElement {
+class UiGeoMap extends LitElement {
   /** @override */
   static styles = css`
     :host {
@@ -184,3 +184,5 @@ export class UiGeoMap extends LitElement {
 }
 
 customElements.define("ui-geo-map", UiGeoMap);
+
+export { UiGeoMap };

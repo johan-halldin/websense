@@ -12,7 +12,7 @@ import { css, html, LitElement } from "lit";
  * @property {(value: string) => void} [onInput]
  */
 
-export class UiTextArea extends LitElement {
+class UiTextArea extends LitElement {
   /** @override */
   static styles = css`
     label {
@@ -91,3 +91,5 @@ export class UiTextArea extends LitElement {
 }
 
 customElements.define("ui-text-area", UiTextArea);
+
+export { UiTextArea };

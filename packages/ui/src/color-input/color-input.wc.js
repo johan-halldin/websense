@@ -13,7 +13,7 @@ import "../button/button.wc.js";
  * @property {(value: string|null) => void} [onInput]
  */
 
-export class UiColorInput extends LitElement {
+class UiColorInput extends LitElement {
   /** @override */
   static styles = css`
     label {
@@ -128,3 +128,5 @@ export class UiColorInput extends LitElement {
 }
 
 customElements.define("ui-color-input", UiColorInput);
+
+export { UiColorInput };

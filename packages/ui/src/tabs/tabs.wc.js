@@ -18,7 +18,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
  * @property {(value: string) => void} [onChange]
  */
 
-export class UiTabs extends LitElement {
+class UiTabs extends LitElement {
   /** @override */
   static styles = [
     iconBaseStyle,
@@ -105,3 +105,5 @@ export class UiTabs extends LitElement {
 }
 
 customElements.define("ui-tabs", UiTabs);
+
+export { UiTabs };

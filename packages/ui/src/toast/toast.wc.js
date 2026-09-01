@@ -19,7 +19,7 @@ const DEFAULT_ICON = {
  * @property {() => void} [onDismiss]
  */
 
-export class UiToast extends LitElement {
+class UiToast extends LitElement {
   /** @override */
   static styles = [
     iconBaseStyle,
@@ -85,3 +85,5 @@ export class UiToast extends LitElement {
 }
 
 customElements.define("ui-toast", UiToast);
+
+export { UiToast };

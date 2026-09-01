@@ -11,7 +11,7 @@ import { css, html, LitElement } from "lit";
  * @property {(value: string) => void} [onInput]
  */
 
-export class UiStringInput extends LitElement {
+class UiStringInput extends LitElement {
   /** @override */
   static styles = css`
     label {
@@ -87,3 +87,5 @@ export class UiStringInput extends LitElement {
 }
 
 customElements.define("ui-string-input", UiStringInput);
+
+export { UiStringInput };

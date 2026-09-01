@@ -24,7 +24,7 @@ import "../popover/popover.wc.js";
  * selection vs. toggle membership in it), which is state-owning logic that
  * lives outside this component. See AGENTS.md.
  */
-export class UiSelect extends LitElement {
+class UiSelect extends LitElement {
   /** @override */
   static styles = [
     iconBaseStyle,
@@ -160,3 +160,5 @@ function getTriggerLabel(ic) {
 }
 
 customElements.define("ui-select", UiSelect);
+
+export { UiSelect };

@@ -16,7 +16,7 @@ import { ifDefined } from "lit/directives/if-defined.js";
  * @property {(value: number|null) => void} [onInput]
  */
 
-export class UiNumberInput extends LitElement {
+class UiNumberInput extends LitElement {
   /** @override */
   static styles = css`
     label {
@@ -99,3 +99,5 @@ export class UiNumberInput extends LitElement {
 }
 
 customElements.define("ui-number-input", UiNumberInput);
+
+export { UiNumberInput };

@@ -46,7 +46,7 @@ import "../popover/popover.wc.js";
  * @property {SelectActionGroup[]} groups
  */
 
-export class UiSelectActions extends LitElement {
+class UiSelectActions extends LitElement {
   /** @override */
   static styles = [
     iconBaseStyle,
@@ -258,3 +258,5 @@ export class UiSelectActions extends LitElement {
 }
 
 customElements.define("ui-select-actions", UiSelectActions);
+
+export { UiSelectActions };

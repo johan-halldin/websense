@@ -24,6 +24,15 @@ JavaScript (with JSDoc for types), Lit, Web Components, HTML, CSS.
 Import types at the top of the file with `@import`, never inline
 `import("./x.js").Foo` at the point of use:
 
+#### Exports
+
+Never export at the point of definition (`export class Foo`, `export const
+x = ...`). Define everything unexported and collect all of a file's exports
+in one `export { ... };` block at the very end, so every export a file
+provides can be found in one place. A barrel file re-exporting from other
+modules (`export * from "./x.js"`, `export { x } from "./x.js"`) already is
+that block, so it doesn't need further wrapping.
+
 #### Component pattern
 
 - `*.wc.js` — a web component (`LitElement`). Purely presentational: its only
