@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ui-slider example</title>
+    <link rel="stylesheet" href="../tokens.css" />
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        font-family: sans-serif;
+      }
+      .group {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 240px;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "@lit/reactive-element": "../../node_modules/@lit/reactive-element/reactive-element.js",
+          "lit": "../../node_modules/lit/index.js",
+          "lit/": "../../node_modules/lit/",
+          "lit-element": "../../node_modules/lit-element/index.js",
+          "lit-element/": "../../node_modules/lit-element/",
+          "lit-html": "../../node_modules/lit-html/lit-html.js",
+          "lit-html/": "../../node_modules/lit-html/"
+        }
+      }
+    </script>
+    <script type="module">
+      import { init_example_slider } from "./slider.example.js";
+
+      init_example_slider(document.getElementById("default-root"));
+    </script>
+  </head>
+  <body>
+    <div>
+      <h3>Default theme (tokens.css)</h3>
+      <div id="default-root" class="group"></div>
+    </div>
+  </body>
+</html>
