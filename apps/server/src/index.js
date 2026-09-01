@@ -123,8 +123,7 @@ async function handleCityPair(searchParams, res) {
      JOIN cities src ON src.probe_id = ping_results.probe_id AND src.id = $1
      JOIN cities dst
        ON dst.measurement_id = ping_results.measurement_id AND dst.id = $2
-     ORDER BY ping_results.time DESC
-     LIMIT 100`,
+     ORDER BY ping_results.time DESC`,
     [srcId, dstId],
   );
 

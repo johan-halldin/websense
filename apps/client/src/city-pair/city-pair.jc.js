@@ -1,4 +1,7 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
+import { show_toast } from "@websense/ui/src/toast/toast.js";
+import { formatTime } from "@websense/util";
+import { subscribeToPingResultsUpdates } from "../ping-results-events.js";
 
 /** @import { ICityPair } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
@@ -34,6 +37,29 @@ class JcCityPair {
   constructor(on_change) {
     this.#on_change = on_change;
     this.#fetchCities();
+    this.#subscribeToUpdates();
+  }
+
+  /** Silently re-fetches (no blocking spinner) whenever the server pushes a
+   * notification that new ping results landed - only if a pair is already
+   * being viewed, so this never overrides the "Fetch measurements" button's
+   * manual-trigger intent by starting a fetch nobody asked for. */
+  #subscribeToUpdates() {
+    subscribeToPingResultsUpdates(() => {
+      if (
+        this.#srcId === null ||
+        this.#dstId === null ||
+        this.#rows.length === 0
+      ) {
+        return;
+      }
+      this.#doFetchMeasurements().then(() => {
+        this.#on_change();
+        show_toast(`Page updated at ${formatTime(new Date())}`, {
+          level: "info",
+        });
+      });
+    });
   }
 
   async #fetchCities() {

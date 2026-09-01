@@ -1,6 +1,7 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { formatTime } from "@websense/util";
+import { subscribeToPingResultsUpdates } from "../ping-results-events.js";
 import {
   isRttDeviationNotable,
   rttColor,
@@ -45,15 +46,14 @@ class JcMesh {
    * a notification that new ping results landed - e.g. from the scheduled
    * background ingestion, not just this tab's own actions. */
   #subscribeToUpdates() {
-    const source = new EventSource("/api/events");
-    source.onmessage = () => {
+    subscribeToPingResultsUpdates(() => {
       this.#doFetch().then(() => {
         this.#on_change();
         show_toast(`Page updated at ${formatTime(new Date())}`, {
           level: "info",
         });
       });
-    };
+    });
   }
 
   async #fetch() {
