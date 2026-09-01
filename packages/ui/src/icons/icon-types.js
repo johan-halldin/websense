@@ -35,6 +35,7 @@
  * |"lock-open"
  * |"mail"
  * |"menu"
+ * |"mesh"
  * |"minus"
  * |"paperclip"
  * |"pencil"
@@ -50,6 +51,7 @@
  * |"upload"
  * |"user"
  * |"users"
+ * |"world-map"
  * |"x"
  * } IconName
  */

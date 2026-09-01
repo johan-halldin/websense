@@ -55,7 +55,7 @@ class WsDashboard extends LitElement {
           <ui-button .ic=${ic.ingestButton}></ui-button>
         </div>
         <ui-tabs .ic=${ic.tabs}></ui-tabs>
-        ${activeTab === "table" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}
+        ${activeTab === "mesh" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}
         ${
           isMapTab
             ? html`<ui-geo-map class="ui-flex-1" .ic=${ic.geoMap}></ui-geo-map>`

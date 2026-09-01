@@ -14,7 +14,7 @@ class JcDashboard {
   /** @type {JcCityPair} */
   #cityPair;
   /** @type {string} */
-  #activeTab = "table";
+  #activeTab = "mesh";
 
   /** @param {() => void} on_change */
   constructor(on_change) {
@@ -56,8 +56,8 @@ class JcDashboard {
       tabs: {
         value: this.#activeTab,
         options: [
-          { value: "table", label: "Table", icon: "list-filter" },
-          { value: "map", label: "Map", icon: "image" },
+          { value: "mesh", label: "Mesh", icon: "mesh" },
+          { value: "map", label: "Map", icon: "world-map" },
           { value: "city-pair", label: "City Pair", icon: "link" },
         ],
         onChange: (value) => {
