@@ -50,6 +50,7 @@ function async_confirm(options) {
     const confirmButton = new UiButton();
     confirmButton.ic = {
       label: options.confirmLabel ?? "OK",
+      variant: "primary",
       onClick: () => {
         confirmed = true;
         modal.close();

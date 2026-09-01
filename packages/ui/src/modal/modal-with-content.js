@@ -5,25 +5,30 @@ import { UiModal } from "./modal.wc.js";
  * @template TIc
  * @typedef {object} ModalContentRender
  * @property {TIc} ic
- * @property {boolean} canConfirm
+ * @property {boolean} [canConfirm]
  */
 
 /**
- * @typedef {object} AsyncModalOptions
- * @property {string} [title]
- * @property {string} [description]
- * @property {string} [confirmLabel]
- * @property {string} [cancelLabel]
+ * @typedef {import("./confirm.js").ConfirmOptions & {mode?: "confirm"}} AsyncConfirmModalOptions
+ */
+
+/**
+ * @typedef {import("./alert.js").AlertOptions & {mode: "alert"}} AsyncAlertModalOptions
+ */
+
+/**
+ * @typedef {AsyncConfirmModalOptions|AsyncAlertModalOptions} AsyncModalOptions
  */
 
 /**
  * Embeds an arbitrary ic-driven web component as a modal's content, with
  * live re-render exactly like a `jc` drives a `wc` elsewhere in this
  * codebase: `makeIc(on_change)` runs once up front and again every time
- * `on_change()` fires, each time producing the content's `ic` and whether
- * confirming is currently allowed (e.g. a form isn't valid yet). The confirm
- * button follows the same on*-absence-means-disabled convention as every
- * other component here, rather than a separate enable/disable callback.
+ * `on_change()` fires, each time producing the content's `ic` and, in confirm
+ * mode, whether confirming is currently allowed (e.g. a form isn't valid
+ * yet). Alert mode renders one close button instead. The confirm button
+ * follows the same on*-absence-means-disabled convention as every other
+ * component here, rather than a separate enable/disable callback.
  *
  * @template TIc
  * @param {HTMLElement & {ic: TIc}} element
@@ -34,6 +39,7 @@ import { UiModal } from "./modal.wc.js";
 function async_modal_with_content(element, makeIc, options = {}) {
   return new Promise((resolve) => {
     const modal = new UiModal();
+    const mode = options.mode ?? "confirm";
     let confirmed = false;
 
     if (options.title !== undefined) {
@@ -54,30 +60,52 @@ function async_modal_with_content(element, makeIc, options = {}) {
 
     const buttonRow = document.createElement("div");
     buttonRow.className = "ui-row ui-gap-sm ui-justify-end";
-    const cancelButton = new UiButton();
-    const confirmButton = new UiButton();
-    buttonRow.appendChild(cancelButton);
-    buttonRow.appendChild(confirmButton);
+    const cancelButton = mode === "confirm" ? new UiButton() : undefined;
+    const confirmButton = mode === "confirm" ? new UiButton() : undefined;
+    const closeButton = mode === "alert" ? new UiButton() : undefined;
+    if (cancelButton !== undefined) {
+      buttonRow.appendChild(cancelButton);
+    }
+    if (confirmButton !== undefined) {
+      buttonRow.appendChild(confirmButton);
+    }
+    if (closeButton !== undefined) {
+      buttonRow.appendChild(closeButton);
+    }
     modal.appendChild(buttonRow);
 
     function render() {
       const { ic, canConfirm } = makeIc(render);
       element.ic = ic;
-      cancelButton.ic = {
-        label: options.cancelLabel ?? "Cancel",
-        onClick: () => modal.close(),
-      };
-      confirmButton.ic = {
-        label: options.confirmLabel ?? "OK",
-        ...(canConfirm
-          ? {
-              onClick: () => {
-                confirmed = true;
-                modal.close();
-              },
-            }
-          : {}),
-      };
+      if (
+        options.mode !== "alert" &&
+        cancelButton !== undefined &&
+        confirmButton !== undefined
+      ) {
+        cancelButton.ic = {
+          label: options.cancelLabel ?? "Cancel",
+          onClick: () => modal.close(),
+        };
+        confirmButton.ic = {
+          label: options.confirmLabel ?? "OK",
+          variant: "primary",
+          ...(canConfirm === true
+            ? {
+                onClick: () => {
+                  confirmed = true;
+                  modal.close();
+                },
+              }
+            : {}),
+        };
+      }
+      if (options.mode === "alert" && closeButton !== undefined) {
+        closeButton.ic = {
+          label: options.closeLabel ?? "OK",
+          variant: "primary",
+          onClick: () => modal.close(),
+        };
+      }
     }
     render();
 

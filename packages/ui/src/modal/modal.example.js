@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { UiButton } from "../button/button.wc.js";
+import { async_alert } from "./alert.js";
 import { async_confirm } from "./confirm.js";
 import { async_modal_with_content } from "./modal-with-content.js";
 import { UiModal } from "./modal.wc.js";
@@ -92,6 +93,17 @@ function init_example_modal(root) {
     },
   };
   root.appendChild(confirmButton);
+
+  const alertButton = new UiButton();
+  alertButton.ic = {
+    label: "Open alert dialog",
+    onClick: () =>
+      async_alert({
+        title: "Something happened",
+        description: "This alert has one acknowledgement action.",
+      }),
+  };
+  root.appendChild(alertButton);
 
   const promptButton = new UiButton();
   promptButton.ic = {
