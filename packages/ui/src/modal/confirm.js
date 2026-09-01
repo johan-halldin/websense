@@ -39,6 +39,7 @@ function async_confirm(options) {
 
     const buttonRow = document.createElement("div");
     buttonRow.className = "ui-row ui-gap-sm ui-justify-end";
+    buttonRow.style.marginTop = "var(--space-sm)";
 
     const cancelButton = new UiButton();
     cancelButton.ic = {

@@ -60,6 +60,7 @@ function async_modal_with_content(element, makeIc, options = {}) {
 
     const buttonRow = document.createElement("div");
     buttonRow.className = "ui-row ui-gap-sm ui-justify-end";
+    buttonRow.style.marginTop = "var(--space-sm)";
     const cancelButton = mode === "confirm" ? new UiButton() : undefined;
     const confirmButton = mode === "confirm" ? new UiButton() : undefined;
     const closeButton = mode === "alert" ? new UiButton() : undefined;

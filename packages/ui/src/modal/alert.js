@@ -34,6 +34,7 @@ function async_alert(options) {
 
     const buttonRow = document.createElement("div");
     buttonRow.className = "ui-row ui-gap-sm ui-justify-end";
+    buttonRow.style.marginTop = "var(--space-sm)";
 
     const closeButton = new UiButton();
     closeButton.ic = {
