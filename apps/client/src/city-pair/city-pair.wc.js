@@ -1,10 +1,12 @@
 import { css, html, LitElement } from "lit";
 import "@websense/ui/src/button/button.wc.js";
+import "@websense/ui/src/line-chart/line-chart.wc.js";
 import "@websense/ui/src/select/select.wc.js";
 import { formatTime } from "@websense/util";
 
 /** @import { ISelect } from "@websense/ui/src/select/select.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
+/** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
 /** @import { CityPairMeasurement } from "../fetch/city-pair.js" */
 
 /**
@@ -14,6 +16,7 @@ import { formatTime } from "@websense/util";
  * @property {IButton} fetchButton
  * @property {string|null} error
  * @property {CityPairMeasurement[]} rows
+ * @property {ILineChart} chart
  */
 
 class WsCityPair extends LitElement {
@@ -76,6 +79,7 @@ class WsCityPair extends LitElement {
 
     return html`
       ${selectors}
+      <ui-line-chart .ic=${ic.chart}></ui-line-chart>
       <table>
         <thead>
           <tr>

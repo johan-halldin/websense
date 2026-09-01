@@ -7,6 +7,7 @@ import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 
 /** @import { ICityPair } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
+/** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
 /** @import { City } from "../fetch/cities.js" */
 /** @import { CityPairMeasurement } from "../fetch/city-pair.js" */
 
@@ -114,6 +115,24 @@ class JcCityPair {
       ...(canFetch ? { onClick: () => this.#fetchMeasurements() } : {}),
     };
 
+    /** @type {ILineChart} */
+    const chart = {
+      series: [
+        {
+          label: "RTT (ms)",
+          points: this.#rows
+            .filter((row) => row.rttMs !== null)
+            .map((row) => ({
+              time: row.time,
+              value: /** @type {number} */ (row.rttMs),
+            }))
+            .sort(
+              (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+            ),
+        },
+      ],
+    };
+
     return {
       srcSelect: {
         label: "From",
@@ -138,6 +157,7 @@ class JcCityPair {
       fetchButton,
       error: this.#error,
       rows: this.#rows,
+      chart,
     };
   }
 }
