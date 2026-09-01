@@ -4,12 +4,10 @@ import "@websense/ui/src/tabs/tabs.wc.js";
 import "../city-pair/city-pair.wc.js";
 import "../mesh/mesh.wc.js";
 
-/**
- * @typedef {import("@websense/ui/src/tabs/tabs.wc.js").ITabs} ITabs
- * @typedef {import("../mesh/mesh.wc.js").IWsMesh} IWsMesh
- * @typedef {import("@websense/ui/src/geo-map/geo-map.wc.js").IGeoMap} IGeoMap
- * @typedef {import("../city-pair/city-pair.wc.js").ICityPair} ICityPair
- */
+/** @import { ITabs } from "@websense/ui/src/tabs/tabs.wc.js" */
+/** @import { IWsMesh } from "../mesh/mesh.wc.js" */
+/** @import { IGeoMap } from "@websense/ui/src/geo-map/geo-map.wc.js" */
+/** @import { ICityPair } from "../city-pair/city-pair.wc.js" */
 
 /**
  * @typedef {object} IDashboard

@@ -7,12 +7,9 @@ import {
   rttDeviationPercent,
 } from "./rtt-color.js";
 
-/**
- * @typedef {import("./mesh.wc.js").IWsMesh} IWsMesh
- * @typedef {import("@websense/ui/src/button/button.wc.js").IButton} IButton
- * @typedef {import("@websense/ui/src/geo-map/geo-map.wc.js").IGeoMap} IGeoMap
- * @typedef {import("@websense/ui/src/geo-map/geo-map.wc.js").IGeoPoint} IGeoPoint
- */
+/** @import { IWsMesh } from "./mesh.wc.js" */
+/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
+/** @import { IGeoMap, IGeoPoint } from "@websense/ui/src/geo-map/geo-map.wc.js" */
 
 /**
  * @typedef {object} MeshRow

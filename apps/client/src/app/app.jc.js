@@ -1,9 +1,7 @@
 import { JcDashboard } from "../dashboard/dashboard.jc.js";
 import { WsAppView } from "./app.wc.js";
 
-/**
- * @typedef {import("./app.wc.js").IAppView} IAppView
- */
+/** @import { IAppView } from "./app.wc.js" */
 
 class JcApp {
   /** @type {WsAppView} */

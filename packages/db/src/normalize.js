@@ -1,6 +1,4 @@
-/**
- * @typedef {import("./ripe-atlas.js").RipeAtlasPingResult} RipeAtlasPingResult
- */
+/** @import { RipeAtlasPingResult } from "./ripe-atlas.js" */
 
 /**
  * @typedef {object} PingRow

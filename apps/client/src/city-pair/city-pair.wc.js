@@ -1,14 +1,18 @@
 import { css, html, LitElement } from "lit";
+import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/select/select.wc.js";
 import { formatTime } from "@websense/util";
 
 /** @import { ISelect } from "@websense/ui/src/select/select.wc.js" */
+/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { CityPairMeasurement } from "./city-pair.jc.js" */
 
 /**
  * @typedef {object} ICityPair
  * @property {ISelect} srcSelect
  * @property {ISelect} dstSelect
+ * @property {IButton} fetchButton
+ * @property {string|null} error
  * @property {CityPairMeasurement[]} rows
  */
 
@@ -53,12 +57,21 @@ class WsCityPair extends LitElement {
         <ui-select .ic=${ic.srcSelect}></ui-select>
         <span>→</span>
         <ui-select .ic=${ic.dstSelect}></ui-select>
+        <ui-button .ic=${ic.fetchButton}></ui-button>
       </div>
     `;
 
+    if (ic.error !== null) {
+      return html`${selectors}
+        <p>Failed to load: ${ic.error}</p>`;
+    }
+
     if (ic.rows.length === 0) {
       return html`${selectors}
-        <p>Select two cities to see measurements between them.</p>`;
+        <p>
+          Select two cities and click "Fetch measurements" to see the
+          measurements between them.
+        </p>`;
     }
 
     return html`
@@ -76,8 +89,8 @@ class WsCityPair extends LitElement {
             (row) => html`
               <tr>
                 <td title=${row.time}>${formatTime(new Date(row.time))}</td>
-                <td>${row.rttMs.toFixed(1)}</td>
-                <td>${row.packetLossPct.toFixed(0)}</td>
+                <td>${row.rttMs?.toFixed(1) ?? "—"}</td>
+                <td>${row.packetLossPct?.toFixed(0) ?? "—"}</td>
               </tr>
             `,
           )}

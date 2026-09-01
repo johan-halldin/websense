@@ -8,10 +8,8 @@ import {
   rttDeviationPercent,
 } from "./rtt-color.js";
 
-/**
- * @typedef {import("./mesh.jc.js").MeshRow} MeshRow
- * @typedef {import("@websense/ui/src/button/button.wc.js").IButton} IButton
- */
+/** @import { MeshRow } from "./mesh.jc.js" */
+/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 
 /**
  * @typedef {object} IWsMesh

@@ -1,114 +1,124 @@
+import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
+
 /** @import { ICityPair } from "./city-pair.wc.js" */
+/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 
 /**
  * @typedef {object} City
- * @property {string} id
+ * @property {number} id
  * @property {string} name
  */
-
-/** @type {City[]} */
-const CITIES = [
-  { id: "nyc", name: "New York" },
-  { id: "lon", name: "London" },
-  { id: "tok", name: "Tokyo" },
-  { id: "ber", name: "Berlin" },
-  { id: "syd", name: "Sydney" },
-  { id: "sao", name: "São Paulo" },
-  { id: "sin", name: "Singapore" },
-  { id: "jnb", name: "Johannesburg" },
-];
 
 /**
  * @typedef {object} CityPairMeasurement
  * @property {string} time
- * @property {number} rttMs
- * @property {number} packetLossPct
+ * @property {number|null} rttMs
+ * @property {number|null} packetLossPct
  */
-
-/**
- * A tiny seeded PRNG so a given city pair's fake measurements look stable
- * across re-renders instead of jittering randomly every time.
- *
- * @param {string} seed
- * @returns {() => number}
- */
-function makeRng(seed) {
-  let state = 0;
-  for (const char of seed) {
-    state = (state * 31 + char.charCodeAt(0)) | 0;
-  }
-  return () => {
-    state = (state * 1103515245 + 12345) | 0;
-    return ((state >>> 0) % 1000) / 1000;
-  };
-}
-
-/**
- * @param {string} srcId
- * @param {string} dstId
- * @returns {CityPairMeasurement[]}
- */
-function fakeMeasurements(srcId, dstId) {
-  const rng = makeRng(`${srcId}-${dstId}`);
-  const baseRttMs = 20 + rng() * 180;
-  const count = 12;
-  const now = Date.now();
-
-  return Array.from({ length: count }, (_, i) => {
-    const time = new Date(now - (count - 1 - i) * 5 * 60 * 1000).toISOString();
-    const rttMs = Math.max(1, baseRttMs + (rng() - 0.5) * 20);
-    const packetLossPct = rng() < 0.1 ? Math.round(rng() * 20) : 0;
-    return {
-      time,
-      rttMs: Math.round(rttMs * 10) / 10,
-      packetLossPct,
-    };
-  });
-}
 
 class JcCityPair {
   /** @type {() => void} */
   #on_change;
-  /** @type {string|null} */
+  /** @type {City[]} */
+  #cities = [];
+  /** @type {number|null} */
   #srcId = null;
-  /** @type {string|null} */
+  /** @type {number|null} */
   #dstId = null;
+  /** @type {CityPairMeasurement[]} */
+  #rows = [];
+  /** @type {string|null} */
+  #error = null;
 
   /** @param {() => void} on_change */
   constructor(on_change) {
     this.#on_change = on_change;
+    this.#fetchCities();
+  }
+
+  async #fetchCities() {
+    await with_blocking_spinner(this.#doFetchCities(), "Loading cities...");
+    this.#on_change();
+  }
+
+  async #doFetchCities() {
+    try {
+      const response = await fetch("/api/cities");
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+      this.#cities = await response.json();
+      this.#error = null;
+    } catch (error) {
+      this.#error = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  async #fetchMeasurements() {
+    await with_blocking_spinner(
+      this.#doFetchMeasurements(),
+      "Loading measurements...",
+    );
+    this.#on_change();
+  }
+
+  async #doFetchMeasurements() {
+    const srcId = this.#srcId;
+    const dstId = this.#dstId;
+    if (srcId === null || dstId === null) {
+      return;
+    }
+    try {
+      const response = await fetch(`/api/city-pair?src=${srcId}&dst=${dstId}`);
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+      this.#rows = await response.json();
+      this.#error = null;
+    } catch (error) {
+      this.#error = error instanceof Error ? error.message : String(error);
+    }
   }
 
   /** @returns {ICityPair} */
   getICityPair() {
-    const srcId = this.#srcId;
-    const dstId = this.#dstId;
-    const options = CITIES.map((city) => ({
-      value: city.id,
+    const options = this.#cities.map((city) => ({
+      value: String(city.id),
       label: city.name,
     }));
+    const canFetch = this.#srcId !== null && this.#dstId !== null;
+
+    /** @type {IButton} */
+    const fetchButton = {
+      label: "Fetch measurements",
+      icon: "search",
+      ...(canFetch ? { onClick: () => this.#fetchMeasurements() } : {}),
+    };
 
     return {
       srcSelect: {
         label: "From",
         options,
-        selectedValues: srcId !== null ? [srcId] : [],
+        selectedValues: this.#srcId !== null ? [String(this.#srcId)] : [],
         onSelect: (value) => {
-          this.#srcId = value;
+          this.#srcId = Number(value);
+          this.#rows = [];
           this.#on_change();
         },
       },
       dstSelect: {
         label: "To",
         options,
-        selectedValues: dstId !== null ? [dstId] : [],
+        selectedValues: this.#dstId !== null ? [String(this.#dstId)] : [],
         onSelect: (value) => {
-          this.#dstId = value;
+          this.#dstId = Number(value);
+          this.#rows = [];
           this.#on_change();
         },
       },
-      rows:
-        srcId !== null && dstId !== null ? fakeMeasurements(srcId, dstId) : [],
+      fetchButton,
+      error: this.#error,
+      rows: this.#rows,
     };
   }
 }

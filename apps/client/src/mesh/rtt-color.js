@@ -1,6 +1,4 @@
-/**
- * @typedef {import("./mesh.jc.js").MeshRow} MeshRow
- */
+/** @import { MeshRow } from "./mesh.jc.js" */
 
 /** Deviations smaller than this (in whole percent, post-rounding) are
  * treated as noise - no color shown. Rounding first, then thresholding the

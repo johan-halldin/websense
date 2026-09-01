@@ -15,14 +15,16 @@ than allowing them and guarding against them at runtime.
 
 ## Stack
 
-### Frontend
-
-JavaScript (with JSDoc for types), Lit, Web Components, HTML, CSS.
+Both the frontend and the backend are JavaScript with JSDoc for types (see
+below) - the two conventions right after this apply to _all_ JS in the repo,
+frontend or backend, not just UI components.
 
 #### Importing JSDoc types
 
 Import types at the top of the file with `@import`, never inline
-`import("./x.js").Foo` at the point of use:
+`import("./x.js").Foo` at the point of use - this includes types used only
+once, deep in a function body (e.g. a `@returns` or an inline `@type` cast),
+not just types reused across a file.
 
 #### Exports
 
@@ -32,6 +34,10 @@ in one `export { ... };` block at the very end, so every export a file
 provides can be found in one place. A barrel file re-exporting from other
 modules (`export * from "./x.js"`, `export { x } from "./x.js"`) already is
 that block, so it doesn't need further wrapping.
+
+### Frontend
+
+JavaScript (with JSDoc for types), Lit, Web Components, HTML, CSS.
 
 #### Component pattern
 

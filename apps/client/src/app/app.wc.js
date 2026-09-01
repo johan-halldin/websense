@@ -1,9 +1,7 @@
 import { html, LitElement } from "lit";
 import "../dashboard/dashboard.wc.js";
 
-/**
- * @typedef {import("../dashboard/dashboard.wc.js").IDashboard} IDashboard
- */
+/** @import { IDashboard } from "../dashboard/dashboard.wc.js" */
 
 /**
  * @typedef {object} IAppView

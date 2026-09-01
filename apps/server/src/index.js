@@ -6,13 +6,15 @@ import {
 } from "@websense/db";
 import { clamp } from "@websense/util";
 
+/** @import { IncomingMessage, ServerResponse } from "node:http" */
+
 const PORT = clamp(Number(process.env.PORT) || 3001, 0, 65535);
 
-/** @type {Set<import("node:http").ServerResponse>} */
+/** @type {Set<ServerResponse>} */
 const sseClients = new Set();
 
 /**
- * @param {import("node:http").ServerResponse} res
+ * @param {ServerResponse} res
  */
 function handleEvents(res) {
   res.writeHead(200, {
@@ -44,7 +46,7 @@ listenForPingResultsUpdates(() => {
 });
 
 /**
- * @param {import("node:http").ServerResponse} res
+ * @param {ServerResponse} res
  */
 async function handleMesh(res) {
   const { rows } = await query(
@@ -89,7 +91,7 @@ async function handleMesh(res) {
 }
 
 /**
- * @param {import("node:http").ServerResponse} res
+ * @param {ServerResponse} res
  */
 async function handleIngest(res) {
   const totalRows = await runIngestCycle();
@@ -99,7 +101,39 @@ async function handleIngest(res) {
 }
 
 /**
- * @param {import("node:http").IncomingMessage} req
+ * @param {URLSearchParams} searchParams
+ * @param {ServerResponse} res
+ */
+async function handleCityPair(searchParams, res) {
+  const srcId = Number(searchParams.get("src"));
+  const dstId = Number(searchParams.get("dst"));
+
+  if (!Number.isInteger(srcId) || !Number.isInteger(dstId)) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Expected ?src=<cityId>&dst=<cityId>" }));
+    return;
+  }
+
+  const { rows } = await query(
+    `SELECT
+       ping_results.time,
+       ping_results.rtt_avg_ms AS "rttMs",
+       ping_results.packet_loss_pct AS "packetLossPct"
+     FROM ping_results
+     JOIN cities src ON src.probe_id = ping_results.probe_id AND src.id = $1
+     JOIN cities dst
+       ON dst.measurement_id = ping_results.measurement_id AND dst.id = $2
+     ORDER BY ping_results.time DESC
+     LIMIT 100`,
+    [srcId, dstId],
+  );
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(rows));
+}
+
+/**
+ * @param {IncomingMessage} req
  * @returns {Promise<unknown>}
  */
 async function readJsonBody(req) {
@@ -111,7 +145,7 @@ async function readJsonBody(req) {
 }
 
 /**
- * @param {import("node:http").ServerResponse} res
+ * @param {ServerResponse} res
  */
 async function handleListCities(res) {
   const { rows } = await query(
@@ -132,8 +166,8 @@ async function handleListCities(res) {
 }
 
 /**
- * @param {import("node:http").IncomingMessage} req
- * @param {import("node:http").ServerResponse} res
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
  */
 async function handleCreateCity(req, res) {
   const body = /** @type {Record<string, unknown>} */ (await readJsonBody(req));
@@ -182,7 +216,7 @@ async function handleCreateCity(req, res) {
 
 /**
  * @param {number} id
- * @param {import("node:http").ServerResponse} res
+ * @param {ServerResponse} res
  */
 async function handleDeleteCity(id, res) {
   await query("DELETE FROM cities WHERE id = $1", [id]);
@@ -217,6 +251,11 @@ const server = createServer((req, res) => {
 
   if (url.pathname === "/api/ingest" && req.method === "POST") {
     handleIngest(res).catch(onError);
+    return;
+  }
+
+  if (url.pathname === "/api/city-pair" && req.method === "GET") {
+    handleCityPair(url.searchParams, res).catch(onError);
     return;
   }
 

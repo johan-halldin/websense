@@ -2,9 +2,7 @@ import { pool } from "./pool.js";
 import { normalizeResults } from "./normalize.js";
 import { fetchResults } from "./ripe-atlas.js";
 
-/**
- * @typedef {import("./normalize.js").PingRow} PingRow
- */
+/** @import { PingRow } from "./normalize.js" */
 
 /**
  * @typedef {object} City

@@ -1,9 +1,7 @@
 import { JcCityPair } from "../city-pair/city-pair.jc.js";
 import { JcMesh } from "../mesh/mesh.jc.js";
 
-/**
- * @typedef {import("./dashboard.wc.js").IDashboard} IDashboard
- */
+/** @import { IDashboard } from "./dashboard.wc.js" */
 
 class JcDashboard {
   /** @type {() => void} */

@@ -1,9 +1,11 @@
 import { pool } from "./pool.js";
 
+/** @import { QueryResult } from "pg" */
+
 /**
  * @param {string} text
  * @param {unknown[]} [params]
- * @returns {Promise<import("pg").QueryResult>}
+ * @returns {Promise<QueryResult>}
  */
 function query(text, params) {
   return pool.query(text, params);
