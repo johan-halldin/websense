@@ -1,23 +1,14 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { formatTime } from "@websense/util";
+import { fetchCities } from "../fetch/cities.js";
+import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
 import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 
 /** @import { ICityPair } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
-
-/**
- * @typedef {object} City
- * @property {number} id
- * @property {string} name
- */
-
-/**
- * @typedef {object} CityPairMeasurement
- * @property {string} time
- * @property {number|null} rttMs
- * @property {number|null} packetLossPct
- */
+/** @import { City } from "../fetch/cities.js" */
+/** @import { CityPairMeasurement } from "../fetch/city-pair.js" */
 
 class JcCityPair {
   /** @type {() => void} */
@@ -46,11 +37,7 @@ class JcCityPair {
    * manual-trigger intent by starting a fetch nobody asked for. */
   #subscribeToUpdates() {
     subscribeToPingResultsUpdates(() => {
-      if (
-        this.#srcId === null ||
-        this.#dstId === null ||
-        this.#rows.length === 0
-      ) {
+      if (this.#srcId === null || this.#dstId === null) {
         return;
       }
       this.#doFetchMeasurements().then(() => {
@@ -69,11 +56,13 @@ class JcCityPair {
 
   async #doFetchCities() {
     try {
-      const response = await fetch("/api/cities");
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+      this.#cities = await fetchCities();
+      if (this.#srcId === null) {
+        this.#srcId = this.#cities.at(0)?.id ?? null;
       }
-      this.#cities = await response.json();
+      if (this.#dstId === null) {
+        this.#dstId = this.#cities.at(-1)?.id ?? null;
+      }
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
@@ -95,11 +84,7 @@ class JcCityPair {
       return;
     }
     try {
-      const response = await fetch(`/api/city-pair?src=${srcId}&dst=${dstId}`);
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
-      }
-      this.#rows = await response.json();
+      this.#rows = await fetchCityPairMeasurements(srcId, dstId);
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);

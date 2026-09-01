@@ -5,7 +5,7 @@ import { formatTime } from "@websense/util";
 
 /** @import { ISelect } from "@websense/ui/src/select/select.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
-/** @import { CityPairMeasurement } from "./city-pair.jc.js" */
+/** @import { CityPairMeasurement } from "../fetch/city-pair.js" */
 
 /**
  * @typedef {object} ICityPair
