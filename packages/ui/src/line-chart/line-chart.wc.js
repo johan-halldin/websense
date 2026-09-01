@@ -1,5 +1,6 @@
 import {
   Chart,
+  Legend,
   LinearScale,
   LineController,
   LineElement,
@@ -8,7 +9,29 @@ import {
 } from "chart.js";
 import { css, html, LitElement } from "lit";
 
-Chart.register(LineController, LineElement, PointElement, LinearScale, Tooltip);
+/** @import { ChartDataset } from "chart.js" */
+
+Chart.register(
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Tooltip,
+  Legend,
+);
+
+/** Fixed categorical order, assigned by series position - never cycled or
+ * picked by value. See tokens.css's --color-chart-* comment. */
+const SERIES_COLOR_VARS = [
+  "--color-chart-1",
+  "--color-chart-2",
+  "--color-chart-3",
+  "--color-chart-4",
+  "--color-chart-5",
+  "--color-chart-6",
+  "--color-chart-7",
+  "--color-chart-8",
+];
 
 const tickFormat = new Intl.DateTimeFormat(undefined, {
   hour: "2-digit",
@@ -26,17 +49,29 @@ const tooltipTitleFormat = new Intl.DateTimeFormat(undefined, {
  */
 
 /**
- * @typedef {object} ILineChart
- * @property {string} [label] - series name, shown in the tooltip
+ * @typedef {object} LineChartSeries
+ * @property {string} label - series name, shown in the legend and tooltip
  * @property {LineChartPoint[]} points
  */
 
 /**
- * A minimal single-series time series line chart, backed by Chart.js.
- * Points are plotted by their actual timestamp on a linear x-axis (not one
+ * @typedef {object} ILineChart
+ * @property {LineChartSeries[]} series
+ */
+
+/**
+ * A minimal multi-series time series line chart, backed by Chart.js. Points
+ * are plotted by their actual timestamp on a linear x-axis (not one
  * category slot per point), so unevenly-spaced measurements - a gap from a
  * dropped ingest cycle, say - show up as a genuinely longer stretch of line
  * rather than being silently compressed to look evenly spaced.
+ *
+ * Each series is colored by its position in `series` against a fixed,
+ * colorblind-safe categorical order (tokens.css's --color-chart-*) - never
+ * cycled, never picked by value. A legend appears once there's more than
+ * one series (a single series needs no legend - the surrounding UI names
+ * it); the legend's own text stays in the muted ink token, only the swatch
+ * carries the series color.
  *
  * Unlike every other component here, this one isn't purely declarative:
  * Chart.js owns an imperative `Chart` instance drawn onto a `<canvas>`, so
@@ -87,13 +122,14 @@ class UiLineChart extends LitElement {
       this.#chart = this.#createChart(ic);
       return;
     }
-    this.#chart.data.datasets = [
-      {
-        ...this.#chart.data.datasets[0],
-        data: toChartPoints(ic.points),
-        label: ic.label ?? "",
-      },
-    ];
+    const seriesColors = this.#seriesColors();
+    this.#chart.data.datasets = ic.series.map((series, i) =>
+      toDataset(series, seriesColors[i % seriesColors.length] ?? ""),
+    );
+    const legend = this.#chart.options.plugins?.legend;
+    if (legend !== undefined) {
+      legend.display = ic.series.length >= 2;
+    }
     this.#chart.update();
   }
 
@@ -102,6 +138,12 @@ class UiLineChart extends LitElement {
     super.disconnectedCallback();
     this.#chart?.destroy();
     this.#chart = null;
+  }
+
+  /** @returns {string[]} */
+  #seriesColors() {
+    const style = getComputedStyle(this);
+    return SERIES_COLOR_VARS.map((name) => style.getPropertyValue(name).trim());
   }
 
   /**
@@ -113,30 +155,25 @@ class UiLineChart extends LitElement {
       this.renderRoot.querySelector("canvas")
     );
     const style = getComputedStyle(this);
-    const primaryColor = style.getPropertyValue("--color-primary").trim();
     const mutedColor = style.getPropertyValue("--color-text-muted").trim();
     const borderColor = style.getPropertyValue("--color-border").trim();
+    const seriesColors = this.#seriesColors();
 
     return new Chart(canvas, {
       type: "line",
       data: {
-        datasets: [
-          {
-            label: ic.label ?? "",
-            data: toChartPoints(ic.points),
-            borderColor: primaryColor,
-            borderWidth: 2,
-            borderCapStyle: "round",
-            pointRadius: 0,
-            tension: 0,
-          },
-        ],
+        datasets: ic.series.map((series, i) =>
+          toDataset(series, seriesColors[i % seriesColors.length] ?? ""),
+        ),
       },
       options: {
         maintainAspectRatio: false,
         interaction: { mode: "index", intersect: false },
         plugins: {
-          legend: { display: false },
+          legend: {
+            display: ic.series.length >= 2,
+            labels: { color: mutedColor },
+          },
           tooltip: {
             mode: "index",
             intersect: false,
@@ -167,14 +204,23 @@ class UiLineChart extends LitElement {
 }
 
 /**
- * @param {LineChartPoint[]} points
- * @returns {{x: number, y: number}[]}
+ * @param {LineChartSeries} series
+ * @param {string} color
+ * @returns {ChartDataset<"line", {x: number, y: number}[]>}
  */
-function toChartPoints(points) {
-  return points.map((point) => ({
-    x: new Date(point.time).getTime(),
-    y: point.value,
-  }));
+function toDataset(series, color) {
+  return {
+    label: series.label,
+    data: series.points.map((point) => ({
+      x: new Date(point.time).getTime(),
+      y: point.value,
+    })),
+    borderColor: color,
+    borderWidth: 2,
+    borderCapStyle: "round",
+    pointRadius: 0,
+    tension: 0,
+  };
 }
 
 customElements.define("ui-line-chart", UiLineChart);

@@ -104,6 +104,21 @@
   --color-warning-hover: var(--color-warning-700);
   --color-on-warning: var(--color-white);
 
+  /* Categorical chart series - identity color for "which series", not a
+     status/brand meaning. Fixed hue order, assigned by position (slot 1 for
+     the first series, slot 2 for the second, ...) - never cycled or picked
+     by value. Validated for adjacent-pair colorblind-safety (charts.js's
+     dataviz skill, references/palette.md) - don't reorder or swap values
+     without re-running that validator. */
+  --color-chart-1: #2a78d6;
+  --color-chart-2: #eb6834;
+  --color-chart-3: #1baf7a;
+  --color-chart-4: #eda100;
+  --color-chart-5: #e87ba4;
+  --color-chart-6: #008300;
+  --color-chart-7: #4a3aa7;
+  --color-chart-8: #e34948;
+
   /* Spacing */
   --space-2xs: 2px;
   --space-xs: 4px;
