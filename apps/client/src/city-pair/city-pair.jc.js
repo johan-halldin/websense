@@ -180,7 +180,6 @@ class JcCityPair {
         tooltip: "Remove pair",
         onClick: () => this.#removePair(pair.id),
       },
-      rows: pair.rows,
     }));
 
     /** @type {ILineChart} */

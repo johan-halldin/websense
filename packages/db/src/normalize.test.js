@@ -33,6 +33,36 @@ describe("normalizeResults", () => {
     ]);
   });
 
+  it("normalizes a fully lossy result reported as -1 rather than omitted", () => {
+    const rows = normalizeResults([
+      {
+        prb_id: 1003,
+        msm_id: 5001,
+        timestamp: 1700000000,
+        dst_addr: "192.0.2.1",
+        avg: -1,
+        min: -1,
+        max: -1,
+        sent: 3,
+        rcvd: 0,
+      },
+    ]);
+
+    expect(rows).toEqual([
+      {
+        time: new Date(1700000000 * 1000),
+        probeId: 1003,
+        measurementId: 5001,
+        dstAddr: "192.0.2.1",
+        dstName: null,
+        rttAvgMs: null,
+        rttMinMs: null,
+        rttMaxMs: null,
+        packetLossPct: 100,
+      },
+    ]);
+  });
+
   it("normalizes a fully lossy result with no avg/min/max", () => {
     const rows = normalizeResults([
       {

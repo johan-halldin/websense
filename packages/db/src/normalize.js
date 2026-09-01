@@ -14,10 +14,21 @@
  */
 
 /**
+ * RIPE Atlas represents "no successful replies" two ways: by omitting
+ * avg/min/max entirely, or - for some measurement types - by setting them
+ * to -1. Either way it means no real RTT was measured, so both normalize
+ * to `null` rather than storing a nonsensical negative millisecond value.
+ *
+ * @param {number|undefined} value
+ * @returns {number|null}
+ */
+function normalizeRttMs(value) {
+  return value === undefined || value < 0 ? null : value;
+}
+
+/**
  * Converts raw RIPE Atlas ping results into rows shaped for the
- * `ping_results` hypertable. A result with no successful replies (all
- * packets lost) has no `avg`/`min`/`max` fields, so those become `null`
- * rather than being dropped.
+ * `ping_results` hypertable.
  *
  * @param {RipeAtlasPingResult[]} rawResults
  * @returns {PingRow[]}
@@ -33,9 +44,9 @@ function normalizeResults(rawResults) {
       measurementId: raw.msm_id,
       dstAddr: raw.dst_addr,
       dstName: raw.dst_name ?? null,
-      rttAvgMs: raw.avg ?? null,
-      rttMinMs: raw.min ?? null,
-      rttMaxMs: raw.max ?? null,
+      rttAvgMs: normalizeRttMs(raw.avg),
+      rttMinMs: normalizeRttMs(raw.min),
+      rttMaxMs: normalizeRttMs(raw.max),
       packetLossPct: sent > 0 ? (100 * (sent - rcvd)) / sent : null,
     };
   });

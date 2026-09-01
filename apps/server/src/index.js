@@ -50,10 +50,22 @@ listenForPingResultsUpdates(() => {
  */
 async function handleMesh(res) {
   const { rows } = await query(
-    `WITH latest AS (
+    `WITH results AS (
+       -- Some RIPE Atlas results report a fully lossy ping as rtt_avg_ms
+       -- = -1 rather than omitting it (normalize.js guards new ingests,
+       -- this covers rows already stored before that fix).
+       SELECT
+         probe_id,
+         measurement_id,
+         time,
+         CASE WHEN rtt_avg_ms < 0 THEN NULL ELSE rtt_avg_ms END AS rtt_avg_ms,
+         packet_loss_pct
+       FROM ping_results
+     ),
+     latest AS (
        SELECT DISTINCT ON (probe_id, measurement_id)
          probe_id, measurement_id, time, rtt_avg_ms, packet_loss_pct
-       FROM ping_results
+       FROM results
        ORDER BY probe_id, measurement_id, time DESC
      ),
      stats AS (
@@ -62,7 +74,7 @@ async function handleMesh(res) {
          measurement_id,
          avg(rtt_avg_ms) AS avg_rtt_ms,
          avg(packet_loss_pct) AS avg_packet_loss_pct
-       FROM ping_results
+       FROM results
        GROUP BY probe_id, measurement_id
      )
      SELECT
@@ -117,7 +129,13 @@ async function handleCityPair(searchParams, res) {
   const { rows } = await query(
     `SELECT
        ping_results.time,
-       ping_results.rtt_avg_ms AS "rttMs",
+       -- Some RIPE Atlas results report a fully lossy ping as rtt_avg_ms
+       -- = -1 rather than omitting it (normalize.js guards new ingests,
+       -- this covers rows already stored before that fix).
+       CASE
+         WHEN ping_results.rtt_avg_ms < 0 THEN NULL
+         ELSE ping_results.rtt_avg_ms
+       END AS "rttMs",
        ping_results.packet_loss_pct AS "packetLossPct"
      FROM ping_results
      JOIN cities src ON src.probe_id = ping_results.probe_id AND src.id = $1

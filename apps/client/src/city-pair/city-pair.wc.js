@@ -4,13 +4,11 @@ import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/icon-button/icon-button.wc.js";
 import "@websense/ui/src/line-chart/line-chart.wc.js";
 import "@websense/ui/src/select/select.wc.js";
-import { formatTime } from "@websense/util";
 
 /** @import { ISelect } from "@websense/ui/src/select/select.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { IIconButton } from "@websense/ui/src/icon-button/icon-button.wc.js" */
 /** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
-/** @import { CityPairMeasurement } from "../fetch/city-pair.js" */
 
 /**
  * @typedef {object} ICityPairRow
@@ -18,7 +16,6 @@ import { formatTime } from "@websense/util";
  * @property {ISelect} srcSelect
  * @property {ISelect} dstSelect
  * @property {IIconButton} removeButton
- * @property {CityPairMeasurement[]} rows
  */
 
 /**
@@ -47,17 +44,6 @@ class WsCityPair extends LitElement {
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-    table {
-      margin-top: 12px;
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th,
-    td {
-      text-align: left;
-      padding: 6px 12px;
-      border-bottom: 1px solid var(--color-border);
     }
     .add-pair {
       margin-top: 16px;
@@ -101,34 +87,6 @@ class WsCityPair extends LitElement {
               <ui-select .ic=${pair.dstSelect}></ui-select>
               <ui-icon-button .ic=${pair.removeButton}></ui-icon-button>
             </div>
-            ${
-              pair.rows.length === 0
-                ? html`<p>No measurements yet.</p>`
-                : html`
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Time</th>
-                          <th>RTT (ms)</th>
-                          <th>Loss (%)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        ${pair.rows.map(
-                          (row) => html`
-                            <tr>
-                              <td title=${row.time}>
-                                ${formatTime(new Date(row.time))}
-                              </td>
-                              <td>${row.rttMs?.toFixed(1) ?? "—"}</td>
-                              <td>${row.packetLossPct?.toFixed(0) ?? "—"}</td>
-                            </tr>
-                          `,
-                        )}
-                      </tbody>
-                    </table>
-                  `
-            }
           </div>
         `,
       )}
