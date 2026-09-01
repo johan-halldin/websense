@@ -5,23 +5,27 @@ import { fetchCities } from "../fetch/cities.js";
 import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
 import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 
-/** @import { ICityPair } from "./city-pair.wc.js" */
+/** @import { ICityPair, ICityPairRow } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
 /** @import { City } from "../fetch/cities.js" */
 /** @import { CityPairMeasurement } from "../fetch/city-pair.js" */
+
+/**
+ * @typedef {object} Pair
+ * @property {string} id
+ * @property {number|null} srcId
+ * @property {number|null} dstId
+ * @property {CityPairMeasurement[]} rows
+ */
 
 class JcCityPair {
   /** @type {() => void} */
   #on_change;
   /** @type {City[]} */
   #cities = [];
-  /** @type {number|null} */
-  #srcId = null;
-  /** @type {number|null} */
-  #dstId = null;
-  /** @type {CityPairMeasurement[]} */
-  #rows = [];
+  /** @type {Pair[]} */
+  #pairs = [{ id: crypto.randomUUID(), srcId: null, dstId: null, rows: [] }];
   /** @type {string|null} */
   #error = null;
 
@@ -32,24 +36,29 @@ class JcCityPair {
     this.#subscribeToUpdates();
   }
 
-  /** Fetches cities first, then the default pair's measurements - the
-   * latter needs #srcId/#dstId, which #fetchCities only sets once the
-   * city list actually comes back. */
+  /** Fetches cities first, defaults the first pair to the first/last city
+   * once the list actually comes back, then fetches its measurements. */
   async #startup() {
     await this.#fetchCities();
-    await this.#fetchMeasurements();
+    const firstPair = this.#pairs[0];
+    if (firstPair !== undefined) {
+      firstPair.srcId = this.#cities.at(0)?.id ?? null;
+      firstPair.dstId = this.#cities.at(-1)?.id ?? null;
+    }
+    await this.#fetchAllMeasurements();
   }
 
   /** Silently re-fetches (no blocking spinner) whenever the server pushes a
-   * notification that new ping results landed - only if a pair is already
-   * being viewed, so this never overrides the "Fetch measurements" button's
+   * notification that new ping results landed - only if some pair is
+   * already being viewed, so this never overrides the "Refresh" button's
    * manual-trigger intent by starting a fetch nobody asked for. */
   #subscribeToUpdates() {
     subscribeToPingResultsUpdates(() => {
-      if (this.#srcId === null || this.#dstId === null) {
+      const hasData = this.#pairs.some((pair) => pair.rows.length > 0);
+      if (!hasData) {
         return;
       }
-      this.#doFetchMeasurements().then(() => {
+      this.#doFetchAllMeasurements().then(() => {
         this.#on_change();
         show_toast(`Page updated at ${formatTime(new Date())}`, {
           level: "info",
@@ -66,38 +75,60 @@ class JcCityPair {
   async #doFetchCities() {
     try {
       this.#cities = await fetchCities();
-      if (this.#srcId === null) {
-        this.#srcId = this.#cities.at(0)?.id ?? null;
-      }
-      if (this.#dstId === null) {
-        this.#dstId = this.#cities.at(-1)?.id ?? null;
-      }
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
     }
   }
 
-  async #fetchMeasurements() {
+  async #fetchAllMeasurements() {
     await with_blocking_spinner(
-      this.#doFetchMeasurements(),
+      this.#doFetchAllMeasurements(),
       "Loading measurements...",
     );
     this.#on_change();
   }
 
-  async #doFetchMeasurements() {
-    const srcId = this.#srcId;
-    const dstId = this.#dstId;
+  async #doFetchAllMeasurements() {
+    await Promise.all(
+      this.#pairs
+        .filter((pair) => pair.srcId !== null && pair.dstId !== null)
+        .map((pair) => this.#doFetchPairMeasurements(pair)),
+    );
+  }
+
+  /** @param {Pair} pair */
+  async #doFetchPairMeasurements(pair) {
+    const srcId = pair.srcId;
+    const dstId = pair.dstId;
     if (srcId === null || dstId === null) {
       return;
     }
     try {
-      this.#rows = await fetchCityPairMeasurements(srcId, dstId);
+      pair.rows = await fetchCityPairMeasurements(srcId, dstId);
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
     }
+  }
+
+  #addPair() {
+    this.#pairs = [
+      ...this.#pairs,
+      { id: crypto.randomUUID(), srcId: null, dstId: null, rows: [] },
+    ];
+    this.#on_change();
+  }
+
+  /** @param {string} id */
+  #removePair(id) {
+    this.#pairs = this.#pairs.filter((pair) => pair.id !== id);
+    this.#on_change();
+  }
+
+  /** @param {number|null} id */
+  #cityName(id) {
+    return this.#cities.find((city) => city.id === id)?.name ?? "?";
   }
 
   /** @returns {ICityPair} */
@@ -106,21 +137,59 @@ class JcCityPair {
       value: String(city.id),
       label: city.name,
     }));
-    const canFetch = this.#srcId !== null && this.#dstId !== null;
 
     /** @type {IButton} */
-    const fetchButton = {
-      label: this.#rows.length !== 0 ? "Refresh" : "Fetch measurements",
-      icon: "search",
-      ...(canFetch ? { onClick: () => this.#fetchMeasurements() } : {}),
+    const refreshButton = {
+      label: "Refresh",
+      icon: "refresh-cw",
+      onClick: () => this.#fetchAllMeasurements(),
     };
+
+    /** @type {IButton} */
+    const addPairButton = {
+      label: "Add pair",
+      icon: "plus",
+      onClick: () => this.#addPair(),
+    };
+
+    /** @type {ICityPairRow[]} */
+    const pairs = this.#pairs.map((pair) => ({
+      id: pair.id,
+      srcSelect: {
+        label: "From",
+        options,
+        selectedValues: pair.srcId !== null ? [String(pair.srcId)] : [],
+        onSelect: (value) => {
+          pair.srcId = Number(value);
+          pair.rows = [];
+          this.#on_change();
+        },
+      },
+      dstSelect: {
+        label: "To",
+        options,
+        selectedValues: pair.dstId !== null ? [String(pair.dstId)] : [],
+        onSelect: (value) => {
+          pair.dstId = Number(value);
+          pair.rows = [];
+          this.#on_change();
+        },
+      },
+      removeButton: {
+        icon: "trash-2",
+        tooltip: "Remove pair",
+        onClick: () => this.#removePair(pair.id),
+      },
+      rows: pair.rows,
+    }));
 
     /** @type {ILineChart} */
     const chart = {
-      series: [
-        {
-          label: "RTT (ms)",
-          points: this.#rows
+      series: this.#pairs
+        .filter((pair) => pair.rows.length > 0)
+        .map((pair) => ({
+          label: `${this.#cityName(pair.srcId)} → ${this.#cityName(pair.dstId)}`,
+          points: pair.rows
             .filter((row) => row.rttMs !== null)
             .map((row) => ({
               time: row.time,
@@ -129,34 +198,14 @@ class JcCityPair {
             .sort(
               (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
             ),
-        },
-      ],
+        })),
     };
 
     return {
-      srcSelect: {
-        label: "From",
-        options,
-        selectedValues: this.#srcId !== null ? [String(this.#srcId)] : [],
-        onSelect: (value) => {
-          this.#srcId = Number(value);
-          this.#rows = [];
-          this.#on_change();
-        },
-      },
-      dstSelect: {
-        label: "To",
-        options,
-        selectedValues: this.#dstId !== null ? [String(this.#dstId)] : [],
-        onSelect: (value) => {
-          this.#dstId = Number(value);
-          this.#rows = [];
-          this.#on_change();
-        },
-      },
-      fetchButton,
+      refreshButton,
+      addPairButton,
+      pairs,
       error: this.#error,
-      rows: this.#rows,
       chart,
     };
   }
