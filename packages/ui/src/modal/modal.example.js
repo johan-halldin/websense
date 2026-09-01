@@ -83,9 +83,10 @@ function init_example_modal(root) {
   confirmButton.ic = {
     label: "Open confirm dialog",
     onClick: async () => {
-      const result = await async_confirm("Are you sure you want to continue?", {
+      const result = await async_confirm({
         title: "Please confirm",
-        description: "This action cannot be undone.",
+        description:
+          "Are you sure you want to continue? This action cannot be undone.",
       });
       console.log("Confirmed:", result);
     },

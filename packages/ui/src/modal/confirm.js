@@ -15,11 +15,10 @@ import { UiModal } from "./modal.wc.js";
  * funnel through the same native "close" event - there's exactly one
  * resolve() call, reading whichever outcome actually happened.
  *
- * @param {string} message
- * @param {ConfirmOptions} [options]
+ * @param {ConfirmOptions} options
  * @returns {Promise<boolean>}
  */
-function async_confirm(message, options = {}) {
+function async_confirm(options) {
   return new Promise((resolve) => {
     const modal = new UiModal();
     let confirmed = false;
@@ -29,10 +28,6 @@ function async_confirm(message, options = {}) {
       titleElement.textContent = options.title;
       modal.appendChild(titleElement);
     }
-
-    const messageElement = document.createElement("p");
-    messageElement.textContent = message;
-    modal.appendChild(messageElement);
 
     if (options.description !== undefined) {
       const descriptionElement = document.createElement("p");
