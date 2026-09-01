@@ -44,7 +44,9 @@ that block, so it doesn't need further wrapping.
   on each change builds a fresh `IXxx` interface object (data + callbacks) and
   assigns it to the `wc`'s `.ic` property. Renders are debounced with a short
   `setTimeout` so multiple state changes in one tick coalesce into one
-  repaint.
+  repaint. Its class is named `JcXxx` (e.g. `JcDashboard` drives `WsDashboard`),
+  marking it as the thing that drives the corresponding `wc` rather than a
+  plain data class.
 - Stateless components (e.g. a plain button) only need a `.wc.js` — don't add
   a `.jc.js` unless there's real state to manage.
 

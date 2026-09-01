@@ -1,16 +1,16 @@
-import { CityPair } from "../city-pair/city-pair.jc.js";
-import { Mesh } from "../mesh/mesh.jc.js";
+import { JcCityPair } from "../city-pair/city-pair.jc.js";
+import { JcMesh } from "../mesh/mesh.jc.js";
 
 /**
  * @typedef {import("./dashboard.wc.js").IDashboard} IDashboard
  */
 
-class Dashboard {
+class JcDashboard {
   /** @type {() => void} */
   #on_change;
-  /** @type {Mesh} */
+  /** @type {JcMesh} */
   #mesh;
-  /** @type {CityPair} */
+  /** @type {JcCityPair} */
   #cityPair;
   /** @type {string} */
   #activeTab = "table";
@@ -18,8 +18,8 @@ class Dashboard {
   /** @param {() => void} on_change */
   constructor(on_change) {
     this.#on_change = on_change;
-    this.#mesh = new Mesh(on_change);
-    this.#cityPair = new CityPair(on_change);
+    this.#mesh = new JcMesh(on_change);
+    this.#cityPair = new JcCityPair(on_change);
   }
 
   /** @returns {IDashboard} */
@@ -44,4 +44,4 @@ class Dashboard {
   }
 }
 
-export { Dashboard };
+export { JcDashboard };

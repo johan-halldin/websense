@@ -29,7 +29,7 @@ import {
  * @property {number|null} avgPacketLossPct
  */
 
-class Mesh {
+class JcMesh {
   /** @type {() => void} */
   #on_change;
   /** @type {string|null} */
@@ -158,4 +158,4 @@ class Mesh {
   }
 }
 
-export { Mesh };
+export { JcMesh };

@@ -1,17 +1,17 @@
-import { Dashboard } from "../dashboard/dashboard.jc.js";
+import { JcDashboard } from "../dashboard/dashboard.jc.js";
 import { WsAppView } from "./app.wc.js";
 
 /**
  * @typedef {import("./app.wc.js").IAppView} IAppView
  */
 
-class App {
+class JcApp {
   /** @type {WsAppView} */
   #view = new WsAppView();
   /** @type {number|null} */
   #renderTimer = null;
-  /** @type {Dashboard} */
-  #dashboard = new Dashboard(() => this.#render());
+  /** @type {JcDashboard} */
+  #dashboard = new JcDashboard(() => this.#render());
 
   /** @returns {HTMLElement} */
   get_element() {
@@ -47,14 +47,14 @@ class App {
 
 /**
  * @param {HTMLElement} root
- * @returns {App}
+ * @returns {JcApp}
  */
 function init_app(root) {
-  const app = new App();
+  const app = new JcApp();
   const el = app.get_element();
   root.appendChild(el);
   app.render();
   return app;
 }
 
-export { App, init_app };
+export { JcApp, init_app };

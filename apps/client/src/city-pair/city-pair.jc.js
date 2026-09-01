@@ -66,7 +66,7 @@ function fakeMeasurements(srcId, dstId) {
   });
 }
 
-class CityPair {
+class JcCityPair {
   /** @type {() => void} */
   #on_change;
   /** @type {string|null} */
@@ -113,4 +113,4 @@ class CityPair {
   }
 }
 
-export { CityPair };
+export { JcCityPair };
