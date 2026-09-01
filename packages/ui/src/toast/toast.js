@@ -1,9 +1,7 @@
 import { UiToast } from "./toast.wc.js";
 import { UiToastStack } from "./toast-stack.wc.js";
 
-/**
- * @typedef {import("../icons/icon-types.js").IconName} IconName
- */
+/** @import { IconName } from "../icons/icon-types.js" */
 
 /** @type {UiToastStack|null} */
 let stack = null;

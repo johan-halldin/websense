@@ -1,8 +1,6 @@
 import { UiTabs } from "./tabs.wc.js";
 
-/**
- * @typedef {import("./tabs.wc.js").TabOption} TabOption
- */
+/** @import { TabOption } from "./tabs.wc.js" */
 
 /** @type {Record<string, string>} */
 const CONTENT_BY_VALUE = {

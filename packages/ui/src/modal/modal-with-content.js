@@ -1,6 +1,9 @@
 import { UiButton } from "../button/button.wc.js";
 import { UiModal } from "./modal.wc.js";
 
+/** @import { ConfirmOptions } from "./confirm.js" */
+/** @import { AlertOptions } from "./alert.js" */
+
 /**
  * @template TIc
  * @typedef {object} ModalContentRender
@@ -9,11 +12,11 @@ import { UiModal } from "./modal.wc.js";
  */
 
 /**
- * @typedef {import("./confirm.js").ConfirmOptions & {mode?: "confirm"}} AsyncConfirmModalOptions
+ * @typedef {ConfirmOptions & {mode?: "confirm"}} AsyncConfirmModalOptions
  */
 
 /**
- * @typedef {import("./alert.js").AlertOptions & {mode: "alert"}} AsyncAlertModalOptions
+ * @typedef {AlertOptions & {mode: "alert"}} AsyncAlertModalOptions
  */
 
 /**

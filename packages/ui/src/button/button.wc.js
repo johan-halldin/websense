@@ -1,9 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { iconBaseStyle } from "../icons/icon-styles.js";
 
-/**
- * @typedef {import("../icons/icon-types.js").IconName} IconName
- */
+/** @import { IconName } from "../icons/icon-types.js" */
 
 /**
  * @typedef {object} IButton

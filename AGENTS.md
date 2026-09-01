@@ -19,6 +19,11 @@ than allowing them and guarding against them at runtime.
 
 JavaScript (with JSDoc for types), Lit, Web Components, HTML, CSS.
 
+#### Importing JSDoc types
+
+Import types at the top of the file with `@import`, never inline
+`import("./x.js").Foo` at the point of use:
+
 #### Component pattern
 
 - `*.wc.js` — a web component (`LitElement`). Purely presentational: its only

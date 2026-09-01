@@ -1,8 +1,6 @@
 import { UiSelectActions } from "./select-actions.wc.js";
 
-/**
- * @typedef {import("./select-actions.wc.js").ISelectActions} ISelectActions
- */
+/** @import { ISelectActions } from "./select-actions.wc.js" */
 
 /**
  * @param {HTMLElement} root

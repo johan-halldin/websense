@@ -2,9 +2,9 @@ import { css, html, LitElement } from "lit";
 import { iconBaseStyle } from "../icons/icon-styles.js";
 import "../popover/popover.wc.js";
 
-/**
- * @typedef {import("../icons/icon-types.js").IconName} IconName
- */
+/** @import { TemplateResult } from "lit" */
+/** @import { IconName } from "../icons/icon-types.js" */
+/** @import { UiPopover } from "../popover/popover.wc.js" */
 
 /**
  * @typedef {object} SelectActionLeaf
@@ -170,7 +170,7 @@ export class UiSelectActions extends LitElement {
 
   /**
    * @param {SelectActionGroup[]} groups
-   * @returns {import("lit").TemplateResult}
+   * @returns {TemplateResult}
    */
   #renderGroups(groups) {
     return html`
@@ -193,7 +193,7 @@ export class UiSelectActions extends LitElement {
 
   /**
    * @param {SelectAction} action
-   * @returns {import("lit").TemplateResult}
+   * @returns {TemplateResult}
    */
   #renderAction(action) {
     if (action.type === "branch") {
@@ -252,9 +252,7 @@ export class UiSelectActions extends LitElement {
   #hideAllPopovers() {
     const popovers = this.shadowRoot?.querySelectorAll("ui-popover") ?? [];
     for (const popover of popovers) {
-      /** @type {import("../popover/popover.wc.js").UiPopover} */ (
-        popover
-      ).hidePopover();
+      /** @type {UiPopover} */ (popover).hidePopover();
     }
   }
 }
