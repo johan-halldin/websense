@@ -2,6 +2,7 @@ import { html, LitElement } from "lit";
 import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/geo-map/geo-map.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
+import { layoutStyle } from "@websense/ui/src/layout-style.js";
 import "../city-pair/city-pair.wc.js";
 import "../mesh/mesh.wc.js";
 
@@ -21,15 +22,8 @@ import "../mesh/mesh.wc.js";
  */
 
 class WsDashboard extends LitElement {
-  /**
-   * Renders in light DOM (not shadow DOM) so this page's layout.css
-   * utility classes (.ui-row, .ui-gap-md, etc.) apply directly - see
-   * AGENTS.md.
-   * @override
-   */
-  createRenderRoot() {
-    return this;
-  }
+  /** @override */
+  static styles = layoutStyle;
 
   /** @type {IDashboard|null} */
   #ic = null;

@@ -89,13 +89,16 @@ so they can't collide with unrelated global class names in an app that
 renders them in light DOM.
 
 Layout utility classes are plain CSS classes, not custom properties - they
-don't cross a Shadow DOM boundary the same way color tokens do. A
-page/layout-composing `*.wc.js` (one that arranges other components using
-these classes) should render in light DOM (`createRenderRoot() { return
-this; }`) so the classes apply directly. Leaf/atomic design-system
-components (button, checkbox, etc.) keep the default Shadow DOM for their
-own style encapsulation - only components whose job is composing a layout
-need light DOM.
+don't cross a Shadow DOM boundary the same way color tokens do (classes
+don't match across a boundary; custom properties inherit through it
+regardless). Every `*.wc.js` keeps the default Shadow DOM, including
+page/layout-composing ones - none of them should override
+`createRenderRoot()`. A component that uses layout utility classes in its
+own template instead adds `layoutStyle` (`packages/ui/src/layout-style.js`)
+to its `static styles`, the same way leaf components already share
+`iconBaseStyle` for icon sizing - Lit caches identical `css` values, so
+this adopts one shared stylesheet per component's shadow root rather than
+duplicating it.
 
 ### Backend
 
