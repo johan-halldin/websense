@@ -1,12 +1,14 @@
 import { html, LitElement } from "lit";
 import "@websense/ui/src/geo-map/geo-map.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
+import "../city-pair/city-pair.wc.js";
 import "../mesh/mesh.wc.js";
 
 /**
  * @typedef {import("@websense/ui/src/tabs/tabs.wc.js").ITabs} ITabs
  * @typedef {import("../mesh/mesh.wc.js").IWsMesh} IWsMesh
  * @typedef {import("@websense/ui/src/geo-map/geo-map.wc.js").IGeoMap} IGeoMap
+ * @typedef {import("../city-pair/city-pair.wc.js").ICityPair} ICityPair
  */
 
 /**
@@ -14,6 +16,7 @@ import "../mesh/mesh.wc.js";
  * @property {ITabs} tabs
  * @property {IWsMesh} mesh
  * @property {IGeoMap} geoMap
+ * @property {ICityPair} cityPair
  */
 
 class WsDashboard extends LitElement {
@@ -58,6 +61,11 @@ class WsDashboard extends LitElement {
         ${
           isMapTab
             ? html`<ui-geo-map class="ui-flex-1" .ic=${ic.geoMap}></ui-geo-map>`
+            : ""
+        }
+        ${
+          activeTab === "city-pair"
+            ? html`<ws-city-pair .ic=${ic.cityPair}></ws-city-pair>`
             : ""
         }
       </div>

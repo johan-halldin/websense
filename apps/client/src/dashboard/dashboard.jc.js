@@ -1,3 +1,4 @@
+import { CityPair } from "../city-pair/city-pair.jc.js";
 import { Mesh } from "../mesh/mesh.jc.js";
 
 /**
@@ -9,6 +10,8 @@ class Dashboard {
   #on_change;
   /** @type {Mesh} */
   #mesh;
+  /** @type {CityPair} */
+  #cityPair;
   /** @type {string} */
   #activeTab = "table";
 
@@ -16,6 +19,7 @@ class Dashboard {
   constructor(on_change) {
     this.#on_change = on_change;
     this.#mesh = new Mesh(on_change);
+    this.#cityPair = new CityPair(on_change);
   }
 
   /** @returns {IDashboard} */
@@ -26,6 +30,7 @@ class Dashboard {
         options: [
           { value: "table", label: "Table", icon: "list-filter" },
           { value: "map", label: "Map", icon: "image" },
+          { value: "city-pair", label: "City Pair", icon: "link" },
         ],
         onChange: (value) => {
           this.#activeTab = value;
@@ -34,6 +39,7 @@ class Dashboard {
       },
       mesh: this.#mesh.getIWsMesh(),
       geoMap: this.#mesh.getIGeoMap(),
+      cityPair: this.#cityPair.getICityPair(),
     };
   }
 }
