@@ -13,9 +13,11 @@
     "test": "node -e \"console.log('No tests implemented yet')\""
   },
   "dependencies": {
+    "chart.js": "^4.5.1",
     "lit": "^3.3.0"
   },
   "devDependencies": {
+    "@kurkle/color": "^0.4.0",
     "@lit/reactive-element": "^2.1.0",
     "lit-element": "^4.2.0",
     "lit-html": "^3.3.0"
