@@ -2,6 +2,7 @@ import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { JcCityPair } from "../city-pair/city-pair.jc.js";
 import { JcMesh } from "../mesh/mesh.jc.js";
+import { JcWorldMap } from "../world-map/world-map.jc.js";
 
 /** @import { IDashboard } from "./dashboard.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
@@ -11,6 +12,8 @@ class JcDashboard {
   #on_change;
   /** @type {JcMesh} */
   #mesh;
+  /** @type {JcWorldMap} */
+  #worldMap;
   /** @type {JcCityPair} */
   #cityPair;
   /** @type {string} */
@@ -20,6 +23,7 @@ class JcDashboard {
   constructor(on_change) {
     this.#on_change = on_change;
     this.#mesh = new JcMesh(on_change);
+    this.#worldMap = new JcWorldMap(on_change);
     this.#cityPair = new JcCityPair(on_change);
   }
 
@@ -35,7 +39,7 @@ class JcDashboard {
       if (!response.ok) {
         throw new Error(`Request failed: ${response.status}`);
       }
-      await this.#mesh.refresh();
+      await Promise.all([this.#mesh.refresh(), this.#worldMap.refresh()]);
     } catch (error) {
       show_toast(error instanceof Error ? error.message : String(error), {
         level: "error",
@@ -57,7 +61,7 @@ class JcDashboard {
         value: this.#activeTab,
         options: [
           { value: "mesh", label: "Mesh", icon: "mesh" },
-          { value: "map", label: "Map", icon: "world-map" },
+          { value: "world-map", label: "World Map", icon: "world-map" },
           { value: "city-pair", label: "City Pair", icon: "link" },
         ],
         onChange: (value) => {
@@ -67,7 +71,7 @@ class JcDashboard {
       },
       ingestButton,
       mesh: this.#mesh.getIWsMesh(),
-      geoMap: this.#mesh.getIGeoMap(),
+      worldMap: this.#worldMap.getIWorldMap(),
       cityPair: this.#cityPair.getICityPair(),
     };
   }

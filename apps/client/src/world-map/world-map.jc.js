@@ -1,27 +1,19 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { formatTime } from "@websense/util";
+import {
+  isRttDeviationNotable,
+  rttColor,
+  rttDeviationPercent,
+} from "../mesh/rtt-color.js";
 import { subscribeToPingResultsUpdates } from "../ping-results-events.js";
 
-/** @import { IWsMesh } from "./mesh.wc.js" */
+/** @import { IWorldMap } from "./world-map.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
+/** @import { IGeoPoint } from "@websense/ui/src/geo-map/geo-map.wc.js" */
+/** @import { MeshRow } from "../mesh/mesh.jc.js" */
 
-/**
- * @typedef {object} MeshRow
- * @property {string} srcName
- * @property {number} srcLat
- * @property {number} srcLon
- * @property {string} dstName
- * @property {number} dstLat
- * @property {number} dstLon
- * @property {string} time
- * @property {number|null} rttAvgMs
- * @property {number|null} packetLossPct
- * @property {number|null} avgRttMs
- * @property {number|null} avgPacketLossPct
- */
-
-class JcMesh {
+class JcWorldMap {
   /** @type {() => void} */
   #on_change;
   /** @type {string|null} */
@@ -51,8 +43,15 @@ class JcMesh {
   }
 
   async #fetch() {
-    await with_blocking_spinner(this.#doFetch(), "Loading mesh data...");
+    await with_blocking_spinner(this.#doFetch(), "Loading map data...");
     this.#on_change();
+  }
+
+  /** Re-fetches map data - exposed for JcDashboard to call after an
+   * ingest it triggered (ingestion itself is a global action, not scoped
+   * to this view - see JcDashboard). */
+  async refresh() {
+    await this.#fetch();
   }
 
   async #doFetch() {
@@ -68,15 +67,8 @@ class JcMesh {
     }
   }
 
-  /** Re-fetches mesh data - exposed for JcDashboard to call after an
-   * ingest it triggered (ingestion itself is a global action, not scoped
-   * to this view - see JcDashboard). */
-  async refresh() {
-    await this.#fetch();
-  }
-
-  /** @returns {IWsMesh} */
-  getIWsMesh() {
+  /** @returns {IWorldMap} */
+  getIWorldMap() {
     /** @type {IButton} */
     const refreshButton = {
       label: "Refresh",
@@ -84,12 +76,47 @@ class JcMesh {
       onClick: () => this.#fetch(),
     };
 
+    /** @type {Map<string, IGeoPoint>} */
+    const pointByName = new Map();
+    for (const row of this.#rows) {
+      if (!pointByName.has(row.srcName)) {
+        pointByName.set(row.srcName, {
+          label: row.srcName,
+          lat: row.srcLat,
+          lon: row.srcLon,
+        });
+      }
+      if (!pointByName.has(row.dstName)) {
+        pointByName.set(row.dstName, {
+          label: row.dstName,
+          lat: row.dstLat,
+          lon: row.dstLon,
+        });
+      }
+    }
+
+    const edges = this.#rows.map((row) => {
+      const percent = rttDeviationPercent(row);
+      const color = isRttDeviationNotable(percent)
+        ? rttColor(/** @type {number} */ (percent)).color
+        : undefined;
+
+      return {
+        from: { label: row.srcName, lat: row.srcLat, lon: row.srcLon },
+        to: { label: row.dstName, lat: row.dstLat, lon: row.dstLon },
+        ...(color !== undefined ? { color } : {}),
+      };
+    });
+
     return {
       error: this.#error,
-      rows: this.#rows,
       refreshButton,
+      geoMap: {
+        points: [...pointByName.values()],
+        edges,
+      },
     };
   }
 }
 
-export { JcMesh };
+export { JcWorldMap };

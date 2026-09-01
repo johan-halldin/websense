@@ -1,15 +1,15 @@
 import { html, LitElement } from "lit";
 import "@websense/ui/src/button/button.wc.js";
-import "@websense/ui/src/geo-map/geo-map.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
 import { layoutStyle } from "@websense/ui/src/layout-style.js";
 import "../city-pair/city-pair.wc.js";
 import "../mesh/mesh.wc.js";
+import "../world-map/world-map.wc.js";
 
 /** @import { ITabs } from "@websense/ui/src/tabs/tabs.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { IWsMesh } from "../mesh/mesh.wc.js" */
-/** @import { IGeoMap } from "@websense/ui/src/geo-map/geo-map.wc.js" */
+/** @import { IWorldMap } from "../world-map/world-map.wc.js" */
 /** @import { ICityPair } from "../city-pair/city-pair.wc.js" */
 
 /**
@@ -17,7 +17,7 @@ import "../mesh/mesh.wc.js";
  * @property {ITabs} tabs
  * @property {IButton} ingestButton
  * @property {IWsMesh} mesh
- * @property {IGeoMap} geoMap
+ * @property {IWorldMap} worldMap
  * @property {ICityPair} cityPair
  */
 
@@ -42,7 +42,7 @@ class WsDashboard extends LitElement {
     }
 
     const activeTab = ic.tabs.value;
-    const isMapTab = activeTab === "map";
+    const isMapTab = activeTab === "world-map";
 
     return html`
       <div
@@ -58,7 +58,10 @@ class WsDashboard extends LitElement {
         ${activeTab === "mesh" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}
         ${
           isMapTab
-            ? html`<ui-geo-map class="ui-flex-1" .ic=${ic.geoMap}></ui-geo-map>`
+            ? html`<ws-world-map
+                class="ui-flex-1"
+                .ic=${ic.worldMap}
+              ></ws-world-map>`
             : ""
         }
         ${
