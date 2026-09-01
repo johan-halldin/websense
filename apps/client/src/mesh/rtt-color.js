@@ -1,4 +1,4 @@
-/** @import { MeshRow } from "./mesh.jc.js" */
+/** @import { MeshRow } from "../fetch/mesh.js" */
 
 /** Deviations smaller than this (in whole percent, post-rounding) are
  * treated as noise - no color shown. Rounding first, then thresholding the

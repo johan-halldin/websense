@@ -1,17 +1,18 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { formatTime } from "@websense/util";
+import { fetchMeshRows } from "../fetch/mesh.js";
 import {
   isRttDeviationNotable,
   rttColor,
   rttDeviationPercent,
 } from "../mesh/rtt-color.js";
-import { subscribeToPingResultsUpdates } from "../ping-results-events.js";
+import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 
 /** @import { IWorldMap } from "./world-map.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { IGeoPoint } from "@websense/ui/src/geo-map/geo-map.wc.js" */
-/** @import { MeshRow } from "../mesh/mesh.jc.js" */
+/** @import { MeshRow } from "../fetch/mesh.js" */
 
 class JcWorldMap {
   /** @type {() => void} */
@@ -56,11 +57,7 @@ class JcWorldMap {
 
   async #doFetch() {
     try {
-      const response = await fetch("/api/mesh");
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
-      }
-      this.#rows = await response.json();
+      this.#rows = await fetchMeshRows();
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);

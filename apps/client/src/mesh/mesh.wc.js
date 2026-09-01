@@ -9,7 +9,7 @@ import {
 } from "./rtt-color.js";
 
 /** @import { TemplateResult } from "lit" */
-/** @import { MeshRow } from "./mesh.jc.js" */
+/** @import { MeshRow } from "../fetch/mesh.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 
 /**

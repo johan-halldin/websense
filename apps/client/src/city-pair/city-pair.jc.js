@@ -1,7 +1,7 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { formatTime } from "@websense/util";
-import { subscribeToPingResultsUpdates } from "../ping-results-events.js";
+import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 
 /** @import { ICityPair } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
