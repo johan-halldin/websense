@@ -74,20 +74,11 @@ class JcMesh {
     }
   }
 
-  async #ingest() {
-    await with_blocking_spinner(this.#doIngest(), "Ingesting...");
+  /** Re-fetches mesh data - exposed for JcDashboard to call after an
+   * ingest it triggered (ingestion itself is a global action, not scoped
+   * to this view - see JcDashboard). */
+  async refresh() {
     await this.#fetch();
-  }
-
-  async #doIngest() {
-    try {
-      const response = await fetch("/api/ingest", { method: "POST" });
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
-      }
-    } catch (error) {
-      this.#error = error instanceof Error ? error.message : String(error);
-    }
   }
 
   /** @returns {IWsMesh} */
@@ -99,18 +90,10 @@ class JcMesh {
       onClick: () => this.#fetch(),
     };
 
-    /** @type {IButton} */
-    const ingestButton = {
-      label: "Ingest now",
-      icon: "download",
-      onClick: () => this.#ingest(),
-    };
-
     return {
       error: this.#error,
       rows: this.#rows,
       refreshButton,
-      ingestButton,
     };
   }
 

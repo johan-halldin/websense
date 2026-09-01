@@ -9,6 +9,18 @@ import "../dashboard/dashboard.wc.js";
  */
 
 class WsAppView extends LitElement {
+  /**
+   * Renders in light DOM (not shadow DOM) so this page's layout.css
+   * utility classes (.ui-row, .ui-gap-md, etc.) apply directly - see
+   * AGENTS.md. Without this, ws-dashboard (which also renders in light
+   * DOM) would still sit inside this component's shadow root, cutting it
+   * off from the global stylesheet.
+   * @override
+   */
+  createRenderRoot() {
+    return this;
+  }
+
   /** @type {IAppView|null} */
   #ic = null;
 

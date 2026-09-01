@@ -1,10 +1,12 @@
 import { html, LitElement } from "lit";
+import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/geo-map/geo-map.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
 import "../city-pair/city-pair.wc.js";
 import "../mesh/mesh.wc.js";
 
 /** @import { ITabs } from "@websense/ui/src/tabs/tabs.wc.js" */
+/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { IWsMesh } from "../mesh/mesh.wc.js" */
 /** @import { IGeoMap } from "@websense/ui/src/geo-map/geo-map.wc.js" */
 /** @import { ICityPair } from "../city-pair/city-pair.wc.js" */
@@ -12,6 +14,7 @@ import "../mesh/mesh.wc.js";
 /**
  * @typedef {object} IDashboard
  * @property {ITabs} tabs
+ * @property {IButton} ingestButton
  * @property {IWsMesh} mesh
  * @property {IGeoMap} geoMap
  * @property {ICityPair} cityPair
@@ -53,7 +56,10 @@ class WsDashboard extends LitElement {
           isMapTab ? "ui-fill-viewport" : ""
         }"
       >
-        <h1>WebSense</h1>
+        <div class="ui-row ui-gap-md ui-align-center">
+          <h1>WebSense</h1>
+          <ui-button .ic=${ic.ingestButton}></ui-button>
+        </div>
         <ui-tabs .ic=${ic.tabs}></ui-tabs>
         ${activeTab === "table" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}
         ${

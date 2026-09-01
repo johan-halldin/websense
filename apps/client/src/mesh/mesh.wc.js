@@ -17,7 +17,6 @@ import {
  * @property {string|null} error
  * @property {MeshRow[]} rows
  * @property {IButton} refreshButton
- * @property {IButton} ingestButton
  */
 
 /**
@@ -203,7 +202,6 @@ class WsMesh extends LitElement {
       <header>
         <h2>Mesh</h2>
         <ui-button .ic=${ic.refreshButton}></ui-button>
-        <ui-button .ic=${ic.ingestButton}></ui-button>
       </header>
     `;
 
