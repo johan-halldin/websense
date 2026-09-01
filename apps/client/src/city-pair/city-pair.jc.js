@@ -27,8 +27,16 @@ class JcCityPair {
   /** @param {() => void} on_change */
   constructor(on_change) {
     this.#on_change = on_change;
-    this.#fetchCities();
+    this.#startup();
     this.#subscribeToUpdates();
+  }
+
+  /** Fetches cities first, then the default pair's measurements - the
+   * latter needs #srcId/#dstId, which #fetchCities only sets once the
+   * city list actually comes back. */
+  async #startup() {
+    await this.#fetchCities();
+    await this.#fetchMeasurements();
   }
 
   /** Silently re-fetches (no blocking spinner) whenever the server pushes a
@@ -101,7 +109,7 @@ class JcCityPair {
 
     /** @type {IButton} */
     const fetchButton = {
-      label: "Fetch measurements",
+      label: this.#rows.length !== 0 ? "Refresh" : "Fetch measurements",
       icon: "search",
       ...(canFetch ? { onClick: () => this.#fetchMeasurements() } : {}),
     };
