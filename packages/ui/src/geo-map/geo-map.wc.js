@@ -15,7 +15,7 @@ import landJson from "./land-110m.json";
  * @property {IGeoPoint} from
  * @property {IGeoPoint} to
  * @property {string} [color] - CSS color for the line stroke, defaults to a
- *   neutral border color if omitted
+ *   neutral gray if omitted
  */
 
 /**
@@ -113,23 +113,23 @@ class UiGeoMap extends LitElement {
       height: 100%;
     }
     .land {
-      fill: var(--color-gray-200);
-      stroke: var(--color-gray-300);
+      fill: var(--color-gray-100);
+      stroke: var(--color-gray-200);
       stroke-width: 0.5;
     }
     .edge {
       stroke-width: 1.5;
       stroke-linecap: round;
-      opacity: 0.2;
+      opacity: 0.1;
     }
     .edge.notable {
       opacity: 0.5;
     }
     .point {
-      fill: var(--color-gray-400);
+      fill: var(--color-gray-600);
       stroke: var(--color-surface);
       stroke-width: 1;
-      opacity: 0.5;
+      opacity: 0.3;
       cursor: pointer;
     }
     .point.notable {
@@ -137,6 +137,7 @@ class UiGeoMap extends LitElement {
     }
     .point:hover {
       opacity: 1;
+      fill: var(--color-black);
     }
     .label {
       font-size: 9px;
@@ -195,6 +196,7 @@ class UiGeoMap extends LitElement {
             this.#hoveredLabel !== null &&
             (edge.from.label === this.#hoveredLabel ||
               edge.to.label === this.#hoveredLabel);
+          const dimmed = this.#hoveredLabel !== null && !touchesHovered;
           return svg`
             <line
               class="edge ${edge.color !== undefined ? "notable" : ""}"
@@ -202,8 +204,13 @@ class UiGeoMap extends LitElement {
               y1=${y1}
               x2=${x2}
               y2=${y2}
-              stroke=${edge.color ?? "var(--color-border)"}
-              style=${touchesHovered ? "opacity: 1;" : ""}
+              stroke=${
+                edge.color ??
+                (touchesHovered
+                  ? "var(--color-black)"
+                  : "var(--color-gray-600)")
+              }
+              style=${touchesHovered ? "opacity: 1;" : dimmed ? "opacity: 0.1;" : ""}
             ></line>
           `;
         })}
