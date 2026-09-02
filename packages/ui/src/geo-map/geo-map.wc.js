@@ -130,7 +130,7 @@ class UiGeoMap extends LitElement {
       cursor: pointer;
     }
     .point:hover {
-      fill: var(--color-black);
+      fill: var(--color-gray-700);
       opacity: 1;
     }
   `;
@@ -191,7 +191,7 @@ class UiGeoMap extends LitElement {
               stroke=${
                 edge.color ??
                 (touchesHovered
-                  ? "var(--color-black)"
+                  ? "var(--color-gray-700)"
                   : "var(--color-gray-300)")
               }
               style=${touchesHovered ? "opacity: 1;" : dimmed ? "opacity: 0.1;" : ""}
