@@ -9,7 +9,7 @@ const MIN_DEVIATION_PERCENT = 5;
 /** A deviation of this size (or more) from a pair's own average RTT reaches
  * full color strength - deviations between MIN_DEVIATION_PERCENT and this
  * are shown as a proportionally fainter tint. */
-const MAX_DEVIATION_PERCENT = 15;
+const MAX_DEVIATION_PERCENT = 50;
 /** Floor color intensity for any shown deviation, so one just past
  * MIN_DEVIATION_PERCENT is still visible rather than nearly transparent. */
 const MIN_INTENSITY = 0.15;

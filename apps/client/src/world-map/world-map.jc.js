@@ -17,7 +17,8 @@ import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 /**
  * @typedef {object} CityStats
  * @property {number} total
- * @property {number} degraded
+ * @property {number} degraded - notably slower than that connection's own average
+ * @property {number} improved - notably faster than that connection's own average
  */
 
 /**
@@ -44,22 +45,34 @@ function wilsonLowerBound(degraded, total, z = 1.96) {
   return (center - margin) / denominator;
 }
 
-/** Ad hoc thresholds on the Wilson lower bound (see above) of a city's
- * connections currently running slower than that connection's own
- * average. Tune these two cutoffs if they don't feel right in practice.
+/** Colors a city dot on the same red/green error/success scale the mesh
+ * view's per-connection chips use (rtt-color.js's rttColor), so a dot, the
+ * lines feeding into it, and the mesh table all read as one consistent
+ * scale. Each direction (degraded vs. improved) gets its own Wilson lower
+ * bound (see above); whichever is larger is the dot's dominant story,
+ * scaled by 100 and signed (positive = degraded/red, negative =
+ * improved/green) so its own 0.15 "clearly notable" cutoff lines up with
+ * MAX_DEVIATION_PERCENT (15) - the same point an edge/chip reaches full
+ * color intensity.
  *
  * @param {CityStats|undefined} stats
  * @returns {string|undefined}
  */
 function cityStatusColor(stats) {
-  if (stats === undefined || stats.total === 0) {
+  if (stats === undefined) {
     return undefined;
   }
-  if (stats.degraded === 0) {
-    return "var(--color-success)";
+  const degradedBound =
+    stats.degraded > 0 ? wilsonLowerBound(stats.degraded, stats.total) : 0;
+  const improvedBound =
+    stats.improved > 0 ? wilsonLowerBound(stats.improved, stats.total) : 0;
+  if (degradedBound === 0 && improvedBound === 0) {
+    return undefined;
   }
-  const lowerBound = wilsonLowerBound(stats.degraded, stats.total);
-  return lowerBound <= 0.15 ? "var(--color-warning)" : "var(--color-error)";
+
+  const percent =
+    (degradedBound >= improvedBound ? degradedBound : -improvedBound) * 100;
+  return isRttDeviationNotable(percent) ? rttColor(percent).color : undefined;
 }
 
 class JcWorldMap {
@@ -124,12 +137,22 @@ class JcWorldMap {
     /** @type {Map<string, CityStats>} */
     const statsByName = new Map();
     for (const row of this.#rows) {
-      const degraded = isRttDeviationNotable(rttDeviationPercent(row));
+      const percent = rttDeviationPercent(row);
+      const notable = isRttDeviationNotable(percent);
+      const degraded = notable && /** @type {number} */ (percent) > 0;
+      const improved = notable && /** @type {number} */ (percent) < 0;
       for (const name of [row.srcName, row.dstName]) {
-        const stats = statsByName.get(name) ?? { total: 0, degraded: 0 };
+        const stats = statsByName.get(name) ?? {
+          total: 0,
+          degraded: 0,
+          improved: 0,
+        };
         stats.total += 1;
         if (degraded) {
           stats.degraded += 1;
+        }
+        if (improved) {
+          stats.improved += 1;
         }
         statsByName.set(name, stats);
       }
