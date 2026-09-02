@@ -120,15 +120,30 @@ class UiGeoMap extends LitElement {
     .edge {
       stroke-width: 1.5;
       stroke-linecap: round;
+      opacity: 0.2;
+    }
+    .edge.notable {
+      opacity: 0.5;
     }
     .point {
       fill: var(--color-gray-400);
       stroke: var(--color-surface);
       stroke-width: 1;
+      opacity: 0.5;
+      cursor: pointer;
+    }
+    .point.notable {
+      opacity: 0.85;
     }
     .label {
       font-size: 9px;
       fill: var(--color-text);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.1s;
+    }
+    .point:hover + .label {
+      opacity: 1;
     }
   `;
 
@@ -164,7 +179,7 @@ class UiGeoMap extends LitElement {
           const [x2, y2] = project([edge.to.lon, edge.to.lat], width, height);
           return svg`
             <line
-              class="edge"
+              class="edge ${edge.color !== undefined ? "notable" : ""}"
               x1=${x1}
               y1=${y1}
               x2=${x2}
@@ -177,7 +192,7 @@ class UiGeoMap extends LitElement {
           const [x, y] = project([point.lon, point.lat], width, height);
           return svg`
             <circle
-              class="point"
+              class="point ${point.color !== undefined ? "notable" : ""}"
               cx=${x}
               cy=${y}
               r="6"
