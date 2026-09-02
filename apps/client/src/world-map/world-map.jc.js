@@ -14,6 +14,54 @@ import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 /** @import { IGeoPoint } from "@websense/ui/src/geo-map/geo-map.wc.js" */
 /** @import { MeshRow } from "../fetch/mesh.js" */
 
+/**
+ * @typedef {object} CityStats
+ * @property {number} total
+ * @property {number} degraded
+ */
+
+/**
+ * Wilson score interval's lower bound for a binomial proportion - used
+ * instead of a raw degraded/total share so a city with only a couple of
+ * measured connections needs much stronger evidence of trouble than one
+ * with a dozen before it reads as unhealthy. At k=0 this is exactly 0
+ * regardless of n; otherwise it grows toward the raw share as n grows and
+ * shrinks toward 0 as n shrinks, for the same raw share.
+ *
+ * @param {number} degraded
+ * @param {number} total
+ * @param {number} [z] - z-score for the confidence level, defaults to a
+ *   standard 95% (1.96)
+ * @returns {number}
+ */
+function wilsonLowerBound(degraded, total, z = 1.96) {
+  const p = degraded / total;
+  const z2 = z * z;
+  const denominator = 1 + z2 / total;
+  const center = p + z2 / (2 * total);
+  const margin =
+    z * Math.sqrt((p * (1 - p)) / total + z2 / (4 * total * total));
+  return (center - margin) / denominator;
+}
+
+/** Ad hoc thresholds on the Wilson lower bound (see above) of a city's
+ * connections currently running slower than that connection's own
+ * average. Tune these two cutoffs if they don't feel right in practice.
+ *
+ * @param {CityStats|undefined} stats
+ * @returns {string|undefined}
+ */
+function cityStatusColor(stats) {
+  if (stats === undefined || stats.total === 0) {
+    return undefined;
+  }
+  if (stats.degraded === 0) {
+    return "var(--color-success)";
+  }
+  const lowerBound = wilsonLowerBound(stats.degraded, stats.total);
+  return lowerBound <= 0.15 ? "var(--color-warning)" : "var(--color-error)";
+}
+
 class JcWorldMap {
   /** @type {() => void} */
   #on_change;
@@ -73,21 +121,39 @@ class JcWorldMap {
       onClick: () => this.#fetch(),
     };
 
+    /** @type {Map<string, CityStats>} */
+    const statsByName = new Map();
+    for (const row of this.#rows) {
+      const degraded = isRttDeviationNotable(rttDeviationPercent(row));
+      for (const name of [row.srcName, row.dstName]) {
+        const stats = statsByName.get(name) ?? { total: 0, degraded: 0 };
+        stats.total += 1;
+        if (degraded) {
+          stats.degraded += 1;
+        }
+        statsByName.set(name, stats);
+      }
+    }
+
     /** @type {Map<string, IGeoPoint>} */
     const pointByName = new Map();
     for (const row of this.#rows) {
       if (!pointByName.has(row.srcName)) {
+        const color = cityStatusColor(statsByName.get(row.srcName));
         pointByName.set(row.srcName, {
           label: row.srcName,
           lat: row.srcLat,
           lon: row.srcLon,
+          ...(color !== undefined ? { color } : {}),
         });
       }
       if (!pointByName.has(row.dstName)) {
+        const color = cityStatusColor(statsByName.get(row.dstName));
         pointByName.set(row.dstName, {
           label: row.dstName,
           lat: row.dstLat,
           lon: row.dstLon,
+          ...(color !== undefined ? { color } : {}),
         });
       }
     }

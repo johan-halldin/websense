@@ -5,7 +5,7 @@
  * rounded value, keeps this in agreement with any displayed delta text -
  * otherwise a raw 0.6% could round to a displayed "+1%" while still failing
  * a threshold check against the unrounded 0.006. */
-const MIN_DEVIATION_PERCENT = 1;
+const MIN_DEVIATION_PERCENT = 5;
 /** A deviation of this size (or more) from a pair's own average RTT reaches
  * full color strength - deviations between MIN_DEVIATION_PERCENT and this
  * are shown as a proportionally fainter tint. */

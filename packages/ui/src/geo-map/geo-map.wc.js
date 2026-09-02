@@ -6,6 +6,8 @@ import landJson from "./land-110m.json";
  * @property {string} label
  * @property {number} lat
  * @property {number} lon
+ * @property {string} [color] - CSS color for the point fill, defaults to
+ *   the primary color if omitted
  */
 
 /**
@@ -174,7 +176,13 @@ class UiGeoMap extends LitElement {
         ${points.map((point) => {
           const [x, y] = project([point.lon, point.lat], width, height);
           return svg`
-            <circle class="point" cx=${x} cy=${y} r="3"></circle>
+            <circle
+              class="point"
+              cx=${x}
+              cy=${y}
+              r="3"
+              style=${point.color !== undefined ? `fill: ${point.color};` : ""}
+            ></circle>
             <text class="label" x=${x + 5} y=${y + 3}>${point.label}</text>
           `;
         })}
