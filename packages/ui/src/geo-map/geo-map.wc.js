@@ -192,7 +192,7 @@ class UiGeoMap extends LitElement {
                 edge.color ??
                 (touchesHovered
                   ? "var(--color-gray-700)"
-                  : "var(--color-gray-300)")
+                  : "var(--color-gray-200)")
               }
               style=${touchesHovered ? "opacity: 1;" : dimmed ? "opacity: 0.1;" : ""}
             ></line>
