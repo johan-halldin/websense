@@ -133,7 +133,10 @@ class UiGeoMap extends LitElement {
       cursor: pointer;
     }
     .point.notable {
-      opacity: 0.85;
+      opacity: 0.6;
+    }
+    .point:hover {
+      opacity: 1;
     }
     .label {
       font-size: 9px;
@@ -149,10 +152,21 @@ class UiGeoMap extends LitElement {
 
   /** @type {IGeoMap|null} */
   #ic = null;
+  /** Which point is currently hovered, by label - not part of `ic` since
+   * it's ephemeral interaction state local to this component, not data the
+   * caller owns.
+   * @type {string|null} */
+  #hoveredLabel = null;
 
   /** @param {IGeoMap} ic */
   set ic(ic) {
     this.#ic = ic;
+    this.requestUpdate();
+  }
+
+  /** @param {string|null} label */
+  #setHovered(label) {
+    this.#hoveredLabel = label;
     this.requestUpdate();
   }
 
@@ -177,6 +191,10 @@ class UiGeoMap extends LitElement {
             height,
           );
           const [x2, y2] = project([edge.to.lon, edge.to.lat], width, height);
+          const touchesHovered =
+            this.#hoveredLabel !== null &&
+            (edge.from.label === this.#hoveredLabel ||
+              edge.to.label === this.#hoveredLabel);
           return svg`
             <line
               class="edge ${edge.color !== undefined ? "notable" : ""}"
@@ -185,6 +203,7 @@ class UiGeoMap extends LitElement {
               x2=${x2}
               y2=${y2}
               stroke=${edge.color ?? "var(--color-border)"}
+              style=${touchesHovered ? "opacity: 1;" : ""}
             ></line>
           `;
         })}
@@ -197,6 +216,8 @@ class UiGeoMap extends LitElement {
               cy=${y}
               r="6"
               style=${point.color !== undefined ? `fill: ${point.color};` : ""}
+              @mouseenter=${() => this.#setHovered(point.label)}
+              @mouseleave=${() => this.#setHovered(null)}
             ></circle>
             <text class="label" x=${x + 9} y=${y + 4}>${point.label}</text>
           `;

@@ -45,15 +45,21 @@ function wilsonLowerBound(degraded, total, z = 1.96) {
   return (center - margin) / denominator;
 }
 
-/** Colors a city dot on the same red/green error/success scale the mesh
- * view's per-connection chips use (rtt-color.js's rttColor), so a dot, the
- * lines feeding into it, and the mesh table all read as one consistent
- * scale. Each direction (degraded vs. improved) gets its own Wilson lower
- * bound (see above); whichever is larger is the dot's dominant story,
- * scaled by 100 and signed (positive = degraded/red, negative =
- * improved/green) so its own 0.15 "clearly notable" cutoff lines up with
- * MAX_DEVIATION_PERCENT (15) - the same point an edge/chip reaches full
- * color intensity.
+/** Colors a city dot using the same red/green error/success tokens the
+ * mesh view's per-connection chips use (rtt-color.js's rttColor), so a
+ * dot, the lines feeding into it, and the mesh table all read as one
+ * consistent scale. Unlike rttColor's edge/chip output, this returns a
+ * solid token rather than a color-mix blended with transparent - a dot's
+ * own CSS opacity (.point.notable, boosted further on :hover) already
+ * carries "how notable", so baking a second, independent alpha into the
+ * fill color itself would make a hovered dot look partly see-through even
+ * at `opacity: 1`.
+ *
+ * Each direction (degraded vs. improved) gets its own Wilson lower bound
+ * (see above); whichever is larger is the dot's dominant story, scaled by
+ * 100 and signed (positive = degraded/red, negative = improved/green) so
+ * its own 0.15 "clearly notable" cutoff lines up with rtt-color.js's
+ * MAX_DEVIATION_PERCENT (15).
  *
  * @param {CityStats|undefined} stats
  * @returns {string|undefined}
@@ -72,7 +78,10 @@ function cityStatusColor(stats) {
 
   const percent =
     (degradedBound >= improvedBound ? degradedBound : -improvedBound) * 100;
-  return isRttDeviationNotable(percent) ? rttColor(percent).color : undefined;
+  if (!isRttDeviationNotable(percent)) {
+    return undefined;
+  }
+  return percent >= 0 ? "var(--color-error)" : "var(--color-success)";
 }
 
 class JcWorldMap {
