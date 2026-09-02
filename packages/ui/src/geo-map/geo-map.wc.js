@@ -120,33 +120,17 @@ class UiGeoMap extends LitElement {
     .edge {
       stroke-width: 1.5;
       stroke-linecap: round;
-      opacity: 0.1;
-    }
-    .edge.notable {
       opacity: 0.5;
     }
     .point {
-      fill: var(--color-gray-600);
+      fill: var(--color-gray-400);
       stroke: var(--color-surface);
       stroke-width: 1;
-      opacity: 0.3;
+      opacity: 0.6;
       cursor: pointer;
     }
-    .point.notable {
-      opacity: 0.6;
-    }
     .point:hover {
-      opacity: 1;
       fill: var(--color-black);
-    }
-    .label {
-      font-size: 9px;
-      fill: var(--color-text);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.1s;
-    }
-    .point:hover + .label {
       opacity: 1;
     }
   `;
@@ -199,7 +183,7 @@ class UiGeoMap extends LitElement {
           const dimmed = this.#hoveredLabel !== null && !touchesHovered;
           return svg`
             <line
-              class="edge ${edge.color !== undefined ? "notable" : ""}"
+              class="edge"
               x1=${x1}
               y1=${y1}
               x2=${x2}
@@ -208,7 +192,7 @@ class UiGeoMap extends LitElement {
                 edge.color ??
                 (touchesHovered
                   ? "var(--color-black)"
-                  : "var(--color-gray-600)")
+                  : "var(--color-gray-300)")
               }
               style=${touchesHovered ? "opacity: 1;" : dimmed ? "opacity: 0.1;" : ""}
             ></line>
@@ -218,15 +202,16 @@ class UiGeoMap extends LitElement {
           const [x, y] = project([point.lon, point.lat], width, height);
           return svg`
             <circle
-              class="point ${point.color !== undefined ? "notable" : ""}"
+              class="point"
               cx=${x}
               cy=${y}
               r="6"
               style=${point.color !== undefined ? `fill: ${point.color};` : ""}
               @mouseenter=${() => this.#setHovered(point.label)}
               @mouseleave=${() => this.#setHovered(null)}
-            ></circle>
-            <text class="label" x=${x + 9} y=${y + 4}>${point.label}</text>
+            >
+              <title>${point.label}</title>
+            </circle>
           `;
         })}
       </svg>
