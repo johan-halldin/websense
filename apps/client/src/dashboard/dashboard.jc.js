@@ -1,6 +1,7 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { JcCityPair } from "../city-pair/city-pair.jc.js";
+import { JcCorrelations } from "../correlations/correlations.jc.js";
 import { JcMesh } from "../mesh/mesh.jc.js";
 import { JcWorldMap } from "../world-map/world-map.jc.js";
 
@@ -16,6 +17,8 @@ class JcDashboard {
   #worldMap;
   /** @type {JcCityPair} */
   #cityPair;
+  /** @type {JcCorrelations} */
+  #correlations;
   /** @type {string} */
   #activeTab = "mesh";
 
@@ -25,6 +28,7 @@ class JcDashboard {
     this.#mesh = new JcMesh(on_change);
     this.#worldMap = new JcWorldMap(on_change);
     this.#cityPair = new JcCityPair(on_change);
+    this.#correlations = new JcCorrelations(on_change);
   }
 
   /** Ingestion refreshes data for every city pair, not just the mesh table,
@@ -55,6 +59,7 @@ class JcDashboard {
       this.#mesh.refreshFromServerChange(),
       this.#worldMap.refreshFromServerChange(),
       this.#cityPair.refreshFromServerChange(),
+      this.#correlations.refreshFromServerChange(),
     ]);
   }
 
@@ -85,6 +90,7 @@ class JcDashboard {
       mesh: this.#mesh.getIWsMesh(),
       worldMap: this.#worldMap.getIWorldMap(),
       cityPair: this.#cityPair.getICityPair(),
+      correlations: this.#correlations.getICorrelations(),
     };
   }
 }

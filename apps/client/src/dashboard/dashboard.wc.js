@@ -4,6 +4,7 @@ import "@websense/ui/src/tabs/tabs.wc.js";
 import { iconBaseStyle } from "@websense/ui/src/icons/icon-styles.js";
 import { layoutStyle } from "@websense/ui/src/layout-style.js";
 import "../city-pair/city-pair.wc.js";
+import "../correlations/correlations.wc.js";
 import "../mesh/mesh.wc.js";
 import "../world-map/world-map.wc.js";
 
@@ -12,6 +13,7 @@ import "../world-map/world-map.wc.js";
 /** @import { IWsMesh } from "../mesh/mesh.wc.js" */
 /** @import { IWorldMap } from "../world-map/world-map.wc.js" */
 /** @import { ICityPair } from "../city-pair/city-pair.wc.js" */
+/** @import { ICorrelations } from "../correlations/correlations.wc.js" */
 
 /**
  * @typedef {object} IDashboard
@@ -20,6 +22,7 @@ import "../world-map/world-map.wc.js";
  * @property {IWsMesh} mesh
  * @property {IWorldMap} worldMap
  * @property {ICityPair} cityPair
+ * @property {ICorrelations} correlations
  */
 
 class WsDashboard extends LitElement {
@@ -78,15 +81,7 @@ class WsDashboard extends LitElement {
         }
         ${
           activeTab === "correlations"
-            ? html`
-                <section class="ui-stack ui-gap-sm">
-                  <h2>Correlations</h2>
-                  <p>
-                    Explore routes that degrade or recover together, helping
-                    identify shared regional or provider-level events.
-                  </p>
-                </section>
-              `
+            ? html`<ws-correlations .ic=${ic.correlations}></ws-correlations>`
             : ""
         }
       </div>

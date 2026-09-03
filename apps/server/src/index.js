@@ -174,6 +174,86 @@ async function handleCityPair(searchParams, res) {
 }
 
 /**
+ * @param {URLSearchParams} searchParams
+ * @param {ServerResponse} res
+ */
+async function handleCorrelations(searchParams, res) {
+  const range = correlationRangeInterval(searchParams.get("range"));
+  const grouping = correlationGroupingInterval(searchParams.get("group"));
+  const metric = searchParams.get("metric");
+
+  if (
+    range === null ||
+    grouping === null ||
+    (metric !== "rtt" && metric !== "loss")
+  ) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        error: "Expected ?range=week|month|year&group=hour|day&metric=rtt|loss",
+      }),
+    );
+    return;
+  }
+
+  const value =
+    metric === "rtt"
+      ? "CASE WHEN ping_results.rtt_avg_ms < 0 THEN NULL ELSE ping_results.rtt_avg_ms END"
+      : "ping_results.packet_loss_pct";
+  const minSharedBuckets = grouping === "1 hour" ? 24 : 7;
+  const { rows } = await query(
+    `WITH bucketed AS MATERIALIZED (
+       SELECT
+         src.id AS src_id,
+         dst.id AS dst_id,
+         time_bucket($2::interval, ping_results.time) AS bucket,
+         avg(${value}) AS value
+       FROM ping_results
+       JOIN cities src ON src.probe_id = ping_results.probe_id
+       JOIN cities dst ON dst.measurement_id = ping_results.measurement_id
+       WHERE ping_results.time >= NOW() - $1::interval
+       GROUP BY 1, 2, 3
+     ),
+     correlations AS (
+       SELECT
+         first_route.src_id AS first_src_id,
+         first_route.dst_id AS first_dst_id,
+         second_route.src_id AS second_src_id,
+         second_route.dst_id AS second_dst_id,
+         corr(first_route.value, second_route.value) AS correlation,
+         count(*) AS shared_buckets
+       FROM bucketed first_route
+       JOIN bucketed second_route
+         ON second_route.bucket = first_route.bucket
+         AND (second_route.src_id, second_route.dst_id) >
+           (first_route.src_id, first_route.dst_id)
+       WHERE first_route.value IS NOT NULL AND second_route.value IS NOT NULL
+       GROUP BY 1, 2, 3, 4
+       HAVING count(*) >= $3
+     )
+     SELECT
+       first_src.name AS "firstSrcName",
+       first_dst.name AS "firstDstName",
+       second_src.name AS "secondSrcName",
+       second_dst.name AS "secondDstName",
+       correlations.correlation,
+       correlations.shared_buckets AS "sharedBuckets"
+     FROM correlations
+     JOIN cities first_src ON first_src.id = correlations.first_src_id
+     JOIN cities first_dst ON first_dst.id = correlations.first_dst_id
+     JOIN cities second_src ON second_src.id = correlations.second_src_id
+     JOIN cities second_dst ON second_dst.id = correlations.second_dst_id
+     WHERE correlations.correlation IS NOT NULL
+     ORDER BY abs(correlations.correlation) DESC
+     LIMIT 100`,
+    [range, grouping, minSharedBuckets],
+  );
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(rows));
+}
+
+/**
  * @param {string|null} range
  * @returns {"1 day"|"1 week"|"1 month"|"1 year"|null}
  */
@@ -206,6 +286,38 @@ function cityPairGroupingInterval(grouping) {
       return "1 day";
     default:
       return undefined;
+  }
+}
+
+/**
+ * @param {string|null} range
+ * @returns {"1 week"|"1 month"|"1 year"|null}
+ */
+function correlationRangeInterval(range) {
+  switch (range ?? "week") {
+    case "week":
+      return "1 week";
+    case "month":
+      return "1 month";
+    case "year":
+      return "1 year";
+    default:
+      return null;
+  }
+}
+
+/**
+ * @param {string|null} grouping
+ * @returns {"1 hour"|"1 day"|null}
+ */
+function correlationGroupingInterval(grouping) {
+  switch (grouping ?? "hour") {
+    case "hour":
+      return "1 hour";
+    case "day":
+      return "1 day";
+    default:
+      return null;
   }
 }
 
@@ -333,6 +445,11 @@ const server = createServer((req, res) => {
 
   if (url.pathname === "/api/city-pair" && req.method === "GET") {
     handleCityPair(url.searchParams, res).catch(onError);
+    return;
+  }
+
+  if (url.pathname === "/api/correlations" && req.method === "GET") {
+    handleCorrelations(url.searchParams, res).catch(onError);
     return;
   }
 
