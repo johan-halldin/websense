@@ -1,6 +1,8 @@
 import { css, html, LitElement } from "lit";
+import "@websense/ui/src/badge/badge.wc.js";
 import "@websense/ui/src/segmented-control/segmented-control.wc.js";
 
+/** @import { IBadge } from "@websense/ui/src/badge/badge.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
 /** @import { Correlation } from "../fetch/correlations.js" */
 
@@ -66,6 +68,11 @@ class WsCorrelations extends LitElement {
     if (ic === null) {
       return "";
     }
+    const maxSharedBuckets = Math.max(
+      0,
+      ...ic.symmetricRows.map((row) => row.sharedBuckets),
+      ...ic.otherRows.map((row) => row.sharedBuckets),
+    );
 
     return html`
       <section>
@@ -97,11 +104,13 @@ class WsCorrelations extends LitElement {
           "Reverse directions",
           "The same city pair measured in both directions.",
           ic.symmetricRows,
+          maxSharedBuckets,
         )}
         ${this.#renderTable(
           "Other route pairs",
           "Routes that are not opposite directions of the same city pair.",
           ic.otherRows,
+          maxSharedBuckets,
         )}
       </section>
     `;
@@ -111,8 +120,9 @@ class WsCorrelations extends LitElement {
    * @param {string} heading
    * @param {string} description
    * @param {Correlation[]} rows
+   * @param {number} maxSharedBuckets
    */
-  #renderTable(heading, description, rows) {
+  #renderTable(heading, description, rows, maxSharedBuckets) {
     return html`
       <section>
         <h3>${heading}</h3>
@@ -135,8 +145,19 @@ class WsCorrelations extends LitElement {
                         <tr>
                           <td>${row.firstSrcName} → ${row.firstDstName}</td>
                           <td>${row.secondSrcName} → ${row.secondDstName}</td>
-                          <td class="number">${row.correlation.toFixed(2)}</td>
-                          <td class="number">${row.sharedBuckets}</td>
+                          <td class="number">
+                            <ui-badge
+                              .ic=${this.#correlationBadge(row.correlation)}
+                            ></ui-badge>
+                          </td>
+                          <td class="number">
+                            <ui-badge
+                              .ic=${this.#sharedBucketsBadge(
+                                row.sharedBuckets,
+                                maxSharedBuckets,
+                              )}
+                            ></ui-badge>
+                          </td>
                         </tr>
                       `,
                     )}
@@ -147,6 +168,64 @@ class WsCorrelations extends LitElement {
         }
       </section>
     `;
+  }
+
+  /**
+   * @param {number} correlation
+   * @returns {IBadge}
+   */
+  #correlationBadge(correlation) {
+    const color =
+      correlation < 0
+        ? {
+            backgroundColor: "var(--color-secondary-200)",
+            textColor: "var(--color-secondary-900)",
+          }
+        : {
+            backgroundColor: "var(--color-primary-100)",
+            textColor: "var(--color-primary-700)",
+          };
+    return {
+      label: correlation.toFixed(2),
+      tooltip: `Correlation: ${correlation.toFixed(4)}`,
+      size: "sm",
+      ...color,
+    };
+  }
+
+  /**
+   * @param {number} sharedBuckets
+   * @param {number} maxSharedBuckets
+   * @returns {IBadge}
+   */
+  #sharedBucketsBadge(sharedBuckets, maxSharedBuckets) {
+    const relativeSupport = sharedBuckets / maxSharedBuckets;
+    const color =
+      relativeSupport >= 0.75
+        ? {
+            backgroundColor: "var(--color-gray-700)",
+            textColor: "var(--color-white)",
+          }
+        : relativeSupport >= 0.5
+          ? {
+              backgroundColor: "var(--color-gray-500)",
+              textColor: "var(--color-white)",
+            }
+          : relativeSupport >= 0.25
+            ? {
+                backgroundColor: "var(--color-gray-300)",
+                textColor: "var(--color-gray-900)",
+              }
+            : {
+                backgroundColor: "var(--color-gray-100)",
+                textColor: "var(--color-gray-700)",
+              };
+    return {
+      label: String(sharedBuckets),
+      tooltip: `${sharedBuckets} shared time buckets`,
+      size: "sm",
+      ...color,
+    };
   }
 }
 
