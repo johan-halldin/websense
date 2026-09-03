@@ -4,11 +4,13 @@ import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/icon-button/icon-button.wc.js";
 import "@websense/ui/src/line-chart/line-chart.wc.js";
 import "@websense/ui/src/select/select.wc.js";
+import "@websense/ui/src/segmented-control/segmented-control.wc.js";
 
 /** @import { ISelect } from "@websense/ui/src/select/select.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { IIconButton } from "@websense/ui/src/icon-button/icon-button.wc.js" */
 /** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
+/** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
 
 /**
  * @typedef {object} ICityPairRow
@@ -22,6 +24,8 @@ import "@websense/ui/src/select/select.wc.js";
  * @typedef {object} ICityPair
  * @property {IButton} refreshButton
  * @property {IButton} addRandomPairButton
+ * @property {ISegmentedControl} rangeControl
+ * @property {ISegmentedControl} groupingControl
  * @property {ICityPairRow[]} pairs
  * @property {string|null} error
  * @property {ILineChart} chart
@@ -44,6 +48,19 @@ class WsCityPair extends LitElement {
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+    .chart-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .control {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
+      color: var(--color-text);
     }
     .add-pair {
       margin-top: 16px;
@@ -75,6 +92,18 @@ class WsCityPair extends LitElement {
       </header>
 
       ${ic.error !== null ? html`<p>Failed to load: ${ic.error}</p>` : ""}
+      <div class="chart-controls">
+        <div class="control">
+          <span>Time range</span>
+          <ui-segmented-control .ic=${ic.rangeControl}></ui-segmented-control>
+        </div>
+        <div class="control">
+          <span>Average measurements</span>
+          <ui-segmented-control
+            .ic=${ic.groupingControl}
+          ></ui-segmented-control>
+        </div>
+      </div>
       ${hasChartData ? html`<ui-line-chart .ic=${ic.chart}></ui-line-chart>` : ""}
       ${repeat(
         ic.pairs,

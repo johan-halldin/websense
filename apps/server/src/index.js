@@ -119,34 +119,94 @@ async function handleIngest(res) {
 async function handleCityPair(searchParams, res) {
   const srcId = Number(searchParams.get("src"));
   const dstId = Number(searchParams.get("dst"));
+  const range = cityPairRangeInterval(searchParams.get("range"));
+  const grouping = cityPairGroupingInterval(searchParams.get("group"));
 
-  if (!Number.isInteger(srcId) || !Number.isInteger(dstId)) {
+  if (
+    !Number.isInteger(srcId) ||
+    !Number.isInteger(dstId) ||
+    range === null ||
+    grouping === undefined
+  ) {
     res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Expected ?src=<cityId>&dst=<cityId>" }));
+    res.end(
+      JSON.stringify({
+        error:
+          "Expected ?src=<cityId>&dst=<cityId>&range=day|week|month|year&group=none|hour|day",
+      }),
+    );
     return;
   }
 
-  const { rows } = await query(
-    `SELECT
-       ping_results.time,
-       -- Some RIPE Atlas results report a fully lossy ping as rtt_avg_ms
-       -- = -1 rather than omitting it (normalize.js guards new ingests,
-       -- this covers rows already stored before that fix).
-       CASE
-         WHEN ping_results.rtt_avg_ms < 0 THEN NULL
-         ELSE ping_results.rtt_avg_ms
-       END AS "rttMs",
-       ping_results.packet_loss_pct AS "packetLossPct"
-     FROM ping_results
+  const baseQuery = `FROM ping_results
      JOIN cities src ON src.probe_id = ping_results.probe_id AND src.id = $1
      JOIN cities dst
        ON dst.measurement_id = ping_results.measurement_id AND dst.id = $2
+     WHERE ping_results.time >= NOW() - $3::interval`;
+  const selectRtt = `CASE
+       WHEN ping_results.rtt_avg_ms < 0 THEN NULL
+       ELSE ping_results.rtt_avg_ms
+     END`;
+  const result =
+    grouping === null
+      ? await query(
+          `SELECT
+       ping_results.time,
+       ${selectRtt} AS "rttMs",
+       ping_results.packet_loss_pct AS "packetLossPct"
+     ${baseQuery}
      ORDER BY ping_results.time DESC`,
-    [srcId, dstId],
-  );
+          [srcId, dstId, range],
+        )
+      : await query(
+          `SELECT
+             time_bucket($4::interval, ping_results.time) AS time,
+             avg(${selectRtt}) AS "rttMs",
+             avg(ping_results.packet_loss_pct) AS "packetLossPct"
+           ${baseQuery}
+           GROUP BY 1
+           ORDER BY time DESC`,
+          [srcId, dstId, range, grouping],
+        );
 
   res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(rows));
+  res.end(JSON.stringify(result.rows));
+}
+
+/**
+ * @param {string|null} range
+ * @returns {"1 day"|"1 week"|"1 month"|"1 year"|null}
+ */
+function cityPairRangeInterval(range) {
+  switch (range ?? "day") {
+    case "day":
+      return "1 day";
+    case "week":
+      return "1 week";
+    case "month":
+      return "1 month";
+    case "year":
+      return "1 year";
+    default:
+      return null;
+  }
+}
+
+/**
+ * @param {string|null} grouping
+ * @returns {"1 hour"|"1 day"|null|undefined}
+ */
+function cityPairGroupingInterval(grouping) {
+  switch (grouping ?? "none") {
+    case "none":
+      return null;
+    case "hour":
+      return "1 hour";
+    case "day":
+      return "1 day";
+    default:
+      return undefined;
+  }
 }
 
 /**

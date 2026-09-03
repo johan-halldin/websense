@@ -8,8 +8,9 @@ import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 /** @import { ICityPair, ICityPairRow } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
+/** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
 /** @import { City } from "../fetch/cities.js" */
-/** @import { CityPairMeasurement } from "../fetch/city-pair.js" */
+/** @import { CityPairGrouping, CityPairMeasurement, CityPairRange } from "../fetch/city-pair.js" */
 
 /**
  * @typedef {object} Pair
@@ -26,6 +27,10 @@ class JcCityPair {
   #cities = [];
   /** @type {Pair[]} */
   #pairs = [];
+  /** @type {CityPairRange} */
+  #range = "day";
+  /** @type {CityPairGrouping} */
+  #grouping = "none";
   /** @type {string|null} */
   #error = null;
 
@@ -93,7 +98,12 @@ class JcCityPair {
       return;
     }
     try {
-      pair.rows = await fetchCityPairMeasurements(srcId, dstId);
+      pair.rows = await fetchCityPairMeasurements(
+        srcId,
+        dstId,
+        this.#range,
+        this.#grouping,
+      );
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
@@ -118,6 +128,18 @@ class JcCityPair {
       { id: crypto.randomUUID(), srcId: src.id, dstId: dst.id, rows: [] },
     ];
     this.#on_change();
+  }
+
+  /** @param {CityPairRange} range */
+  #setRange(range) {
+    this.#range = range;
+    this.#fetchAllMeasurements();
+  }
+
+  /** @param {CityPairGrouping} grouping */
+  #setGrouping(grouping) {
+    this.#grouping = grouping;
+    this.#fetchAllMeasurements();
   }
 
   /** @param {string} id */
@@ -152,6 +174,42 @@ class JcCityPair {
       ...(this.#cities.length >= 2
         ? { onClick: () => this.#addRandomPair() }
         : {}),
+    };
+
+    /** @type {ISegmentedControl} */
+    const rangeControl = {
+      value: this.#range,
+      options: [
+        { value: "day", label: "1 day" },
+        { value: "week", label: "1 week" },
+        { value: "month", label: "1 month" },
+        { value: "year", label: "1 year" },
+      ],
+      onChange: (value) => {
+        if (
+          value === "day" ||
+          value === "week" ||
+          value === "month" ||
+          value === "year"
+        ) {
+          this.#setRange(value);
+        }
+      },
+    };
+
+    /** @type {ISegmentedControl} */
+    const groupingControl = {
+      value: this.#grouping,
+      options: [
+        { value: "none", label: "None" },
+        { value: "hour", label: "1 hour" },
+        { value: "day", label: "1 day" },
+      ],
+      onChange: (value) => {
+        if (value === "none" || value === "hour" || value === "day") {
+          this.#setGrouping(value);
+        }
+      },
     };
 
     /** @type {ICityPairRow[]} */
@@ -205,6 +263,8 @@ class JcCityPair {
     return {
       refreshButton,
       addRandomPairButton,
+      rangeControl,
+      groupingControl,
       pairs,
       error: this.#error,
       chart,
