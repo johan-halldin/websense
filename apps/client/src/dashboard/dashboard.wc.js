@@ -1,6 +1,7 @@
 import { html, LitElement } from "lit";
 import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
+import { iconBaseStyle } from "@websense/ui/src/icons/icon-styles.js";
 import { layoutStyle } from "@websense/ui/src/layout-style.js";
 import "../city-pair/city-pair.wc.js";
 import "../mesh/mesh.wc.js";
@@ -23,7 +24,7 @@ import "../world-map/world-map.wc.js";
 
 class WsDashboard extends LitElement {
   /** @override */
-  static styles = layoutStyle;
+  static styles = [iconBaseStyle, layoutStyle];
 
   /** @type {IDashboard|null} */
   #ic = null;
@@ -51,7 +52,13 @@ class WsDashboard extends LitElement {
         }"
       >
         <div class="ui-row ui-gap-md ui-align-center">
-          <h1>WebSense</h1>
+          <h1 class="ui-row ui-gap-sm ui-align-center">
+            <span
+              class="icon"
+              style="mask-image: var(--icon-web); -webkit-mask-image: var(--icon-web); --icon-scale: 1.5;"
+            ></span>
+            WebSense
+          </h1>
           <ui-button .ic=${ic.ingestButton}></ui-button>
         </div>
         <ui-tabs .ic=${ic.tabs}></ui-tabs>
