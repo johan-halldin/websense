@@ -237,7 +237,11 @@ async function handleCorrelations(searchParams, res) {
        second_src.name AS "secondSrcName",
        second_dst.name AS "secondDstName",
        correlations.correlation,
-       correlations.shared_buckets AS "sharedBuckets"
+       correlations.shared_buckets AS "sharedBuckets",
+       (
+         correlations.first_src_id = correlations.second_dst_id
+         AND correlations.first_dst_id = correlations.second_src_id
+       ) AS "isSymmetric"
      FROM correlations
      JOIN cities first_src ON first_src.id = correlations.first_src_id
      JOIN cities first_dst ON first_dst.id = correlations.first_dst_id

@@ -10,6 +10,7 @@
  * @property {string} secondDstName
  * @property {number} correlation
  * @property {number} sharedBuckets
+ * @property {boolean} isSymmetric
  */
 
 /**

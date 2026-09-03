@@ -9,7 +9,8 @@ import "@websense/ui/src/segmented-control/segmented-control.wc.js";
  * @property {ISegmentedControl} rangeControl
  * @property {ISegmentedControl} groupingControl
  * @property {ISegmentedControl} metricControl
- * @property {Correlation[]} rows
+ * @property {Correlation[]} symmetricRows
+ * @property {Correlation[]} otherRows
  * @property {string|null} error
  */
 
@@ -92,8 +93,32 @@ class WsCorrelations extends LitElement {
             ></ui-segmented-control>
           </label>
         </div>
+        ${this.#renderTable(
+          "Reverse directions",
+          "The same city pair measured in both directions.",
+          ic.symmetricRows,
+        )}
+        ${this.#renderTable(
+          "Other route pairs",
+          "Routes that are not opposite directions of the same city pair.",
+          ic.otherRows,
+        )}
+      </section>
+    `;
+  }
+
+  /**
+   * @param {string} heading
+   * @param {string} description
+   * @param {Correlation[]} rows
+   */
+  #renderTable(heading, description, rows) {
+    return html`
+      <section>
+        <h3>${heading}</h3>
+        <p>${description}</p>
         ${
-          ic.rows.length > 0
+          rows.length > 0
             ? html`
                 <table>
                   <thead>
@@ -105,7 +130,7 @@ class WsCorrelations extends LitElement {
                     </tr>
                   </thead>
                   <tbody>
-                    ${ic.rows.map(
+                    ${rows.map(
                       (row) => html`
                         <tr>
                           <td>${row.firstSrcName} → ${row.firstDstName}</td>

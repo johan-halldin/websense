@@ -116,7 +116,8 @@ class JcCorrelations {
       rangeControl,
       groupingControl,
       metricControl,
-      rows: this.#rows,
+      symmetricRows: this.#rows.filter((row) => row.isSymmetric),
+      otherRows: this.#rows.filter((row) => !row.isSymmetric),
       error: this.#error,
     };
   }
