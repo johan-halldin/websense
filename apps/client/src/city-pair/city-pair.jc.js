@@ -1,6 +1,6 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
-import { formatTime } from "@websense/util";
+import { formatTime, randomIndex } from "@websense/util";
 import { fetchCities } from "../fetch/cities.js";
 import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
 import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
@@ -104,8 +104,8 @@ class JcCityPair {
     if (this.#cities.length < 2) {
       return;
     }
-    const srcIndex = Math.floor(Math.random() * this.#cities.length);
-    const dstIndex = Math.floor(Math.random() * (this.#cities.length - 1));
+    const srcIndex = randomIndex(this.#cities.length);
+    const dstIndex = randomIndex(this.#cities.length - 1);
     const dstOffset = dstIndex >= srcIndex ? 1 : 0;
     const src = this.#cities[srcIndex];
     const dst = this.#cities[dstIndex + dstOffset];
