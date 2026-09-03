@@ -1,6 +1,6 @@
 import { css, html, LitElement } from "lit";
+import "@websense/ui/src/badge/badge.wc.js";
 import "@websense/ui/src/button/button.wc.js";
-import { iconBaseStyle } from "@websense/ui/src/icons/icon-styles.js";
 import { formatRelativeTime, formatTime } from "@websense/util";
 import {
   isRttDeviationNotable,
@@ -21,13 +21,13 @@ import {
 
 /**
  * @param {number} percent
- * @returns {{style: string, icon: "arrow-up"|"arrow-down"}}
+ * @returns {{backgroundColor: string, textColor: string}}
  */
 function rttBadge(percent) {
-  const { color, textColor, icon } = rttColor(percent);
+  const { color, textColor } = rttColor(percent);
   return {
-    style: `background-color: ${color}; color: ${textColor};`,
-    icon,
+    backgroundColor: color,
+    textColor,
   };
 }
 
@@ -48,9 +48,9 @@ const AVG_RTT_GRAY_STEPS = [
  * @param {number} avgRttMs
  * @param {number} min
  * @param {number} max
- * @returns {string}
+ * @returns {{backgroundColor: string, textColor: string}}
  */
-function avgRttChipStyle(avgRttMs, min, max) {
+function avgRttBadge(avgRttMs, min, max) {
   const normalized = max === min ? 0 : (avgRttMs - min) / (max - min);
   const stepIndex = Math.min(
     AVG_RTT_GRAY_STEPS.length - 1,
@@ -60,7 +60,10 @@ function avgRttChipStyle(avgRttMs, min, max) {
     stepIndex >= AVG_RTT_GRAY_STEPS.length - 2
       ? "var(--color-white)"
       : "var(--color-text)";
-  return `background-color: ${AVG_RTT_GRAY_STEPS[stepIndex]}; color: ${textColor};`;
+  return {
+    backgroundColor: AVG_RTT_GRAY_STEPS[stepIndex] ?? "var(--color-background)",
+    textColor,
+  };
 }
 
 /**
@@ -100,32 +103,27 @@ function renderRow(row, minAvgRttMs, maxAvgRttMs) {
     percent === null || percent === 0
       ? ""
       : `${percent >= 0 ? "+" : ""}${percent}%`;
+  const rttLabel = `${row.rttAvgMs?.toFixed(1) ?? "—"}${
+    badge !== null && percent !== null
+      ? ` ${percent > 0 ? "↑" : "↓"} ${delta}`
+      : ""
+  }`;
 
   return html`
     <tr>
       <td>${row.dstName}</td>
       <td>
-        <span class="rtt-badge" style=${badge?.style ?? ""}>
-          ${row.rttAvgMs?.toFixed(1) ?? "—"}
-          ${
-            badge !== null
-              ? html`<span
-                  class="icon"
-                  style="mask-image: var(--icon-${badge.icon}); -webkit-mask-image: var(--icon-${badge.icon});"
-                ></span>`
-              : ""
-          }
-          ${delta ? html`<span class="delta">${delta}</span>` : ""}
-        </span>
+        <ui-badge .ic=${{ label: rttLabel, ...badge }}></ui-badge>
       </td>
       <td>
         ${
           row.avgRttMs !== null
-            ? html`<span
-                class="avg-rtt-chip"
-                style=${avgRttChipStyle(row.avgRttMs, minAvgRttMs, maxAvgRttMs)}
-                >${row.avgRttMs.toFixed(1)}</span
-              >`
+            ? html`<ui-badge
+                .ic=${{
+                  label: row.avgRttMs.toFixed(1),
+                  ...avgRttBadge(row.avgRttMs, minAvgRttMs, maxAvgRttMs),
+                }}
+              ></ui-badge>`
             : "—"
         }
       </td>
@@ -139,48 +137,24 @@ function renderRow(row, minAvgRttMs, maxAvgRttMs) {
 
 class WsMesh extends LitElement {
   /** @override */
-  static styles = [
-    iconBaseStyle,
-    css`
-      header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-bottom: 24px;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 6px 12px;
-        border-bottom: 1px solid var(--color-border);
-      }
-      .rtt-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 2px 8px;
-        border-radius: 999px;
-        font-size: 13px;
-      }
-      .rtt-badge .delta {
-        font-size: 11px;
-        opacity: 0.8;
-      }
-      .rtt-badge .icon {
-        --icon-scale: 0.7;
-      }
-      .avg-rtt-chip {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 999px;
-        font-size: 13px;
-      }
-    `,
-  ];
+  static styles = css`
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+    th,
+    td {
+      text-align: left;
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--color-border);
+    }
+  `;
 
   /** @type {IWsMesh|null} */
   #ic = null;
