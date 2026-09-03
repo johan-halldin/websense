@@ -17,6 +17,7 @@
  * |"clock"
  * |"color-palette"
  * |"copy"
+ * |"correlation"
  * |"download"
  * |"ellipsis"
  * |"ellipsis-vertical"

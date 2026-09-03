@@ -74,6 +74,7 @@ class JcDashboard {
           { value: "mesh", label: "Mesh", icon: "mesh" },
           { value: "world-map", label: "World Map", icon: "world-map" },
           { value: "city-pair", label: "City Pair", icon: "link" },
+          { value: "correlations", label: "Correlations", icon: "correlation" },
         ],
         onChange: (value) => {
           this.#activeTab = value;

@@ -76,6 +76,19 @@ class WsDashboard extends LitElement {
             ? html`<ws-city-pair .ic=${ic.cityPair}></ws-city-pair>`
             : ""
         }
+        ${
+          activeTab === "correlations"
+            ? html`
+                <section class="ui-stack ui-gap-sm">
+                  <h2>Correlations</h2>
+                  <p>
+                    Explore routes that degrade or recover together, helping
+                    identify shared regional or provider-level events.
+                  </p>
+                </section>
+              `
+            : ""
+        }
       </div>
     `;
   }
