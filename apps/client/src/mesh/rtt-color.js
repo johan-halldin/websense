@@ -38,7 +38,7 @@ function isRttDeviationNotable(percent) {
 
 /**
  * @param {number} percent
- * @returns {{color: string, textColor: string}}
+ * @returns {{color: string, textColor: string, icon: "arrow-up"|"arrow-down"}}
  */
 function rttColor(percent) {
   const magnitude = Math.min(Math.abs(percent) / MAX_DEVIATION_PERCENT, 1);
@@ -51,6 +51,7 @@ function rttColor(percent) {
   return {
     color: `color-mix(in srgb, var(--color-${token}) ${Math.round(intensity * 100)}%, transparent)`,
     textColor,
+    icon: percent >= 0 ? "arrow-up" : "arrow-down",
   };
 }
 

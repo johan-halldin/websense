@@ -21,13 +21,14 @@ import {
 
 /**
  * @param {number} percent
- * @returns {{backgroundColor: string, textColor: string}}
+ * @returns {{backgroundColor: string, textColor: string, icon: "arrow-up"|"arrow-down"}}
  */
 function rttBadge(percent) {
-  const { color, textColor } = rttColor(percent);
+  const { color, textColor, icon } = rttColor(percent);
   return {
     backgroundColor: color,
     textColor,
+    icon,
   };
 }
 
@@ -131,9 +132,7 @@ function renderRow(row, minAvgRttMs, maxAvgRttMs) {
       ? ""
       : `${percent >= 0 ? "+" : ""}${percent}%`;
   const rttLabel = `${row.rttAvgMs?.toFixed(1) ?? "—"}${
-    badge !== null && percent !== null
-      ? ` ${percent > 0 ? "↑" : "↓"} ${delta}`
-      : ""
+    badge !== null ? ` ${delta}` : ""
   }`;
 
   return html`
