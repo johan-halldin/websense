@@ -23,12 +23,14 @@ function init_example_badge(root) {
     {
       label: "Failed",
       icon: "circle-alert",
+      size: "sm",
       backgroundColor: "var(--color-error)",
       textColor: "var(--color-on-error)",
     },
     {
       label: "Pending",
       icon: "clock",
+      size: "lg",
       backgroundColor: "var(--color-warning)",
       textColor: "var(--color-on-warning)",
     },

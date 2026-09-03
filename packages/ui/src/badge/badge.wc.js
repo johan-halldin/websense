@@ -8,6 +8,7 @@ import { iconBaseStyle } from "../icons/icon-styles.js";
  * @property {string} label
  * @property {IconName} [icon]
  * @property {string} [tooltip]
+ * @property {"sm"|"md"|"lg"} [size] - defaults to "md"
  * @property {string} [backgroundColor]
  * @property {string} [textColor]
  * @property {string} [iconColor]
@@ -21,16 +22,37 @@ class UiBadge extends LitElement {
     css`
       :host {
         display: inline-flex;
+        inline-size: fit-content;
+        block-size: fit-content;
       }
       .badge {
         display: inline-flex;
         align-items: center;
         gap: var(--space-xs);
-        padding: var(--space-2xs) var(--space-sm);
-        border-radius: 999px;
+        border-radius: 4px;
         font: inherit;
-        font-size: 13px;
         line-height: 1.25;
+      }
+      .sm {
+        font-size: 12px;
+        padding: var(--space-2xs) calc(var(--space-sm) - var(--space-2xs));
+      }
+      .sm .icon {
+        --icon-scale: 0.75;
+      }
+      .md {
+        font-size: 14px;
+        padding: var(--space-2xs) var(--space-sm);
+      }
+      .md .icon {
+        --icon-scale: 0.875;
+      }
+      .lg {
+        font-size: 16px;
+        padding: var(--space-xs) calc(var(--space-sm) + var(--space-2xs));
+      }
+      .lg .icon {
+        --icon-scale: 1;
       }
     `,
   ];
@@ -53,10 +75,11 @@ class UiBadge extends LitElement {
     const backgroundColor = ic.backgroundColor ?? "var(--color-background)";
     const textColor = ic.textColor ?? "var(--color-text)";
     const iconColor = ic.iconColor ?? textColor;
+    const size = ic.size ?? "md";
 
     return html`
       <span
-        class="badge"
+        class="badge ${size}"
         part="badge"
         title=${ic.tooltip ?? ""}
         style="background-color: ${backgroundColor}; color: ${textColor};"
