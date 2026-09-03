@@ -33,7 +33,11 @@ const SERIES_COLOR_VARS = [
   "--color-chart-8",
 ];
 
-const tickFormat = new Intl.DateTimeFormat(undefined, {
+const tickDateFormat = new Intl.DateTimeFormat(undefined, {
+  month: "short",
+  day: "numeric",
+});
+const tickTimeFormat = new Intl.DateTimeFormat(undefined, {
   hour: "2-digit",
   minute: "2-digit",
 });
@@ -193,7 +197,10 @@ class UiLineChart extends LitElement {
             grid: { color: borderColor },
             ticks: {
               color: mutedColor,
-              callback: (value) => tickFormat.format(Number(value)),
+              callback: (value) => [
+                tickDateFormat.format(Number(value)),
+                tickTimeFormat.format(Number(value)),
+              ],
             },
           },
           y: { grid: { color: borderColor }, ticks: { color: mutedColor } },
