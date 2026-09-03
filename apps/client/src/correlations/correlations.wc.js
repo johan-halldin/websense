@@ -1,13 +1,16 @@
 import { css, html, LitElement } from "lit";
 import "@websense/ui/src/badge/badge.wc.js";
+import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/segmented-control/segmented-control.wc.js";
 
 /** @import { IBadge } from "@websense/ui/src/badge/badge.wc.js" */
+/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
 /** @import { Correlation } from "../fetch/correlations.js" */
 
 /**
  * @typedef {object} ICorrelations
+ * @property {IButton} refreshButton
  * @property {ISegmentedControl} rangeControl
  * @property {ISegmentedControl} groupingControl
  * @property {ISegmentedControl} metricControl
@@ -19,6 +22,11 @@ import "@websense/ui/src/segmented-control/segmented-control.wc.js";
 class WsCorrelations extends LitElement {
   /** @override */
   static styles = css`
+    header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -76,7 +84,10 @@ class WsCorrelations extends LitElement {
 
     return html`
       <section>
-        <h2>Correlations</h2>
+        <header>
+          <h2>Correlations</h2>
+          <ui-button .ic=${ic.refreshButton}></ui-button>
+        </header>
         <p>
           Routes are compared only in shared time buckets, then ordered by
           correlation strength.

@@ -2,6 +2,7 @@ import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner
 import { fetchCorrelations } from "../fetch/correlations.js";
 
 /** @import { ICorrelations } from "./correlations.wc.js" */
+/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
 /** @import { Correlation, CorrelationGrouping, CorrelationMetric, CorrelationRange } from "../fetch/correlations.js" */
 
@@ -69,6 +70,13 @@ class JcCorrelations {
 
   /** @returns {ICorrelations} */
   getICorrelations() {
+    /** @type {IButton} */
+    const refreshButton = {
+      label: "Refresh",
+      icon: "refresh-cw",
+      onClick: () => this.#fetch(),
+    };
+
     /** @type {ISegmentedControl} */
     const rangeControl = {
       value: this.#range,
@@ -113,6 +121,7 @@ class JcCorrelations {
     };
 
     return {
+      refreshButton,
       rangeControl,
       groupingControl,
       metricControl,
