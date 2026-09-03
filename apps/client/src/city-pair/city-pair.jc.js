@@ -25,27 +25,15 @@ class JcCityPair {
   /** @type {City[]} */
   #cities = [];
   /** @type {Pair[]} */
-  #pairs = [{ id: crypto.randomUUID(), srcId: null, dstId: null, rows: [] }];
+  #pairs = [];
   /** @type {string|null} */
   #error = null;
 
   /** @param {() => void} on_change */
   constructor(on_change) {
     this.#on_change = on_change;
-    this.#startup();
+    this.#fetchCities();
     this.#subscribeToUpdates();
-  }
-
-  /** Fetches cities first, defaults the first pair to the first/last city
-   * once the list actually comes back, then fetches its measurements. */
-  async #startup() {
-    await this.#fetchCities();
-    const firstPair = this.#pairs[0];
-    if (firstPair !== undefined) {
-      firstPair.srcId = this.#cities.at(0)?.id ?? null;
-      firstPair.dstId = this.#cities.at(-1)?.id ?? null;
-    }
-    await this.#fetchAllMeasurements();
   }
 
   /** Silently re-fetches (no blocking spinner) whenever the server pushes a
@@ -112,10 +100,22 @@ class JcCityPair {
     }
   }
 
-  #addPair() {
+  #addRandomPair() {
+    if (this.#cities.length < 2) {
+      return;
+    }
+    const srcIndex = Math.floor(Math.random() * this.#cities.length);
+    const dstIndex = Math.floor(Math.random() * (this.#cities.length - 1));
+    const dstOffset = dstIndex >= srcIndex ? 1 : 0;
+    const src = this.#cities[srcIndex];
+    const dst = this.#cities[dstIndex + dstOffset];
+    if (src === undefined || dst === undefined) {
+      return;
+    }
+
     this.#pairs = [
       ...this.#pairs,
-      { id: crypto.randomUUID(), srcId: null, dstId: null, rows: [] },
+      { id: crypto.randomUUID(), srcId: src.id, dstId: dst.id, rows: [] },
     ];
     this.#on_change();
   }
@@ -146,10 +146,12 @@ class JcCityPair {
     };
 
     /** @type {IButton} */
-    const addPairButton = {
-      label: "Add pair",
+    const addRandomPairButton = {
+      label: "Add random pair",
       icon: "plus",
-      onClick: () => this.#addPair(),
+      ...(this.#cities.length >= 2
+        ? { onClick: () => this.#addRandomPair() }
+        : {}),
     };
 
     /** @type {ICityPairRow[]} */
@@ -202,7 +204,7 @@ class JcCityPair {
 
     return {
       refreshButton,
-      addPairButton,
+      addRandomPairButton,
       pairs,
       error: this.#error,
       chart,

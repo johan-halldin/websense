@@ -21,7 +21,7 @@ import "@websense/ui/src/select/select.wc.js";
 /**
  * @typedef {object} ICityPair
  * @property {IButton} refreshButton
- * @property {IButton} addPairButton
+ * @property {IButton} addRandomPairButton
  * @property {ICityPairRow[]} pairs
  * @property {string|null} error
  * @property {ILineChart} chart
@@ -92,7 +92,7 @@ class WsCityPair extends LitElement {
       )}
 
       <div class="add-pair">
-        <ui-button .ic=${ic.addPairButton}></ui-button>
+        <ui-button .ic=${ic.addRandomPairButton}></ui-button>
       </div>
     `;
   }
