@@ -89,6 +89,33 @@ function groupBySrc(rows) {
 }
 
 /**
+ * @param {number|null} packetLossPct
+ * @returns {TemplateResult|string}
+ */
+function renderPacketLoss(packetLossPct) {
+  if (packetLossPct === null) {
+    return "—";
+  }
+  if (packetLossPct === 0) {
+    return "0";
+  }
+
+  const isTotalLoss = packetLossPct >= 100;
+  return html`<ui-badge
+    .ic=${{
+      label: `${packetLossPct.toFixed(0)}%`,
+      icon: isTotalLoss ? "circle-alert" : "triangle-alert",
+      backgroundColor: isTotalLoss
+        ? "var(--color-error)"
+        : "var(--color-warning)",
+      textColor: isTotalLoss
+        ? "var(--color-on-error)"
+        : "var(--color-on-warning)",
+    }}
+  ></ui-badge>`;
+}
+
+/**
  * @param {MeshRow} row
  * @param {number} minAvgRttMs
  * @param {number} maxAvgRttMs
@@ -127,7 +154,7 @@ function renderRow(row, minAvgRttMs, maxAvgRttMs) {
             : "—"
         }
       </td>
-      <td>${row.packetLossPct?.toFixed(0) ?? "—"}</td>
+      <td>${renderPacketLoss(row.packetLossPct)}</td>
       <td title=${formatTime(new Date(row.time))}>
         ${formatRelativeTime(new Date(row.time))}
       </td>
