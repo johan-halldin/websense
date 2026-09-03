@@ -51,6 +51,7 @@
  * |"upload"
  * |"user"
  * |"users"
+ * |"web"
  * |"world-map"
  * |"x"
  * } IconName
