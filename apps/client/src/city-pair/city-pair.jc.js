@@ -1,9 +1,7 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
-import { show_toast } from "@websense/ui/src/toast/toast.js";
-import { formatTime, randomIndex } from "@websense/util";
+import { randomIndex } from "@websense/util";
 import { fetchCities } from "../fetch/cities.js";
 import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
-import { subscribeToPingResultsUpdates } from "../fetch/ping-result-events.js";
 
 /** @import { ICityPair, ICityPairRow } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
@@ -38,26 +36,6 @@ class JcCityPair {
   constructor(on_change) {
     this.#on_change = on_change;
     this.#fetchCities();
-    this.#subscribeToUpdates();
-  }
-
-  /** Silently re-fetches (no blocking spinner) whenever the server pushes a
-   * notification that new ping results landed - only if some pair is
-   * already being viewed, so this never overrides the "Refresh" button's
-   * manual-trigger intent by starting a fetch nobody asked for. */
-  #subscribeToUpdates() {
-    subscribeToPingResultsUpdates(() => {
-      const hasData = this.#pairs.some((pair) => pair.rows.length > 0);
-      if (!hasData) {
-        return;
-      }
-      this.#doFetchAllMeasurements().then(() => {
-        this.#on_change();
-        show_toast(`Page updated at ${formatTime(new Date())}`, {
-          level: "info",
-        });
-      });
-    });
   }
 
   async #fetchCities() {
@@ -79,6 +57,13 @@ class JcCityPair {
       this.#doFetchAllMeasurements(),
       "Loading measurements...",
     );
+    this.#on_change();
+  }
+
+  /** Silently re-fetches data after the app receives a server change. */
+  async refreshFromServerChange() {
+    await this.#doFetchCities();
+    await this.#doFetchAllMeasurements();
     this.#on_change();
   }
 

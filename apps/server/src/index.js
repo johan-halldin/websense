@@ -40,7 +40,7 @@ listenForPingResultsUpdates(() => {
   broadcastTimer = setTimeout(() => {
     broadcastTimer = null;
     for (const res of sseClients) {
-      res.write("data: mesh-updated\n\n");
+      res.write("data: server-changed\n\n");
     }
   }, NOTIFY_DEBOUNCE_MS);
 });

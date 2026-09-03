@@ -47,6 +47,17 @@ class JcDashboard {
     }
   }
 
+  /** Re-fetches all server-backed dashboard data without showing a blocking
+   * spinner. JcApp calls this in response to the server's generic change
+   * signal. */
+  async refreshFromServerChange() {
+    await Promise.all([
+      this.#mesh.refreshFromServerChange(),
+      this.#worldMap.refreshFromServerChange(),
+      this.#cityPair.refreshFromServerChange(),
+    ]);
+  }
+
   /** @returns {IDashboard} */
   getIDashboard() {
     /** @type {IButton} */
