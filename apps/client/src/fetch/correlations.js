@@ -1,6 +1,8 @@
 import { isApiCorrelations } from "@websense/api-types";
+import { fetchJson } from "./http.js";
 
 /** @import { ApiCorrelation, ApiCorrelationGrouping, ApiCorrelationRange } from "@websense/api-types" */
+/** @import { HttpValueResult } from "./http.js" */
 
 /**
  * Fetches route correlations calculated from measurements grouped into shared
@@ -8,22 +10,14 @@ import { isApiCorrelations } from "@websense/api-types";
  *
  * @param {ApiCorrelationRange} range
  * @param {ApiCorrelationGrouping} grouping
- * @returns {Promise<ApiCorrelation[]>}
+ * @returns {Promise<HttpValueResult<ApiCorrelation[]>>}
  */
 async function fetchCorrelations(range, grouping) {
   const searchParams = new URLSearchParams({
     range,
     group: grouping,
   });
-  const response = await fetch(`/api/correlations?${searchParams}`);
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-  const correlations = await response.json();
-  if (!isApiCorrelations(correlations)) {
-    throw new Error("Invalid correlations response");
-  }
-  return correlations;
+  return fetchJson(`/api/correlations?${searchParams}`, isApiCorrelations);
 }
 
 export { fetchCorrelations };

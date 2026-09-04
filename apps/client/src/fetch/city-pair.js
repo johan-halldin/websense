@@ -1,6 +1,8 @@
 import { isApiCityPairMeasurements } from "@websense/api-types";
+import { fetchJson } from "./http.js";
 
 /** @import { ApiCityPairGrouping, ApiCityPairMeasurement, ApiCityPairRange } from "@websense/api-types" */
+/** @import { HttpValueResult } from "./http.js" */
 
 /**
  * Fetches every measurement between two cities from the server (GET
@@ -10,7 +12,7 @@ import { isApiCityPairMeasurements } from "@websense/api-types";
  * @param {number} dstId
  * @param {ApiCityPairRange} range
  * @param {ApiCityPairGrouping} grouping
- * @returns {Promise<ApiCityPairMeasurement[]>}
+ * @returns {Promise<HttpValueResult<ApiCityPairMeasurement[]>>}
  */
 async function fetchCityPairMeasurements(srcId, dstId, range, grouping) {
   const searchParams = new URLSearchParams({
@@ -19,15 +21,7 @@ async function fetchCityPairMeasurements(srcId, dstId, range, grouping) {
     range,
     group: grouping,
   });
-  const response = await fetch(`/api/city-pair?${searchParams}`);
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-  const measurements = await response.json();
-  if (!isApiCityPairMeasurements(measurements)) {
-    throw new Error("Invalid city pair response");
-  }
-  return measurements;
+  return fetchJson(`/api/city-pair?${searchParams}`, isApiCityPairMeasurements);
 }
 
 export { fetchCityPairMeasurements };

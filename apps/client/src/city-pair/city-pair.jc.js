@@ -2,6 +2,7 @@ import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner
 import { randomIndex } from "@websense/util";
 import { fetchCities } from "../fetch/cities.js";
 import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
+import { httpResultErrorMessage } from "../fetch/http.js";
 
 /** @import { ICityPair, ICityPairRow } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
@@ -45,7 +46,12 @@ class JcCityPair {
 
   async #doFetchCities() {
     try {
-      this.#cities = await fetchCities();
+      const response = await fetchCities();
+      if (response.type !== "HTTP OK") {
+        this.#error = httpResultErrorMessage(response);
+        return;
+      }
+      this.#cities = response.value;
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
@@ -83,12 +89,17 @@ class JcCityPair {
       return;
     }
     try {
-      pair.rows = await fetchCityPairMeasurements(
+      const response = await fetchCityPairMeasurements(
         srcId,
         dstId,
         this.#range,
         this.#grouping,
       );
+      if (response.type !== "HTTP OK") {
+        this.#error = httpResultErrorMessage(response);
+        return;
+      }
+      pair.rows = response.value;
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);

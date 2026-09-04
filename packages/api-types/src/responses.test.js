@@ -6,10 +6,16 @@ import {
   isApiCorrelations,
   isApiCorrelationGrouping,
   isApiCorrelationRange,
+  isApiIngest,
   isApiMeshRows,
 } from "./index.js";
 
 describe("measurement API contracts", () => {
+  it("sanitizes ingest responses", () => {
+    expect(isApiIngest({ totalRows: 0 })).toBe(true);
+    expect(isApiIngest({ totalRows: -1 })).toBe(false);
+  });
+
   it("sanitizes city-pair measurements", () => {
     const measurement = {
       time: "2026-09-04T12:00:00.000Z",

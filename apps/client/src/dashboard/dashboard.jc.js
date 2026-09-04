@@ -2,6 +2,8 @@ import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { JcCityPair } from "../city-pair/city-pair.jc.js";
 import { JcCorrelations } from "../correlations/correlations.jc.js";
+import { httpResultErrorMessage } from "../fetch/http.js";
+import { fetchIngest } from "../fetch/ingest.js";
 import { JcMesh } from "../mesh/mesh.jc.js";
 import { JcWorldMap } from "../world-map/world-map.jc.js";
 
@@ -39,9 +41,10 @@ class JcDashboard {
 
   async #doIngest() {
     try {
-      const response = await fetch("/api/ingest", { method: "POST" });
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+      const response = await fetchIngest();
+      if (response.type !== "HTTP OK") {
+        show_toast(httpResultErrorMessage(response), { level: "error" });
+        return;
       }
       await Promise.all([this.#mesh.refresh(), this.#worldMap.refresh()]);
     } catch (error) {

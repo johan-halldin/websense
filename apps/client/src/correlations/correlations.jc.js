@@ -1,5 +1,6 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { fetchCorrelations } from "../fetch/correlations.js";
+import { httpResultErrorMessage } from "../fetch/http.js";
 
 /** @import { ICorrelations } from "./correlations.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
@@ -31,7 +32,12 @@ class JcCorrelations {
 
   async #doFetch() {
     try {
-      this.#rows = await fetchCorrelations(this.#range, this.#grouping);
+      const response = await fetchCorrelations(this.#range, this.#grouping);
+      if (response.type !== "HTTP OK") {
+        this.#error = httpResultErrorMessage(response);
+        return;
+      }
+      this.#rows = response.value;
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);

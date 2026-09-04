@@ -1,22 +1,16 @@
 import { isApiCities } from "@websense/api-types";
+import { fetchJson } from "./http.js";
 
 /** @import { ApiCity } from "@websense/api-types" */
+/** @import { HttpValueResult } from "./http.js" */
 
 /**
  * Fetches every configured city from the server (GET /api/cities).
  *
- * @returns {Promise<ApiCity[]>}
+ * @returns {Promise<HttpValueResult<ApiCity[]>>}
  */
 async function fetchCities() {
-  const response = await fetch("/api/cities");
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-  const cities = await response.json();
-  if (!isApiCities(cities)) {
-    throw new Error("Invalid city response");
-  }
-  return cities;
+  return fetchJson("/api/cities", isApiCities);
 }
 
 export { fetchCities };

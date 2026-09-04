@@ -1,24 +1,18 @@
 import { isApiMeshRows } from "@websense/api-types";
+import { fetchJson } from "./http.js";
 
 /** @import { ApiMeshRow } from "@websense/api-types" */
+/** @import { HttpValueResult } from "./http.js" */
 
 /**
  * Fetches every mesh row from the server (GET /api/mesh) - shared by
  * JcMesh and JcWorldMap, which both present the same underlying
  * ping-results data (as a table vs. as map points/edges).
  *
- * @returns {Promise<ApiMeshRow[]>}
+ * @returns {Promise<HttpValueResult<ApiMeshRow[]>>}
  */
 async function fetchMeshRows() {
-  const response = await fetch("/api/mesh");
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
-  }
-  const rows = await response.json();
-  if (!isApiMeshRows(rows)) {
-    throw new Error("Invalid mesh response");
-  }
-  return rows;
+  return fetchJson("/api/mesh", isApiMeshRows);
 }
 
 export { fetchMeshRows };

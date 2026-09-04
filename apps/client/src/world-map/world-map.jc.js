@@ -1,4 +1,5 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
+import { httpResultErrorMessage } from "../fetch/http.js";
 import { fetchMeshRows } from "../fetch/mesh.js";
 import {
   isRttDeviationNotable,
@@ -115,7 +116,12 @@ class JcWorldMap {
 
   async #doFetch() {
     try {
-      this.#rows = await fetchMeshRows();
+      const response = await fetchMeshRows();
+      if (response.type !== "HTTP OK") {
+        this.#error = httpResultErrorMessage(response);
+        return;
+      }
+      this.#rows = response.value;
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
