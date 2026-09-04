@@ -27,7 +27,7 @@ const server = createServer((req, res) => {
     return;
   }
 
-  if (url.pathname === "/api/mesh") {
+  if (url.pathname === "/api/route-summaries" && req.method === "GET") {
     handleMesh(res).catch(onError);
     return;
   }
@@ -47,7 +47,7 @@ const server = createServer((req, res) => {
     return;
   }
 
-  if (url.pathname === "/api/correlations" && req.method === "GET") {
+  if (url.pathname === "/api/route-correlations" && req.method === "GET") {
     handleCorrelations(url.searchParams, res).catch(onError);
     return;
   }
