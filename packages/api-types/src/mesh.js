@@ -23,11 +23,11 @@ import {
 
 /**
  * @param {unknown} value
- * @returns {ApiMeshRow|null}
+ * @returns {value is ApiMeshRow}
  */
-function sanitizeApiMeshRow(value) {
+function isApiMeshRow(value) {
   if (!isRecord(value)) {
-    return null;
+    return false;
   }
   const {
     srcName,
@@ -55,37 +55,17 @@ function sanitizeApiMeshRow(value) {
     !isNullable(avgRttMs, isNumber) ||
     !isNullable(avgPacketLossPct, isNumber)
   ) {
-    return null;
+    return false;
   }
-  return {
-    srcName,
-    srcLat,
-    srcLon,
-    dstName,
-    dstLat,
-    dstLon,
-    time,
-    rttAvgMs,
-    packetLossPct,
-    avgRttMs,
-    avgPacketLossPct,
-  };
+  return true;
 }
 
 /**
  * @param {unknown} value
- * @returns {ApiMeshRow[]|null}
+ * @returns {value is ApiMeshRow[]}
  */
-function sanitizeApiMeshRows(value) {
-  return isArrayOf(value, isApiMeshRow) ? value : null;
-}
-
-/**
- * @param {unknown} value
- * @returns {value is ApiMeshRow}
- */
-function isApiMeshRow(value) {
-  return sanitizeApiMeshRow(value) !== null;
+function isApiMeshRows(value) {
+  return isArrayOf(value, isApiMeshRow);
 }
 
 /**
@@ -104,4 +84,4 @@ function isLongitude(value) {
   return isNumber(value) && value >= -180 && value <= 180;
 }
 
-export { sanitizeApiMeshRow, sanitizeApiMeshRows };
+export { isApiMeshRow, isApiMeshRows };

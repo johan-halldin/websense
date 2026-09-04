@@ -1,4 +1,4 @@
-import { sanitizeApiCities } from "@websense/api-types";
+import { isApiCities } from "@websense/api-types";
 
 /** @import { ApiCity } from "@websense/api-types" */
 
@@ -12,8 +12,8 @@ async function fetchCities() {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
-  const cities = sanitizeApiCities(await response.json());
-  if (cities === null) {
+  const cities = await response.json();
+  if (!isApiCities(cities)) {
     throw new Error("Invalid city response");
   }
   return cities;

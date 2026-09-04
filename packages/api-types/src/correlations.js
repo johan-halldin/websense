@@ -19,11 +19,11 @@ import {
 
 /**
  * @param {unknown} value
- * @returns {ApiCorrelation|null}
+ * @returns {value is ApiCorrelation}
  */
-function sanitizeApiCorrelation(value) {
+function isApiCorrelation(value) {
   if (!isRecord(value)) {
-    return null;
+    return false;
   }
   const {
     firstSrcName,
@@ -43,33 +43,17 @@ function sanitizeApiCorrelation(value) {
     !isPositiveInteger(sharedBuckets) ||
     !isBoolean(isSymmetric)
   ) {
-    return null;
+    return false;
   }
-  return {
-    firstSrcName,
-    firstDstName,
-    secondSrcName,
-    secondDstName,
-    correlation,
-    sharedBuckets,
-    isSymmetric,
-  };
+  return true;
 }
 
 /**
  * @param {unknown} value
- * @returns {ApiCorrelation[]|null}
+ * @returns {value is ApiCorrelation[]}
  */
-function sanitizeApiCorrelations(value) {
-  return isArrayOf(value, isApiCorrelation) ? value : null;
-}
-
-/**
- * @param {unknown} value
- * @returns {value is ApiCorrelation}
- */
-function isApiCorrelation(value) {
-  return sanitizeApiCorrelation(value) !== null;
+function isApiCorrelations(value) {
+  return isArrayOf(value, isApiCorrelation);
 }
 
 /**
@@ -80,4 +64,4 @@ function isCorrelation(value) {
   return typeof value === "number" && value >= -1 && value <= 1;
 }
 
-export { sanitizeApiCorrelation, sanitizeApiCorrelations };
+export { isApiCorrelation, isApiCorrelations };

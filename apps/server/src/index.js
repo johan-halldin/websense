@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { sanitizeApiCreateCity } from "@websense/api-types";
+import { isApiCreateCity } from "@websense/api-types";
 import {
   listenForPingResultsUpdates,
   query,
@@ -360,9 +360,9 @@ async function handleListCities(res) {
  * @param {ServerResponse} res
  */
 async function handleCreateCity(req, res) {
-  const city = sanitizeApiCreateCity(await readJsonBody(req));
+  const city = await readJsonBody(req);
 
-  if (city === null) {
+  if (!isApiCreateCity(city)) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(
       JSON.stringify({

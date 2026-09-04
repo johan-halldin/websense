@@ -1,4 +1,4 @@
-import { sanitizeApiMeshRows } from "@websense/api-types";
+import { isApiMeshRows } from "@websense/api-types";
 
 /** @import { ApiMeshRow } from "@websense/api-types" */
 
@@ -14,8 +14,8 @@ async function fetchMeshRows() {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
-  const rows = sanitizeApiMeshRows(await response.json());
-  if (rows === null) {
+  const rows = await response.json();
+  if (!isApiMeshRows(rows)) {
     throw new Error("Invalid mesh response");
   }
   return rows;

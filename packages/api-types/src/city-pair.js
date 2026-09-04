@@ -15,11 +15,11 @@ import {
 
 /**
  * @param {unknown} value
- * @returns {ApiCityPairMeasurement|null}
+ * @returns {value is ApiCityPairMeasurement}
  */
-function sanitizeApiCityPairMeasurement(value) {
+function isApiCityPairMeasurement(value) {
   if (!isRecord(value)) {
-    return null;
+    return false;
   }
   const { time, rttMs, packetLossPct } = value;
   if (
@@ -27,25 +27,17 @@ function sanitizeApiCityPairMeasurement(value) {
     !isNullable(rttMs, isNumber) ||
     !isNullable(packetLossPct, isNumber)
   ) {
-    return null;
+    return false;
   }
-  return { time, rttMs, packetLossPct };
+  return true;
 }
 
 /**
  * @param {unknown} value
- * @returns {ApiCityPairMeasurement[]|null}
+ * @returns {value is ApiCityPairMeasurement[]}
  */
-function sanitizeApiCityPairMeasurements(value) {
-  return isArrayOf(value, isApiCityPairMeasurement) ? value : null;
+function isApiCityPairMeasurements(value) {
+  return isArrayOf(value, isApiCityPairMeasurement);
 }
 
-/**
- * @param {unknown} value
- * @returns {value is ApiCityPairMeasurement}
- */
-function isApiCityPairMeasurement(value) {
-  return sanitizeApiCityPairMeasurement(value) !== null;
-}
-
-export { sanitizeApiCityPairMeasurement, sanitizeApiCityPairMeasurements };
+export { isApiCityPairMeasurement, isApiCityPairMeasurements };

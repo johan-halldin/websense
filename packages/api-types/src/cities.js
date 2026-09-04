@@ -28,15 +28,12 @@ import {
  */
 
 /**
- * Returns a validated city-creation request, or null when the value does not
- * match the API contract.
- *
  * @param {unknown} value
- * @returns {ApiCreateCity|null}
+ * @returns {value is ApiCreateCity}
  */
-function sanitizeApiCreateCity(value) {
+function isApiCreateCity(value) {
   if (!isRecord(value)) {
-    return null;
+    return false;
   }
   const { name, country, lat, lon, probeId, measurementId } = value;
   if (
@@ -47,35 +44,9 @@ function sanitizeApiCreateCity(value) {
     !isPositiveInteger(probeId) ||
     !isPositiveInteger(measurementId)
   ) {
-    return null;
+    return false;
   }
-  return { name, country, lat, lon, probeId, measurementId };
-}
-
-/**
- * Returns a validated city response, or null when the value does not match
- * the API contract.
- *
- * @param {unknown} value
- * @returns {ApiCity|null}
- */
-function sanitizeApiCity(value) {
-  const city = sanitizeApiCreateCity(value);
-  if (city === null || !isRecord(value) || !isPositiveInteger(value.id)) {
-    return null;
-  }
-  return { id: value.id, ...city };
-}
-
-/**
- * Returns a validated city-list response, or null when any item does not
- * match the API contract.
- *
- * @param {unknown} value
- * @returns {ApiCity[]|null}
- */
-function sanitizeApiCities(value) {
-  return isArrayOf(value, isApiCity) ? value : null;
+  return true;
 }
 
 /**
@@ -83,7 +54,19 @@ function sanitizeApiCities(value) {
  * @returns {value is ApiCity}
  */
 function isApiCity(value) {
-  return sanitizeApiCity(value) !== null;
+  if (!isRecord(value)) {
+    return false;
+  }
+  const id = value.id;
+  return isApiCreateCity(value) && isPositiveInteger(id);
+}
+
+/**
+ * @param {unknown} value
+ * @returns {value is ApiCity[]}
+ */
+function isApiCities(value) {
+  return isArrayOf(value, isApiCity);
 }
 
 /**
@@ -102,4 +85,4 @@ function isLongitude(value) {
   return isNumber(value) && value >= -180 && value <= 180;
 }
 
-export { sanitizeApiCities, sanitizeApiCity, sanitizeApiCreateCity };
+export { isApiCities, isApiCity, isApiCreateCity };

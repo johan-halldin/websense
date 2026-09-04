@@ -1,4 +1,4 @@
-import { sanitizeApiCityPairMeasurements } from "@websense/api-types";
+import { isApiCityPairMeasurements } from "@websense/api-types";
 
 /** @import { ApiCityPairMeasurement } from "@websense/api-types" */
 
@@ -26,8 +26,8 @@ async function fetchCityPairMeasurements(srcId, dstId, range, grouping) {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
-  const measurements = sanitizeApiCityPairMeasurements(await response.json());
-  if (measurements === null) {
+  const measurements = await response.json();
+  if (!isApiCityPairMeasurements(measurements)) {
     throw new Error("Invalid city pair response");
   }
   return measurements;

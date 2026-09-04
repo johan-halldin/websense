@@ -1,4 +1,4 @@
-import { sanitizeApiCorrelations } from "@websense/api-types";
+import { isApiCorrelations } from "@websense/api-types";
 
 /** @import { ApiCorrelation } from "@websense/api-types" */
 
@@ -22,8 +22,8 @@ async function fetchCorrelations(range, grouping) {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
-  const correlations = sanitizeApiCorrelations(await response.json());
-  if (correlations === null) {
+  const correlations = await response.json();
+  if (!isApiCorrelations(correlations)) {
     throw new Error("Invalid correlations response");
   }
   return correlations;

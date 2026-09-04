@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  sanitizeApiCityPairMeasurements,
-  sanitizeApiCorrelations,
-  sanitizeApiMeshRows,
+  isApiCityPairMeasurements,
+  isApiCorrelations,
+  isApiMeshRows,
 } from "./index.js";
 
 describe("measurement API contracts", () => {
@@ -13,12 +13,10 @@ describe("measurement API contracts", () => {
       packetLossPct: null,
     };
 
-    expect(sanitizeApiCityPairMeasurements([measurement])).toEqual([
-      measurement,
-    ]);
-    expect(
-      sanitizeApiCityPairMeasurements([{ ...measurement, rttMs: "31.2" }]),
-    ).toBeNull();
+    expect(isApiCityPairMeasurements([measurement])).toBe(true);
+    expect(isApiCityPairMeasurements([{ ...measurement, rttMs: "31.2" }])).toBe(
+      false,
+    );
   });
 
   it("sanitizes correlations", () => {
@@ -32,10 +30,10 @@ describe("measurement API contracts", () => {
       isSymmetric: false,
     };
 
-    expect(sanitizeApiCorrelations([correlation])).toEqual([correlation]);
-    expect(
-      sanitizeApiCorrelations([{ ...correlation, correlation: 1.1 }]),
-    ).toBeNull();
+    expect(isApiCorrelations([correlation])).toBe(true);
+    expect(isApiCorrelations([{ ...correlation, correlation: 1.1 }])).toBe(
+      false,
+    );
   });
 
   it("sanitizes mesh rows", () => {
@@ -53,7 +51,7 @@ describe("measurement API contracts", () => {
       avgPacketLossPct: 0.1,
     };
 
-    expect(sanitizeApiMeshRows([row])).toEqual([row]);
-    expect(sanitizeApiMeshRows([{ ...row, dstLat: 100 }])).toBeNull();
+    expect(isApiMeshRows([row])).toBe(true);
+    expect(isApiMeshRows([{ ...row, dstLat: 100 }])).toBe(false);
   });
 });
