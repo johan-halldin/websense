@@ -32,6 +32,9 @@ importers:
 
   apps/client:
     dependencies:
+      '@websense/api-types':
+        specifier: workspace:*
+        version: link:../../packages/api-types
       '@websense/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -54,12 +57,21 @@ importers:
 
   apps/server:
     dependencies:
+      '@websense/api-types':
+        specifier: workspace:*
+        version: link:../../packages/api-types
       '@websense/db':
         specifier: workspace:*
         version: link:../../packages/db
       '@websense/util':
         specifier: workspace:*
         version: link:../../packages/util
+
+  packages/api-types:
+    dependencies:
+      '@websense/util':
+        specifier: workspace:*
+        version: link:../util
 
   packages/db:
     dependencies:

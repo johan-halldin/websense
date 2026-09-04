@@ -4,12 +4,15 @@ import {
   isArrayOf,
   isBoolean,
   isInteger,
+  isNegativeInteger,
   isNonEmptyString,
+  isNonNegativeInteger,
   isNull,
   isNullable,
   isNumber,
   isOneOf,
   isOptional,
+  isPositiveInteger,
   isRecord,
   isRecordOf,
   isString,
@@ -44,6 +47,16 @@ describe("sanitize guards", () => {
     expect(isNumber(Number.POSITIVE_INFINITY)).toBe(false);
     expect(isInteger(3)).toBe(true);
     expect(isInteger(1.5)).toBe(false);
+  });
+
+  it("distinguishes integer signs", () => {
+    expect(isPositiveInteger(1)).toBe(true);
+    expect(isPositiveInteger(0)).toBe(false);
+    expect(isNegativeInteger(-1)).toBe(true);
+    expect(isNegativeInteger(0)).toBe(false);
+    expect(isNonNegativeInteger(0)).toBe(true);
+    expect(isNonNegativeInteger(1)).toBe(true);
+    expect(isNonNegativeInteger(-1)).toBe(false);
   });
 
   it("distinguishes arrays and records", () => {

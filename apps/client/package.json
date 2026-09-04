@@ -14,6 +14,7 @@
     "test": "node -e \"console.log('No tests implemented yet')\""
   },
   "dependencies": {
+    "@websense/api-types": "workspace:*",
     "@websense/ui": "workspace:*",
     "@websense/util": "workspace:*",
     "lit": "^3.3.0"

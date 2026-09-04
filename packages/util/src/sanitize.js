@@ -69,6 +69,36 @@ function isInteger(v) {
 }
 
 /**
+ * Returns whether a value is a positive integer.
+ *
+ * @param {unknown} v
+ * @returns {v is number}
+ */
+function isPositiveInteger(v) {
+  return isInteger(v) && v > 0;
+}
+
+/**
+ * Returns whether a value is a negative integer.
+ *
+ * @param {unknown} v
+ * @returns {v is number}
+ */
+function isNegativeInteger(v) {
+  return isInteger(v) && v < 0;
+}
+
+/**
+ * Returns whether a value is a non-negative integer.
+ *
+ * @param {unknown} v
+ * @returns {v is number}
+ */
+function isNonNegativeInteger(v) {
+  return isInteger(v) && v >= 0;
+}
+
+/**
  * Returns whether a value is an array.
  *
  * @param {unknown} v
@@ -158,12 +188,15 @@ export {
   isArrayOf,
   isBoolean,
   isInteger,
+  isNegativeInteger,
   isNonEmptyString,
+  isNonNegativeInteger,
   isNull,
   isNullable,
   isNumber,
   isOneOf,
   isOptional,
+  isPositiveInteger,
   isRecord,
   isRecordOf,
   isString,

@@ -7,7 +7,7 @@ import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
-/** @import { City } from "../fetch/cities.js" */
+/** @import { ApiCity } from "@websense/api-types" */
 /** @import { CityPairGrouping, CityPairMeasurement, CityPairRange } from "../fetch/city-pair.js" */
 
 /**
@@ -21,7 +21,7 @@ import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
 class JcCityPair {
   /** @type {() => void} */
   #on_change;
-  /** @type {City[]} */
+  /** @type {ApiCity[]} */
   #cities = [];
   /** @type {Pair[]} */
   #pairs = [];

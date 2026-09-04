@@ -1,21 +1,20 @@
 {
-  "name": "@websense/server",
+  "name": "@websense/api-types",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
     "format-check": "prettier --check .",
     "format-write": "prettier --write .",
     "lint-check": "biome lint .",
     "lint-apply": "biome lint --write .",
     "typecheck": "tsgo --noEmit",
-    "test": "node -e \"console.log('No tests implemented yet')\""
+    "test": "vitest run"
   },
   "dependencies": {
-    "@websense/api-types": "workspace:*",
-    "@websense/db": "workspace:*",
     "@websense/util": "workspace:*"
   }
 }

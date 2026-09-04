@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { sanitizeApiCreateCity } from "@websense/api-types";
 import {
   listenForPingResultsUpdates,
   query,
@@ -359,22 +360,9 @@ async function handleListCities(res) {
  * @param {ServerResponse} res
  */
 async function handleCreateCity(req, res) {
-  const body = /** @type {Record<string, unknown>} */ (await readJsonBody(req));
-  const name = body.name;
-  const country = body.country;
-  const lat = Number(body.lat);
-  const lon = Number(body.lon);
-  const probeId = Number(body.probeId);
-  const measurementId = Number(body.measurementId);
+  const city = sanitizeApiCreateCity(await readJsonBody(req));
 
-  if (
-    typeof name !== "string" ||
-    typeof country !== "string" ||
-    !Number.isFinite(lat) ||
-    !Number.isFinite(lon) ||
-    !Number.isInteger(probeId) ||
-    !Number.isInteger(measurementId)
-  ) {
+  if (city === null) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(
       JSON.stringify({
@@ -396,7 +384,14 @@ async function handleCreateCity(req, res) {
        lon,
        probe_id AS "probeId",
        measurement_id AS "measurementId"`,
-    [name, country, lat, lon, probeId, measurementId],
+    [
+      city.name,
+      city.country,
+      city.lat,
+      city.lon,
+      city.probeId,
+      city.measurementId,
+    ],
   );
 
   res.writeHead(201, { "Content-Type": "application/json" });
