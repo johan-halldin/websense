@@ -1,6 +1,6 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
-import { httpResultErrorMessage } from "../fetch/http.js";
-import { fetchMeshRows } from "../fetch/mesh.js";
+import { httpResultErrorMessage } from "../api/http.js";
+import { fetchMeshRows } from "../api/fetch.js";
 import {
   isRttDeviationNotable,
   rttColor,

@@ -1,6 +1,6 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
-import { fetchCorrelations } from "../fetch/correlations.js";
-import { httpResultErrorMessage } from "../fetch/http.js";
+import { fetchCorrelations } from "../api/fetch.js";
+import { httpResultErrorMessage } from "../api/http.js";
 
 /** @import { ICorrelations } from "./correlations.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */

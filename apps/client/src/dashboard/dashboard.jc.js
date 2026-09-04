@@ -2,8 +2,8 @@ import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { JcCityPair } from "../city-pair/city-pair.jc.js";
 import { JcCorrelations } from "../correlations/correlations.jc.js";
-import { httpResultErrorMessage } from "../fetch/http.js";
-import { fetchIngest } from "../fetch/ingest.js";
+import { httpResultErrorMessage } from "../api/http.js";
+import { fetchIngest } from "../api/fetch.js";
 import { JcMesh } from "../mesh/mesh.jc.js";
 import { JcWorldMap } from "../world-map/world-map.jc.js";
 

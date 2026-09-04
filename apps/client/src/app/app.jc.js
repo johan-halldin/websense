@@ -1,5 +1,5 @@
 import { JcDashboard } from "../dashboard/dashboard.jc.js";
-import { subscribeToServerChanges } from "../fetch/server-change-events.js";
+import { subscribeToServerChanges } from "../api/events.js";
 import { WsAppView } from "./app.wc.js";
 import { show_toast } from "@websense/ui/src/toast/toast.js";
 import { formatTime } from "@websense/util";

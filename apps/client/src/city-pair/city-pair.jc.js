@@ -1,8 +1,7 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { randomIndex } from "@websense/util";
-import { fetchCities } from "../fetch/cities.js";
-import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
-import { httpResultErrorMessage } from "../fetch/http.js";
+import { fetchCities, fetchCityPairMeasurements } from "../api/fetch.js";
+import { httpResultErrorMessage } from "../api/http.js";
 
 /** @import { ICityPair, ICityPairRow } from "./city-pair.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
