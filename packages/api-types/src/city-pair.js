@@ -3,6 +3,7 @@ import {
   isNonEmptyString,
   isNullable,
   isNumber,
+  isOneOf,
   isRecord,
 } from "@websense/util";
 
@@ -12,6 +13,14 @@ import {
  * @property {number|null} rttMs
  * @property {number|null} packetLossPct
  */
+
+/** @typedef {"day"|"week"|"month"|"year"} ApiCityPairRange */
+/** @typedef {"none"|"hour"|"day"} ApiCityPairGrouping */
+
+/** @type {readonly ApiCityPairRange[]} */
+const CITY_PAIR_RANGES = ["day", "week", "month", "year"];
+/** @type {readonly ApiCityPairGrouping[]} */
+const CITY_PAIR_GROUPINGS = ["none", "hour", "day"];
 
 /**
  * @param {unknown} value
@@ -40,4 +49,25 @@ function isApiCityPairMeasurements(value) {
   return isArrayOf(value, isApiCityPairMeasurement);
 }
 
-export { isApiCityPairMeasurement, isApiCityPairMeasurements };
+/**
+ * @param {unknown} value
+ * @returns {value is ApiCityPairRange}
+ */
+function isApiCityPairRange(value) {
+  return isOneOf(value, CITY_PAIR_RANGES);
+}
+
+/**
+ * @param {unknown} value
+ * @returns {value is ApiCityPairGrouping}
+ */
+function isApiCityPairGrouping(value) {
+  return isOneOf(value, CITY_PAIR_GROUPINGS);
+}
+
+export {
+  isApiCityPairGrouping,
+  isApiCityPairMeasurement,
+  isApiCityPairMeasurements,
+  isApiCityPairRange,
+};

@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   isApiCityPairMeasurements,
+  isApiCityPairGrouping,
+  isApiCityPairRange,
   isApiCorrelations,
+  isApiCorrelationGrouping,
+  isApiCorrelationRange,
   isApiMeshRows,
 } from "./index.js";
 
@@ -53,5 +57,16 @@ describe("measurement API contracts", () => {
 
     expect(isApiMeshRows([row])).toBe(true);
     expect(isApiMeshRows([{ ...row, dstLat: 100 }])).toBe(false);
+  });
+
+  it("checks supported query values", () => {
+    expect(isApiCityPairRange("week")).toBe(true);
+    expect(isApiCityPairRange("quarter")).toBe(false);
+    expect(isApiCityPairGrouping("none")).toBe(true);
+    expect(isApiCityPairGrouping("minute")).toBe(false);
+    expect(isApiCorrelationRange("month")).toBe(true);
+    expect(isApiCorrelationRange("day")).toBe(false);
+    expect(isApiCorrelationGrouping("hour")).toBe(true);
+    expect(isApiCorrelationGrouping("none")).toBe(false);
   });
 });

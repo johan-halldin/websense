@@ -1,9 +1,6 @@
 import { isApiCityPairMeasurements } from "@websense/api-types";
 
-/** @import { ApiCityPairMeasurement } from "@websense/api-types" */
-
-/** @typedef {"day"|"week"|"month"|"year"} CityPairRange */
-/** @typedef {"none"|"hour"|"day"} CityPairGrouping */
+/** @import { ApiCityPairGrouping, ApiCityPairMeasurement, ApiCityPairRange } from "@websense/api-types" */
 
 /**
  * Fetches every measurement between two cities from the server (GET
@@ -11,8 +8,8 @@ import { isApiCityPairMeasurements } from "@websense/api-types";
  *
  * @param {number} srcId
  * @param {number} dstId
- * @param {CityPairRange} range
- * @param {CityPairGrouping} grouping
+ * @param {ApiCityPairRange} range
+ * @param {ApiCityPairGrouping} grouping
  * @returns {Promise<ApiCityPairMeasurement[]>}
  */
 async function fetchCityPairMeasurements(srcId, dstId, range, grouping) {

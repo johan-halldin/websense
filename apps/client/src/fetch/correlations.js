@@ -1,16 +1,13 @@
 import { isApiCorrelations } from "@websense/api-types";
 
-/** @import { ApiCorrelation } from "@websense/api-types" */
-
-/** @typedef {"week"|"month"|"year"} CorrelationRange */
-/** @typedef {"hour"|"day"} CorrelationGrouping */
+/** @import { ApiCorrelation, ApiCorrelationGrouping, ApiCorrelationRange } from "@websense/api-types" */
 
 /**
  * Fetches route correlations calculated from measurements grouped into shared
  * time buckets (GET /api/correlations).
  *
- * @param {CorrelationRange} range
- * @param {CorrelationGrouping} grouping
+ * @param {ApiCorrelationRange} range
+ * @param {ApiCorrelationGrouping} grouping
  * @returns {Promise<ApiCorrelation[]>}
  */
 async function fetchCorrelations(range, grouping) {

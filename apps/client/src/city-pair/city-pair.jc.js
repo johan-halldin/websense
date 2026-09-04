@@ -8,8 +8,7 @@ import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
 /** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
 /** @import { ApiCity } from "@websense/api-types" */
-/** @import { ApiCityPairMeasurement } from "@websense/api-types" */
-/** @import { CityPairGrouping, CityPairRange } from "../fetch/city-pair.js" */
+/** @import { ApiCityPairGrouping, ApiCityPairMeasurement, ApiCityPairRange } from "@websense/api-types" */
 
 /**
  * @typedef {object} Pair
@@ -26,9 +25,9 @@ class JcCityPair {
   #cities = [];
   /** @type {Pair[]} */
   #pairs = [];
-  /** @type {CityPairRange} */
+  /** @type {ApiCityPairRange} */
   #range = "day";
-  /** @type {CityPairGrouping} */
+  /** @type {ApiCityPairGrouping} */
   #grouping = "none";
   /** @type {string|null} */
   #error = null;
@@ -116,13 +115,13 @@ class JcCityPair {
     this.#on_change();
   }
 
-  /** @param {CityPairRange} range */
+  /** @param {ApiCityPairRange} range */
   #setRange(range) {
     this.#range = range;
     this.#fetchAllMeasurements();
   }
 
-  /** @param {CityPairGrouping} grouping */
+  /** @param {ApiCityPairGrouping} grouping */
   #setGrouping(grouping) {
     this.#grouping = grouping;
     this.#fetchAllMeasurements();

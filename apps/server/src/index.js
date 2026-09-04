@@ -1,11 +1,17 @@
 import { createServer } from "node:http";
-import { isApiCreateCity } from "@websense/api-types";
+import {
+  isApiCityPairGrouping,
+  isApiCityPairRange,
+  isApiCorrelationGrouping,
+  isApiCorrelationRange,
+  isApiCreateCity,
+} from "@websense/api-types";
 import {
   listenForPingResultsUpdates,
   query,
   runIngestCycle,
 } from "@websense/db";
-import { clamp } from "@websense/util";
+import { clamp, isPositiveInteger } from "@websense/util";
 
 /** @import { IncomingMessage, ServerResponse } from "node:http" */
 
@@ -120,14 +126,14 @@ async function handleIngest(res) {
 async function handleCityPair(searchParams, res) {
   const srcId = Number(searchParams.get("src"));
   const dstId = Number(searchParams.get("dst"));
-  const range = cityPairRangeInterval(searchParams.get("range"));
-  const grouping = cityPairGroupingInterval(searchParams.get("group"));
+  const range = searchParams.get("range") ?? "day";
+  const grouping = searchParams.get("group") ?? "none";
 
   if (
-    !Number.isInteger(srcId) ||
-    !Number.isInteger(dstId) ||
-    range === null ||
-    grouping === undefined
+    !isPositiveInteger(srcId) ||
+    !isPositiveInteger(dstId) ||
+    !isApiCityPairRange(range) ||
+    !isApiCityPairGrouping(grouping)
   ) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(
@@ -138,6 +144,16 @@ async function handleCityPair(searchParams, res) {
     );
     return;
   }
+  const rangeInterval =
+    range === "day"
+      ? "1 day"
+      : range === "week"
+        ? "1 week"
+        : range === "month"
+          ? "1 month"
+          : "1 year";
+  const groupingInterval =
+    grouping === "none" ? null : grouping === "hour" ? "1 hour" : "1 day";
 
   const baseQuery = `FROM ping_results
      JOIN cities src ON src.probe_id = ping_results.probe_id AND src.id = $1
@@ -149,7 +165,7 @@ async function handleCityPair(searchParams, res) {
        ELSE ping_results.rtt_avg_ms
      END`;
   const result =
-    grouping === null
+    groupingInterval === null
       ? await query(
           `SELECT
        ping_results.time,
@@ -157,7 +173,7 @@ async function handleCityPair(searchParams, res) {
        ping_results.packet_loss_pct AS "packetLossPct"
      ${baseQuery}
      ORDER BY ping_results.time DESC`,
-          [srcId, dstId, range],
+          [srcId, dstId, rangeInterval],
         )
       : await query(
           `SELECT
@@ -167,7 +183,7 @@ async function handleCityPair(searchParams, res) {
            ${baseQuery}
            GROUP BY 1
            ORDER BY time DESC`,
-          [srcId, dstId, range, grouping],
+          [srcId, dstId, rangeInterval, groupingInterval],
         );
 
   res.writeHead(200, { "Content-Type": "application/json" });
@@ -179,10 +195,10 @@ async function handleCityPair(searchParams, res) {
  * @param {ServerResponse} res
  */
 async function handleCorrelations(searchParams, res) {
-  const range = correlationRangeInterval(searchParams.get("range"));
-  const grouping = correlationGroupingInterval(searchParams.get("group"));
+  const range = searchParams.get("range") ?? "week";
+  const grouping = searchParams.get("group") ?? "hour";
 
-  if (range === null || grouping === null) {
+  if (!isApiCorrelationRange(range) || !isApiCorrelationGrouping(grouping)) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(
       JSON.stringify({
@@ -191,8 +207,11 @@ async function handleCorrelations(searchParams, res) {
     );
     return;
   }
+  const rangeInterval =
+    range === "week" ? "1 week" : range === "month" ? "1 month" : "1 year";
+  const groupingInterval = grouping === "hour" ? "1 hour" : "1 day";
 
-  const minSharedBuckets = grouping === "1 hour" ? 24 : 7;
+  const minSharedBuckets = groupingInterval === "1 hour" ? 24 : 7;
   const { rows } = await query(
     `WITH bucketed AS MATERIALIZED (
        SELECT
@@ -247,79 +266,11 @@ async function handleCorrelations(searchParams, res) {
      WHERE correlations.correlation IS NOT NULL
      ORDER BY abs(correlations.correlation) DESC
      LIMIT 100`,
-    [range, grouping, minSharedBuckets],
+    [rangeInterval, groupingInterval, minSharedBuckets],
   );
 
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(JSON.stringify(rows));
-}
-
-/**
- * @param {string|null} range
- * @returns {"1 day"|"1 week"|"1 month"|"1 year"|null}
- */
-function cityPairRangeInterval(range) {
-  switch (range ?? "day") {
-    case "day":
-      return "1 day";
-    case "week":
-      return "1 week";
-    case "month":
-      return "1 month";
-    case "year":
-      return "1 year";
-    default:
-      return null;
-  }
-}
-
-/**
- * @param {string|null} grouping
- * @returns {"1 hour"|"1 day"|null|undefined}
- */
-function cityPairGroupingInterval(grouping) {
-  switch (grouping ?? "none") {
-    case "none":
-      return null;
-    case "hour":
-      return "1 hour";
-    case "day":
-      return "1 day";
-    default:
-      return undefined;
-  }
-}
-
-/**
- * @param {string|null} range
- * @returns {"1 week"|"1 month"|"1 year"|null}
- */
-function correlationRangeInterval(range) {
-  switch (range ?? "week") {
-    case "week":
-      return "1 week";
-    case "month":
-      return "1 month";
-    case "year":
-      return "1 year";
-    default:
-      return null;
-  }
-}
-
-/**
- * @param {string|null} grouping
- * @returns {"1 hour"|"1 day"|null}
- */
-function correlationGroupingInterval(grouping) {
-  switch (grouping ?? "hour") {
-    case "hour":
-      return "1 hour";
-    case "day":
-      return "1 day";
-    default:
-      return null;
-  }
 }
 
 /**
@@ -460,8 +411,14 @@ const server = createServer((req, res) => {
 
   const cityIdMatch = url.pathname.match(/^\/api\/cities\/(\d+)$/);
   if (cityIdMatch && req.method === "DELETE") {
-    handleDeleteCity(Number(cityIdMatch[1]), res).catch(onError);
-    return;
+    const cityIdText = cityIdMatch[1];
+    if (cityIdText !== undefined) {
+      const cityId = Number(cityIdText);
+      if (isPositiveInteger(cityId)) {
+        handleDeleteCity(cityId, res).catch(onError);
+        return;
+      }
+    }
   }
 
   res.writeHead(404, { "Content-Type": "application/json" });
