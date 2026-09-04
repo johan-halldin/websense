@@ -6,12 +6,12 @@ import { sendError, sendJson } from "../http.js";
 /** @import { ServerResponse } from "node:http" */
 
 /**
+ * @param {number} srcId
+ * @param {number} dstId
  * @param {URLSearchParams} searchParams
  * @param {ServerResponse} res
  */
-async function handleCityPair(searchParams, res) {
-  const srcId = Number(searchParams.get("src"));
-  const dstId = Number(searchParams.get("dst"));
+async function handleRouteMeasurements(srcId, dstId, searchParams, res) {
   const range = searchParams.get("range") ?? "day";
   const grouping = searchParams.get("group") ?? "none";
 
@@ -24,7 +24,7 @@ async function handleCityPair(searchParams, res) {
     sendError(
       res,
       400,
-      "Expected ?src=<cityId>&dst=<cityId>&range=day|week|month|year&group=none|hour|day",
+      "Expected positive route city IDs and ?range=day|week|month|year&group=none|hour|day",
     );
     return;
   }
@@ -73,4 +73,4 @@ async function handleCityPair(searchParams, res) {
   sendJson(res, 200, result.rows);
 }
 
-export { handleCityPair };
+export { handleRouteMeasurements };

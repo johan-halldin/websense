@@ -1,6 +1,6 @@
 import { with_blocking_spinner } from "@websense/ui/src/spinner/blocking-spinner.js";
 import { randomIndex } from "@websense/util";
-import { fetchCities, fetchCityPairMeasurements } from "../api/fetch.js";
+import { fetchCities, fetchRouteMeasurements } from "../api/fetch.js";
 import { httpResultErrorMessage } from "../api/http.js";
 
 /** @import { ICityPair, ICityPairRow } from "./city-pair.wc.js" */
@@ -88,7 +88,7 @@ class JcCityPair {
       return;
     }
     try {
-      const response = await fetchCityPairMeasurements(
+      const response = await fetchRouteMeasurements(
         srcId,
         dstId,
         this.#range,

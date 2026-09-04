@@ -5,7 +5,7 @@ import {
   handleDeleteCity,
   handleListCities,
 } from "./endpoints/cities.js";
-import { handleCityPair } from "./endpoints/city-pair.js";
+import { handleRouteMeasurements } from "./endpoints/route-measurements.js";
 import { handleCorrelations } from "./endpoints/correlations.js";
 import { handleIngest } from "./endpoints/ingest.js";
 import { handleMesh } from "./endpoints/mesh.js";
@@ -42,11 +42,6 @@ const server = createServer((req, res) => {
     return;
   }
 
-  if (url.pathname === "/api/city-pair" && req.method === "GET") {
-    handleCityPair(url.searchParams, res).catch(onError);
-    return;
-  }
-
   if (url.pathname === "/api/route-correlations" && req.method === "GET") {
     handleCorrelations(url.searchParams, res).catch(onError);
     return;
@@ -59,6 +54,16 @@ const server = createServer((req, res) => {
 
   if (url.pathname === "/api/cities" && req.method === "POST") {
     handleCreateCity(req, res).catch(onError);
+    return;
+  }
+
+  const routeMeasurementsMatch = url.pathname.match(
+    /^\/api\/routes\/(\d+)\/(\d+)\/measurements$/,
+  );
+  if (routeMeasurementsMatch && req.method === "GET") {
+    const srcId = Number(routeMeasurementsMatch[1]);
+    const dstId = Number(routeMeasurementsMatch[2]);
+    handleRouteMeasurements(srcId, dstId, url.searchParams, res).catch(onError);
     return;
   }
 

@@ -31,14 +31,12 @@ async function fetchMeshRows() {
  * @param {ApiCityPairGrouping} grouping
  * @returns {Promise<HttpValueResult<ApiCityPairMeasurement[]>>}
  */
-async function fetchCityPairMeasurements(srcId, dstId, range, grouping) {
-  const searchParams = new URLSearchParams({
-    src: String(srcId),
-    dst: String(dstId),
-    range,
-    group: grouping,
-  });
-  return fetchJson(`/api/city-pair?${searchParams}`, isApiCityPairMeasurements);
+async function fetchRouteMeasurements(srcId, dstId, range, grouping) {
+  const searchParams = new URLSearchParams({ range, group: grouping });
+  return fetchJson(
+    `/api/routes/${srcId}/${dstId}/measurements?${searchParams}`,
+    isApiCityPairMeasurements,
+  );
 }
 
 /**
@@ -63,7 +61,7 @@ async function fetchIngest() {
 
 export {
   fetchCities,
-  fetchCityPairMeasurements,
+  fetchRouteMeasurements,
   fetchCorrelations,
   fetchIngest,
   fetchMeshRows,
