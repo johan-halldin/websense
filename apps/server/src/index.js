@@ -6,52 +6,14 @@ import {
   isApiCorrelationRange,
   isApiCreateCity,
 } from "@websense/api-types";
-import {
-  listenForPingResultsUpdates,
-  query,
-  runIngestCycle,
-} from "@websense/db";
+import { query, runIngestCycle } from "@websense/db";
 import { clamp, isPositiveInteger } from "@websense/util";
+import { handleEvents } from "./events.js";
 import { readJsonBody, sendError, sendJson } from "./http.js";
 
 /** @import { IncomingMessage, ServerResponse } from "node:http" */
 
 const PORT = clamp(Number(process.env.PORT) || 3001, 0, 65535);
-
-/** @type {Set<ServerResponse>} */
-const sseClients = new Set();
-
-/**
- * @param {ServerResponse} res
- */
-function handleEvents(res) {
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    Connection: "keep-alive",
-  });
-  res.write("\n");
-  sseClients.add(res);
-  res.on("close", () => sseClients.delete(res));
-}
-
-/** An ingest cycle inserts in many batches, each firing its own NOTIFY -
- * coalesce a burst of them into a single broadcast once things go quiet. */
-const NOTIFY_DEBOUNCE_MS = 500;
-/** @type {NodeJS.Timeout|null} */
-let broadcastTimer = null;
-
-listenForPingResultsUpdates(() => {
-  if (broadcastTimer !== null) {
-    clearTimeout(broadcastTimer);
-  }
-  broadcastTimer = setTimeout(() => {
-    broadcastTimer = null;
-    for (const res of sseClients) {
-      res.write("data: server-changed\n\n");
-    }
-  }, NOTIFY_DEBOUNCE_MS);
-});
 
 /**
  * @param {ServerResponse} res
