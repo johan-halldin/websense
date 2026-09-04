@@ -3,14 +3,14 @@ import { fetchMeshRows } from "../fetch/mesh.js";
 
 /** @import { IWsMesh } from "./mesh.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
-/** @import { MeshRow } from "../fetch/mesh.js" */
+/** @import { ApiMeshRow } from "@websense/api-types" */
 
 class JcMesh {
   /** @type {() => void} */
   #on_change;
   /** @type {string|null} */
   #error = null;
-  /** @type {MeshRow[]} */
+  /** @type {ApiMeshRow[]} */
   #rows = [];
 
   /** @param {() => void} on_change */

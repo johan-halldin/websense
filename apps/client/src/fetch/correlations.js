@@ -1,16 +1,9 @@
+import { sanitizeApiCorrelations } from "@websense/api-types";
+
+/** @import { ApiCorrelation } from "@websense/api-types" */
+
 /** @typedef {"week"|"month"|"year"} CorrelationRange */
 /** @typedef {"hour"|"day"} CorrelationGrouping */
-
-/**
- * @typedef {object} Correlation
- * @property {string} firstSrcName
- * @property {string} firstDstName
- * @property {string} secondSrcName
- * @property {string} secondDstName
- * @property {number} correlation
- * @property {number} sharedBuckets
- * @property {boolean} isSymmetric
- */
 
 /**
  * Fetches route correlations calculated from measurements grouped into shared
@@ -18,7 +11,7 @@
  *
  * @param {CorrelationRange} range
  * @param {CorrelationGrouping} grouping
- * @returns {Promise<Correlation[]>}
+ * @returns {Promise<ApiCorrelation[]>}
  */
 async function fetchCorrelations(range, grouping) {
   const searchParams = new URLSearchParams({
@@ -29,7 +22,11 @@ async function fetchCorrelations(range, grouping) {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
-  return response.json();
+  const correlations = sanitizeApiCorrelations(await response.json());
+  if (correlations === null) {
+    throw new Error("Invalid correlations response");
+  }
+  return correlations;
 }
 
 export { fetchCorrelations };

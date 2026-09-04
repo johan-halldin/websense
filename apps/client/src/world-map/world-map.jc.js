@@ -9,7 +9,7 @@ import {
 /** @import { IWorldMap } from "./world-map.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { IGeoPoint } from "@websense/ui/src/geo-map/geo-map.wc.js" */
-/** @import { MeshRow } from "../fetch/mesh.js" */
+/** @import { ApiMeshRow } from "@websense/api-types" */
 
 /**
  * @typedef {object} CityStats
@@ -86,7 +86,7 @@ class JcWorldMap {
   #on_change;
   /** @type {string|null} */
   #error = null;
-  /** @type {MeshRow[]} */
+  /** @type {ApiMeshRow[]} */
   #rows = [];
 
   /** @param {() => void} on_change */

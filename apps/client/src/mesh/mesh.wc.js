@@ -9,13 +9,13 @@ import {
 } from "./rtt-color.js";
 
 /** @import { TemplateResult } from "lit" */
-/** @import { MeshRow } from "../fetch/mesh.js" */
+/** @import { ApiMeshRow } from "@websense/api-types" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 
 /**
  * @typedef {object} IWsMesh
  * @property {string|null} error
- * @property {MeshRow[]} rows
+ * @property {ApiMeshRow[]} rows
  * @property {IButton} refreshButton
  */
 
@@ -72,11 +72,11 @@ function avgRttBadge(avgRttMs, min, max) {
  * server already sorts by src name, so this just splits that flat list into
  * per-city chunks rather than re-sorting anything).
  *
- * @param {MeshRow[]} rows
- * @returns {Map<string, MeshRow[]>}
+ * @param {ApiMeshRow[]} rows
+ * @returns {Map<string, ApiMeshRow[]>}
  */
 function groupBySrc(rows) {
-  /** @type {Map<string, MeshRow[]>} */
+  /** @type {Map<string, ApiMeshRow[]>} */
   const bySrc = new Map();
   for (const row of rows) {
     const group = bySrc.get(row.srcName);
@@ -117,7 +117,7 @@ function renderPacketLoss(packetLossPct) {
 }
 
 /**
- * @param {MeshRow} row
+ * @param {ApiMeshRow} row
  * @param {number} minAvgRttMs
  * @param {number} maxAvgRttMs
  * @returns {TemplateResult}

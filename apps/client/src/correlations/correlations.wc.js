@@ -6,15 +6,15 @@ import "@websense/ui/src/segmented-control/segmented-control.wc.js";
 /** @import { IBadge } from "@websense/ui/src/badge/badge.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
-/** @import { Correlation } from "../fetch/correlations.js" */
+/** @import { ApiCorrelation } from "@websense/api-types" */
 
 /**
  * @typedef {object} ICorrelations
  * @property {IButton} refreshButton
  * @property {ISegmentedControl} rangeControl
  * @property {ISegmentedControl} groupingControl
- * @property {Correlation[]} symmetricRows
- * @property {Correlation[]} otherRows
+ * @property {ApiCorrelation[]} symmetricRows
+ * @property {ApiCorrelation[]} otherRows
  * @property {string|null} error
  */
 
@@ -123,7 +123,7 @@ class WsCorrelations extends LitElement {
   /**
    * @param {string} heading
    * @param {string} description
-   * @param {Correlation[]} rows
+   * @param {ApiCorrelation[]} rows
    * @param {number} maxSharedBuckets
    */
   #renderTable(heading, description, rows, maxSharedBuckets) {

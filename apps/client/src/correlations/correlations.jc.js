@@ -4,7 +4,8 @@ import { fetchCorrelations } from "../fetch/correlations.js";
 /** @import { ICorrelations } from "./correlations.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
-/** @import { Correlation, CorrelationGrouping, CorrelationRange } from "../fetch/correlations.js" */
+/** @import { ApiCorrelation } from "@websense/api-types" */
+/** @import { CorrelationGrouping, CorrelationRange } from "../fetch/correlations.js" */
 
 class JcCorrelations {
   /** @type {() => void} */
@@ -13,7 +14,7 @@ class JcCorrelations {
   #range = "week";
   /** @type {CorrelationGrouping} */
   #grouping = "hour";
-  /** @type {Correlation[]} */
+  /** @type {ApiCorrelation[]} */
   #rows = [];
   /** @type {string|null} */
   #error = null;

@@ -1,9 +1,6 @@
-/**
- * @typedef {object} CityPairMeasurement
- * @property {string} time
- * @property {number|null} rttMs
- * @property {number|null} packetLossPct
- */
+import { sanitizeApiCityPairMeasurements } from "@websense/api-types";
+
+/** @import { ApiCityPairMeasurement } from "@websense/api-types" */
 
 /** @typedef {"day"|"week"|"month"|"year"} CityPairRange */
 /** @typedef {"none"|"hour"|"day"} CityPairGrouping */
@@ -16,7 +13,7 @@
  * @param {number} dstId
  * @param {CityPairRange} range
  * @param {CityPairGrouping} grouping
- * @returns {Promise<CityPairMeasurement[]>}
+ * @returns {Promise<ApiCityPairMeasurement[]>}
  */
 async function fetchCityPairMeasurements(srcId, dstId, range, grouping) {
   const searchParams = new URLSearchParams({
@@ -29,7 +26,11 @@ async function fetchCityPairMeasurements(srcId, dstId, range, grouping) {
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
-  return response.json();
+  const measurements = sanitizeApiCityPairMeasurements(await response.json());
+  if (measurements === null) {
+    throw new Error("Invalid city pair response");
+  }
+  return measurements;
 }
 
 export { fetchCityPairMeasurements };

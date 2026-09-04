@@ -1,4 +1,4 @@
-/** @import { MeshRow } from "../fetch/mesh.js" */
+/** @import { ApiMeshRow } from "@websense/api-types" */
 
 /** Deviations smaller than this (in whole percent, post-rounding) are
  * treated as noise - no color shown. Rounding first, then thresholding the
@@ -18,7 +18,7 @@ const MIN_INTENSITY = 0.15;
 const INTENSITY_FOR_LIGHT_TEXT = 0.6;
 
 /**
- * @param {MeshRow} row
+ * @param {ApiMeshRow} row
  * @returns {number|null} signed whole percent, e.g. 5 means 5% above average
  */
 function rttDeviationPercent(row) {

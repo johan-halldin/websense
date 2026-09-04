@@ -8,14 +8,15 @@ import { fetchCityPairMeasurements } from "../fetch/city-pair.js";
 /** @import { ILineChart } from "@websense/ui/src/line-chart/line-chart.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
 /** @import { ApiCity } from "@websense/api-types" */
-/** @import { CityPairGrouping, CityPairMeasurement, CityPairRange } from "../fetch/city-pair.js" */
+/** @import { ApiCityPairMeasurement } from "@websense/api-types" */
+/** @import { CityPairGrouping, CityPairRange } from "../fetch/city-pair.js" */
 
 /**
  * @typedef {object} Pair
  * @property {string} id
  * @property {number|null} srcId
  * @property {number|null} dstId
- * @property {CityPairMeasurement[]} rows
+ * @property {ApiCityPairMeasurement[]} rows
  */
 
 class JcCityPair {
