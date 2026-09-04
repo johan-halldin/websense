@@ -45,7 +45,7 @@ function isString(v) {
  * @returns {v is string}
  */
 function isNonEmptyString(v) {
-  return isString(v) && v.length > 0;
+  return isString(v) && v.trim().length > 0;
 }
 
 /**

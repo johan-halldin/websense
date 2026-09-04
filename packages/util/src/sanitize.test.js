@@ -34,6 +34,7 @@ describe("sanitize guards", () => {
   it("identifies non-empty strings without coercing values", () => {
     expect(isNonEmptyString("WebSense")).toBe(true);
     expect(isNonEmptyString("")).toBe(false);
+    expect(isNonEmptyString("  \t\n  ")).toBe(false);
     expect(isNonEmptyString(1)).toBe(false);
   });
 
