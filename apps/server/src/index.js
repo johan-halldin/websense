@@ -12,6 +12,7 @@ import {
   runIngestCycle,
 } from "@websense/db";
 import { clamp, isPositiveInteger } from "@websense/util";
+import { readJsonBody, sendError, sendJson } from "./http.js";
 
 /** @import { IncomingMessage, ServerResponse } from "node:http" */
 
@@ -105,8 +106,7 @@ async function handleMesh(res) {
      ORDER BY src.name, dst.name`,
   );
 
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(rows));
+  sendJson(res, 200, rows);
 }
 
 /**
@@ -115,8 +115,7 @@ async function handleMesh(res) {
 async function handleIngest(res) {
   const totalRows = await runIngestCycle();
 
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ totalRows }));
+  sendJson(res, 200, { totalRows });
 }
 
 /**
@@ -135,12 +134,10 @@ async function handleCityPair(searchParams, res) {
     !isApiCityPairRange(range) ||
     !isApiCityPairGrouping(grouping)
   ) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        error:
-          "Expected ?src=<cityId>&dst=<cityId>&range=day|week|month|year&group=none|hour|day",
-      }),
+    sendError(
+      res,
+      400,
+      "Expected ?src=<cityId>&dst=<cityId>&range=day|week|month|year&group=none|hour|day",
     );
     return;
   }
@@ -186,8 +183,7 @@ async function handleCityPair(searchParams, res) {
           [srcId, dstId, rangeInterval, groupingInterval],
         );
 
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(result.rows));
+  sendJson(res, 200, result.rows);
 }
 
 /**
@@ -199,12 +195,7 @@ async function handleCorrelations(searchParams, res) {
   const grouping = searchParams.get("group") ?? "hour";
 
   if (!isApiCorrelationRange(range) || !isApiCorrelationGrouping(grouping)) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        error: "Expected ?range=week|month|year&group=hour|day",
-      }),
-    );
+    sendError(res, 400, "Expected ?range=week|month|year&group=hour|day");
     return;
   }
   const rangeInterval =
@@ -269,20 +260,7 @@ async function handleCorrelations(searchParams, res) {
     [rangeInterval, groupingInterval, minSharedBuckets],
   );
 
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(rows));
-}
-
-/**
- * @param {IncomingMessage} req
- * @returns {Promise<unknown>}
- */
-async function readJsonBody(req) {
-  const chunks = [];
-  for await (const chunk of req) {
-    chunks.push(chunk);
-  }
-  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  sendJson(res, 200, rows);
 }
 
 /**
@@ -302,8 +280,7 @@ async function handleListCities(res) {
      ORDER BY name ASC`,
   );
 
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(rows));
+  sendJson(res, 200, rows);
 }
 
 /**
@@ -311,15 +288,19 @@ async function handleListCities(res) {
  * @param {ServerResponse} res
  */
 async function handleCreateCity(req, res) {
-  const city = await readJsonBody(req);
+  let city;
+  try {
+    city = await readJsonBody(req);
+  } catch {
+    sendError(res, 400, "Expected a valid JSON request body");
+    return;
+  }
 
   if (!isApiCreateCity(city)) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        error:
-          "Expected { name: string, country: string, lat: number, lon: number, probeId: integer, measurementId: integer }",
-      }),
+    sendError(
+      res,
+      400,
+      "Expected { name: string, country: string, lat: number, lon: number, probeId: integer, measurementId: integer }",
     );
     return;
   }
@@ -345,8 +326,7 @@ async function handleCreateCity(req, res) {
     ],
   );
 
-  res.writeHead(201, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(rows[0]));
+  sendJson(res, 201, rows[0]);
 }
 
 /**
@@ -364,13 +344,11 @@ const server = createServer((req, res) => {
 
   const onError = (/** @type {unknown} */ error) => {
     console.error(error);
-    res.writeHead(500, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Internal server error" }));
+    sendError(res, 500, "Internal server error");
   };
 
   if (url.pathname === "/api/health") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ status: "ok" }));
+    sendJson(res, 200, { status: "ok" });
     return;
   }
 
@@ -421,8 +399,7 @@ const server = createServer((req, res) => {
     }
   }
 
-  res.writeHead(404, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ error: "Not found" }));
+  sendError(res, 404, "Not found");
 });
 
 server.listen(PORT, () => {
