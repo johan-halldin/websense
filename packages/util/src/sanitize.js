@@ -9,6 +9,26 @@ function isBoolean(v) {
 }
 
 /**
+ * Returns whether a value is null.
+ *
+ * @param {unknown} v
+ * @returns {v is null}
+ */
+function isNull(v) {
+  return v === null;
+}
+
+/**
+ * Returns whether a value is undefined.
+ *
+ * @param {unknown} v
+ * @returns {v is undefined}
+ */
+function isUndefined(v) {
+  return v === undefined;
+}
+
+/**
  * Returns whether a value is a string.
  *
  * @param {unknown} v
@@ -16,6 +36,16 @@ function isBoolean(v) {
  */
 function isString(v) {
   return typeof v === "string";
+}
+
+/**
+ * Returns whether a value is a non-empty string.
+ *
+ * @param {unknown} v
+ * @returns {v is string}
+ */
+function isNonEmptyString(v) {
+  return isString(v) && v.length > 0;
 }
 
 /**
@@ -87,13 +117,55 @@ function isRecordOf(v, isValue) {
   return isRecord(v) && Object.values(v).every((value) => isValue(value));
 }
 
+/**
+ * Returns whether a value is undefined or satisfies a guard.
+ *
+ * @template T
+ * @param {unknown} v
+ * @param {(value: unknown) => value is T} isValue
+ * @returns {v is T|undefined}
+ */
+function isOptional(v, isValue) {
+  return isUndefined(v) || isValue(v);
+}
+
+/**
+ * Returns whether a value is null or satisfies a guard.
+ *
+ * @template T
+ * @param {unknown} v
+ * @param {(value: unknown) => value is T} isValue
+ * @returns {v is T|null}
+ */
+function isNullable(v, isValue) {
+  return isNull(v) || isValue(v);
+}
+
+/**
+ * Returns whether a value is one of a set of literal values.
+ *
+ * @template T
+ * @param {unknown} v
+ * @param {readonly T[]} values
+ * @returns {v is T}
+ */
+function isOneOf(v, values) {
+  return values.some((value) => value === v);
+}
+
 export {
   isArray,
   isArrayOf,
   isBoolean,
   isInteger,
+  isNonEmptyString,
+  isNull,
+  isNullable,
   isNumber,
+  isOneOf,
+  isOptional,
   isRecord,
   isRecordOf,
   isString,
+  isUndefined,
 };
