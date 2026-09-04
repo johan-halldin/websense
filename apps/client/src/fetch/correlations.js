@@ -1,6 +1,5 @@
 /** @typedef {"week"|"month"|"year"} CorrelationRange */
 /** @typedef {"hour"|"day"} CorrelationGrouping */
-/** @typedef {"rtt"|"loss"} CorrelationMetric */
 
 /**
  * @typedef {object} Correlation
@@ -19,14 +18,12 @@
  *
  * @param {CorrelationRange} range
  * @param {CorrelationGrouping} grouping
- * @param {CorrelationMetric} metric
  * @returns {Promise<Correlation[]>}
  */
-async function fetchCorrelations(range, grouping, metric) {
+async function fetchCorrelations(range, grouping) {
   const searchParams = new URLSearchParams({
     range,
     group: grouping,
-    metric,
   });
   const response = await fetch(`/api/correlations?${searchParams}`);
   if (!response.ok) {

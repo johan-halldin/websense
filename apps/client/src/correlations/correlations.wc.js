@@ -13,7 +13,6 @@ import "@websense/ui/src/segmented-control/segmented-control.wc.js";
  * @property {IButton} refreshButton
  * @property {ISegmentedControl} rangeControl
  * @property {ISegmentedControl} groupingControl
- * @property {ISegmentedControl} metricControl
  * @property {Correlation[]} symmetricRows
  * @property {Correlation[]} otherRows
  * @property {string|null} error
@@ -102,12 +101,6 @@ class WsCorrelations extends LitElement {
             <span>Average measurements</span>
             <ui-segmented-control
               .ic=${ic.groupingControl}
-            ></ui-segmented-control>
-          </label>
-          <label class="control">
-            <span>Metric</span>
-            <ui-segmented-control
-              .ic=${ic.metricControl}
             ></ui-segmented-control>
           </label>
         </div>

@@ -180,26 +180,17 @@ async function handleCityPair(searchParams, res) {
 async function handleCorrelations(searchParams, res) {
   const range = correlationRangeInterval(searchParams.get("range"));
   const grouping = correlationGroupingInterval(searchParams.get("group"));
-  const metric = searchParams.get("metric");
 
-  if (
-    range === null ||
-    grouping === null ||
-    (metric !== "rtt" && metric !== "loss")
-  ) {
+  if (range === null || grouping === null) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(
       JSON.stringify({
-        error: "Expected ?range=week|month|year&group=hour|day&metric=rtt|loss",
+        error: "Expected ?range=week|month|year&group=hour|day",
       }),
     );
     return;
   }
 
-  const value =
-    metric === "rtt"
-      ? "CASE WHEN ping_results.rtt_avg_ms < 0 THEN NULL ELSE ping_results.rtt_avg_ms END"
-      : "ping_results.packet_loss_pct";
   const minSharedBuckets = grouping === "1 hour" ? 24 : 7;
   const { rows } = await query(
     `WITH bucketed AS MATERIALIZED (
@@ -207,7 +198,12 @@ async function handleCorrelations(searchParams, res) {
          src.id AS src_id,
          dst.id AS dst_id,
          time_bucket($2::interval, ping_results.time) AS bucket,
-         avg(${value}) AS value
+         avg(
+           CASE
+             WHEN ping_results.rtt_avg_ms < 0 THEN NULL
+             ELSE ping_results.rtt_avg_ms
+           END
+         ) AS value
        FROM ping_results
        JOIN cities src ON src.probe_id = ping_results.probe_id
        JOIN cities dst ON dst.measurement_id = ping_results.measurement_id

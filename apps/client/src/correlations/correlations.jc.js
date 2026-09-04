@@ -4,7 +4,7 @@ import { fetchCorrelations } from "../fetch/correlations.js";
 /** @import { ICorrelations } from "./correlations.wc.js" */
 /** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { ISegmentedControl } from "@websense/ui/src/segmented-control/segmented-control.wc.js" */
-/** @import { Correlation, CorrelationGrouping, CorrelationMetric, CorrelationRange } from "../fetch/correlations.js" */
+/** @import { Correlation, CorrelationGrouping, CorrelationRange } from "../fetch/correlations.js" */
 
 class JcCorrelations {
   /** @type {() => void} */
@@ -13,8 +13,6 @@ class JcCorrelations {
   #range = "week";
   /** @type {CorrelationGrouping} */
   #grouping = "hour";
-  /** @type {CorrelationMetric} */
-  #metric = "rtt";
   /** @type {Correlation[]} */
   #rows = [];
   /** @type {string|null} */
@@ -33,11 +31,7 @@ class JcCorrelations {
 
   async #doFetch() {
     try {
-      this.#rows = await fetchCorrelations(
-        this.#range,
-        this.#grouping,
-        this.#metric,
-      );
+      this.#rows = await fetchCorrelations(this.#range, this.#grouping);
       this.#error = null;
     } catch (error) {
       this.#error = error instanceof Error ? error.message : String(error);
@@ -59,12 +53,6 @@ class JcCorrelations {
   /** @param {CorrelationGrouping} grouping */
   #setGrouping(grouping) {
     this.#grouping = grouping;
-    this.#fetch();
-  }
-
-  /** @param {CorrelationMetric} metric */
-  #setMetric(metric) {
-    this.#metric = metric;
     this.#fetch();
   }
 
@@ -106,25 +94,10 @@ class JcCorrelations {
       },
     };
 
-    /** @type {ISegmentedControl} */
-    const metricControl = {
-      value: this.#metric,
-      options: [
-        { value: "rtt", label: "RTT" },
-        { value: "loss", label: "Loss" },
-      ],
-      onChange: (value) => {
-        if (value === "rtt" || value === "loss") {
-          this.#setMetric(value);
-        }
-      },
-    };
-
     return {
       refreshButton,
       rangeControl,
       groupingControl,
-      metricControl,
       symmetricRows: this.#rows.filter((row) => row.isSymmetric),
       otherRows: this.#rows.filter((row) => !row.isSymmetric),
       error: this.#error,
