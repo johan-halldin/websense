@@ -106,6 +106,26 @@ Node.js, JavaScript (with JSDoc for types).
 
 PostgreSQL, TimescaleDB.
 
+#### API routes and handlers
+
+Use resource-oriented HTTP routes built from plural nouns.
+
+Name HTTP handlers using `handle{Operation}{Resource}`, where the operation
+describes the request semantics rather than merely repeating the HTTP method:
+
+- `GET /api/cities` → `handleListCities`
+- `GET /api/cities/:id` → `handleGetCity`
+- `POST /api/cities` → `handleCreateCity`
+- `PATCH /api/cities/:id` → `handleUpdateCity`
+- `DELETE /api/cities/:id` → `handleDeleteCity`
+- `GET /api/events` → `handleStreamEvents`
+
+Use `List` for collection reads and `Get` for individual resources. Use precise
+domain operations such as `Stream` when CRUD terminology does not describe the
+behavior. Keep the resource terminology consistent between the route and its
+handler; for example, `/api/route-summaries` is handled by
+`handleListRouteSummaries`.
+
 ## Resources
 
 ### UI
