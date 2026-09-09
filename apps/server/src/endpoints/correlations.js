@@ -42,6 +42,23 @@ async function handleListRouteCorrelations(searchParams, res) {
        WHERE ping_results.time >= NOW() - $1::interval
        GROUP BY 1, 2, 3
      ),
+     with_previous AS (
+       SELECT
+         *,
+         lag(bucket) OVER route AS previous_bucket,
+         lag(value) OVER route AS previous_value
+       FROM bucketed
+       WINDOW route AS (PARTITION BY src_id, dst_id ORDER BY bucket)
+     ),
+     changes AS (
+       SELECT
+         src_id,
+         dst_id,
+         bucket,
+         value - previous_value AS value
+       FROM with_previous
+       WHERE previous_bucket = bucket - $2::interval
+     ),
      correlations AS (
        SELECT
          first_route.src_id AS first_src_id,
@@ -50,8 +67,8 @@ async function handleListRouteCorrelations(searchParams, res) {
          second_route.dst_id AS second_dst_id,
          corr(first_route.value, second_route.value) AS correlation,
          count(*)::integer AS shared_buckets
-       FROM bucketed first_route
-       JOIN bucketed second_route
+       FROM changes first_route
+       JOIN changes second_route
          ON second_route.bucket = first_route.bucket
          AND (second_route.src_id, second_route.dst_id) >
            (first_route.src_id, first_route.dst_id)
