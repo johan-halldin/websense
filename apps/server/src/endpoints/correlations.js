@@ -11,7 +11,7 @@ import { sendError, sendJson } from "../http.js";
  * @param {URLSearchParams} searchParams
  * @param {ServerResponse} res
  */
-async function handleCorrelations(searchParams, res) {
+async function handleListRouteCorrelations(searchParams, res) {
   const range = searchParams.get("range") ?? "week";
   const grouping = searchParams.get("group") ?? "hour";
 
@@ -84,4 +84,4 @@ async function handleCorrelations(searchParams, res) {
   sendJson(res, 200, rows);
 }
 
-export { handleCorrelations };
+export { handleListRouteCorrelations };

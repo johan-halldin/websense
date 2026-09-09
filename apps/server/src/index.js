@@ -2,9 +2,9 @@ import { createServer } from "node:http";
 import { clamp } from "@websense/util";
 import { handleListCities } from "./endpoints/cities.js";
 import { handleRouteMeasurements } from "./endpoints/route-measurements.js";
-import { handleCorrelations } from "./endpoints/correlations.js";
-import { handleMesh } from "./endpoints/mesh.js";
-import { handleEvents } from "./events.js";
+import { handleListRouteCorrelations } from "./endpoints/correlations.js";
+import { handleListRouteSummaries } from "./endpoints/mesh.js";
+import { handleStreamEvents } from "./events.js";
 import { sendError, sendJson } from "./http.js";
 
 const PORT = clamp(Number(process.env.PORT) || 3001, 0, 65535);
@@ -23,17 +23,17 @@ const server = createServer((req, res) => {
   }
 
   if (url.pathname === "/api/route-summaries" && req.method === "GET") {
-    handleMesh(res).catch(onError);
+    handleListRouteSummaries(res).catch(onError);
     return;
   }
 
   if (url.pathname === "/api/events") {
-    handleEvents(res);
+    handleStreamEvents(res);
     return;
   }
 
   if (url.pathname === "/api/route-correlations" && req.method === "GET") {
-    handleCorrelations(url.searchParams, res).catch(onError);
+    handleListRouteCorrelations(url.searchParams, res).catch(onError);
     return;
   }
 

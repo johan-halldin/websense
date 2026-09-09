@@ -28,7 +28,7 @@ listenForPingResultsUpdates(() => {
  *
  * @param {ServerResponse} res
  */
-function handleEvents(res) {
+function handleStreamEvents(res) {
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
@@ -39,4 +39,4 @@ function handleEvents(res) {
   res.on("close", () => clients.delete(res));
 }
 
-export { handleEvents };
+export { handleStreamEvents };

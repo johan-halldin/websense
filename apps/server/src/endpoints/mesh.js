@@ -6,7 +6,7 @@ import { sendJson } from "../http.js";
 /**
  * @param {ServerResponse} res
  */
-async function handleMesh(res) {
+async function handleListRouteSummaries(res) {
   const { rows } = await query(
     `WITH results AS (
        -- Some RIPE Atlas results report a fully lossy ping as rtt_avg_ms
@@ -59,4 +59,4 @@ async function handleMesh(res) {
   sendJson(res, 200, rows);
 }
 
-export { handleMesh };
+export { handleListRouteSummaries };
