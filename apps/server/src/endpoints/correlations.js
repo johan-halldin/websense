@@ -49,7 +49,7 @@ async function handleListRouteCorrelations(searchParams, res) {
          second_route.src_id AS second_src_id,
          second_route.dst_id AS second_dst_id,
          corr(first_route.value, second_route.value) AS correlation,
-         count(*) AS shared_buckets
+         count(*)::integer AS shared_buckets
        FROM bucketed first_route
        JOIN bucketed second_route
          ON second_route.bucket = first_route.bucket
