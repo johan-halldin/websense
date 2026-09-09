@@ -1,5 +1,4 @@
 import { html, LitElement } from "lit";
-import "@websense/ui/src/button/button.wc.js";
 import "@websense/ui/src/tabs/tabs.wc.js";
 import { iconBaseStyle } from "@websense/ui/src/icons/icon-styles.js";
 import { layoutStyle } from "@websense/ui/src/layout-style.js";
@@ -9,7 +8,6 @@ import "../mesh/mesh.wc.js";
 import "../world-map/world-map.wc.js";
 
 /** @import { ITabs } from "@websense/ui/src/tabs/tabs.wc.js" */
-/** @import { IButton } from "@websense/ui/src/button/button.wc.js" */
 /** @import { IWsMesh } from "../mesh/mesh.wc.js" */
 /** @import { IWorldMap } from "../world-map/world-map.wc.js" */
 /** @import { ICityPair } from "../city-pair/city-pair.wc.js" */
@@ -18,7 +16,6 @@ import "../world-map/world-map.wc.js";
 /**
  * @typedef {object} IDashboard
  * @property {ITabs} tabs
- * @property {IButton} ingestButton
  * @property {IWsMesh} mesh
  * @property {IWorldMap} worldMap
  * @property {ICityPair} cityPair
@@ -62,7 +59,6 @@ class WsDashboard extends LitElement {
             ></span>
             WebSense
           </h1>
-          <ui-button .ic=${ic.ingestButton}></ui-button>
         </div>
         <ui-tabs .ic=${ic.tabs}></ui-tabs>
         ${activeTab === "mesh" ? html`<ws-mesh .ic=${ic.mesh}></ws-mesh>` : ""}

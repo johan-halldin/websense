@@ -2,12 +2,11 @@ import {
   isApiCities,
   isApiCityPairMeasurements,
   isApiCorrelations,
-  isApiIngest,
   isApiMeshRows,
 } from "@websense/api-types";
 import { fetchJson } from "./http.js";
 
-/** @import { ApiCity, ApiCityPairGrouping, ApiCityPairMeasurement, ApiCityPairRange, ApiCorrelation, ApiCorrelationGrouping, ApiCorrelationRange, ApiIngest, ApiMeshRow } from "@websense/api-types" */
+/** @import { ApiCity, ApiCityPairGrouping, ApiCityPairMeasurement, ApiCityPairRange, ApiCorrelation, ApiCorrelationGrouping, ApiCorrelationRange, ApiMeshRow } from "@websense/api-types" */
 /** @import { HttpValueResult } from "./http.js" */
 
 /**
@@ -52,17 +51,9 @@ async function fetchCorrelations(range, grouping) {
   );
 }
 
-/**
- * @returns {Promise<HttpValueResult<ApiIngest>>}
- */
-async function fetchIngest() {
-  return fetchJson("/api/ingest", isApiIngest, { method: "POST" });
-}
-
 export {
   fetchCities,
   fetchRouteMeasurements,
   fetchCorrelations,
-  fetchIngest,
   fetchMeshRows,
 };

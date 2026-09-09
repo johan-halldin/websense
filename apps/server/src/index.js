@@ -1,13 +1,8 @@
 import { createServer } from "node:http";
-import { clamp, isPositiveInteger } from "@websense/util";
-import {
-  handleCreateCity,
-  handleDeleteCity,
-  handleListCities,
-} from "./endpoints/cities.js";
+import { clamp } from "@websense/util";
+import { handleListCities } from "./endpoints/cities.js";
 import { handleRouteMeasurements } from "./endpoints/route-measurements.js";
 import { handleCorrelations } from "./endpoints/correlations.js";
-import { handleIngest } from "./endpoints/ingest.js";
 import { handleMesh } from "./endpoints/mesh.js";
 import { handleEvents } from "./events.js";
 import { sendError, sendJson } from "./http.js";
@@ -37,11 +32,6 @@ const server = createServer((req, res) => {
     return;
   }
 
-  if (url.pathname === "/api/ingest" && req.method === "POST") {
-    handleIngest(res).catch(onError);
-    return;
-  }
-
   if (url.pathname === "/api/route-correlations" && req.method === "GET") {
     handleCorrelations(url.searchParams, res).catch(onError);
     return;
@@ -49,11 +39,6 @@ const server = createServer((req, res) => {
 
   if (url.pathname === "/api/cities" && req.method === "GET") {
     handleListCities(res).catch(onError);
-    return;
-  }
-
-  if (url.pathname === "/api/cities" && req.method === "POST") {
-    handleCreateCity(req, res).catch(onError);
     return;
   }
 
@@ -65,18 +50,6 @@ const server = createServer((req, res) => {
     const dstId = Number(routeMeasurementsMatch[2]);
     handleRouteMeasurements(srcId, dstId, url.searchParams, res).catch(onError);
     return;
-  }
-
-  const cityIdMatch = url.pathname.match(/^\/api\/cities\/(\d+)$/);
-  if (cityIdMatch && req.method === "DELETE") {
-    const cityIdText = cityIdMatch[1];
-    if (cityIdText !== undefined) {
-      const cityId = Number(cityIdText);
-      if (isPositiveInteger(cityId)) {
-        handleDeleteCity(cityId, res).catch(onError);
-        return;
-      }
-    }
   }
 
   sendError(res, 404, "Not found");
